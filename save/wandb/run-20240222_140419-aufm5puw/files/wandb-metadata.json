@@ -1,0 +1,143 @@
+{
+    "os": "Linux-5.15.0-94-generic-x86_64-with-glibc2.31",
+    "python": "3.10.6",
+    "heartbeatAt": "2024-02-22T13:04:20.204080",
+    "startedAt": "2024-02-22T13:04:19.614781",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--node-ip-address=10.42.0.125",
+        "--node-manager-port=45267",
+        "--object-store-name=/tmp/ray/session_2024-02-22_14-04-09_948450_28117/sockets/plasma_store",
+        "--raylet-name=/tmp/ray/session_2024-02-22_14-04-09_948450_28117/sockets/raylet",
+        "--redis-address=None",
+        "--temp-dir=/tmp/ray",
+        "--metrics-agent-port=52146",
+        "--logging-rotate-bytes=536870912",
+        "--logging-rotate-backup-count=5",
+        "--gcs-address=10.42.0.125:60729",
+        "--session-name=session_2024-02-22_14-04-09_948450_28117",
+        "--temp-dir=/tmp/ray",
+        "--webui=",
+        "--startup-token=16",
+        "--worker-launch-time-ms=1708607053962"
+    ],
+    "state": "running",
+    "program": "/home/adriano/.pyenv/versions/elsa_env/lib/python3.10/site-packages/ray/_private/workers/default_worker.py",
+    "codePathLocal": null,
+    "git": {
+        "remote": "https://github.com/AdrianoPaccia/ELSA_tiago_fl.git",
+        "commit": null
+    },
+    "email": "adriano@pacciarelli.com",
+    "root": "/home/adriano/Desktop/tiago_ws/src/elsa_tiago_fl",
+    "host": "oem-IdeaPad-Gaming-3-16IAH7",
+    "username": "adriano",
+    "executable": "/home/adriano/.pyenv/versions/elsa_env/bin/python3",
+    "cpu_count": 10,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 3094.57375,
+        "min": 400.0,
+        "max": 4350.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4600.0
+        },
+        {
+            "current": 3360.222,
+            "min": 400.0,
+            "max": 4600.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4600.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4600.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4700.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4700.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4700.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4700.0
+        },
+        {
+            "current": 4035.054,
+            "min": 400.0,
+            "max": 4600.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4600.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4600.0
+        },
+        {
+            "current": 2700.0,
+            "min": 400.0,
+            "max": 4600.0
+        },
+        {
+            "current": 3497.448,
+            "min": 400.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3499.938,
+            "min": 400.0,
+            "max": 3500.0
+        },
+        {
+            "current": 2852.233,
+            "min": 400.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3475.639,
+            "min": 400.0,
+            "max": 3500.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 180.85349655151367,
+            "used": 49.783973693847656
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+            "memory_total": 6442450944
+        }
+    ],
+    "memory": {
+        "total": 15.344696044921875
+    }
+}

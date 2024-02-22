@@ -1,0 +1,1007 @@
+Simulation client #0...
+... logging to /home/adriano/.ros/log/4cf86fb4-d184-11ee-bd01-11b9d93379fc/roslaunch-oem-IdeaPad-Gaming-3-16IAH7-36664.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/home/adriano/Desktop/tiago_ws/src/tiago_simulation/tiago_gazebo/launch/tiago_gazebo.launch
+xacro: in-order processing became default in ROS Melodic. You can drop the option.
+[1mstarted roslaunch server http://oem-IdeaPad-Gaming-3-16IAH7:34275/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /arm_controller/constraints/arm_1_joint/goal: 0.025
+ * /arm_controller/constraints/arm_2_joint/goal: 0.025
+ * /arm_controller/constraints/arm_3_joint/goal: 0.025
+ * /arm_controller/constraints/arm_4_joint/goal: 0.025
+ * /arm_controller/constraints/arm_5_joint/goal: 0.025
+ * /arm_controller/constraints/arm_6_joint/goal: 0.025
+ * /arm_controller/constraints/arm_7_joint/goal: 0.025
+ * /arm_controller/constraints/goal_time: 0.6
+ * /arm_controller/constraints/stopped_velocity_tolerance: 5.0
+ * /arm_controller/joints: ['arm_1_joint', '...
+ * /arm_controller/type: position_controll...
+ * /collision_model_parameters/blacklist/default: [{'first': 'arm_2...
+ * /collision_model_parameters/links_with_padding: ['arm_4_link', 'a...
+ * /collision_model_parameters/padding: 0.01
+ * /force_torque/wrist_ft/frame: wrist_ft_link
+ * /force_torque/wrist_ft/sensor_joint: arm_7_joint
+ * /force_torque_sensor_controller/publish_rate: 50
+ * /force_torque_sensor_controller/type: force_torque_sens...
+ * /gains/FFJ1/d: 0
+ * /gains/FFJ1/i: 1
+ * /gains/FFJ1/p: 10
+ * /gains/FFJ2/d: 0
+ * /gains/FFJ2/i: 1
+ * /gains/FFJ2/p: 10
+ * /gains/FFJ3/d: 0
+ * /gains/FFJ3/i: 1
+ * /gains/FFJ3/p: 10
+ * /gains/FFJ4/d: 0
+ * /gains/FFJ4/i: 1
+ * /gains/FFJ4/p: 10
+ * /gains/MFJ1/d: 0
+ * /gains/MFJ1/i: 1
+ * /gains/MFJ1/p: 10
+ * /gains/MFJ2/d: 0
+ * /gains/MFJ2/i: 1
+ * /gains/MFJ2/p: 10
+ * /gains/MFJ3/d: 0
+ * /gains/MFJ3/i: 1
+ * /gains/MFJ3/p: 10
+ * /gains/MFJ4/d: 0
+ * /gains/MFJ4/i: 1
+ * /gains/MFJ4/p: 10
+ * /gains/RFJ1/d: 0
+ * /gains/RFJ1/i: 1
+ * /gains/RFJ1/p: 10
+ * /gains/RFJ2/d: 0
+ * /gains/RFJ2/i: 1
+ * /gains/RFJ2/p: 10
+ * /gains/RFJ3/d: 0
+ * /gains/RFJ3/i: 1
+ * /gains/RFJ3/p: 10
+ * /gains/RFJ4/d: 0
+ * /gains/RFJ4/i: 1
+ * /gains/RFJ4/p: 10
+ * /gains/THJ1/d: 0
+ * /gains/THJ1/i: 1
+ * /gains/THJ1/p: 10
+ * /gains/THJ2/d: 0
+ * /gains/THJ2/i: 1
+ * /gains/THJ2/p: 10
+ * /gains/THJ4/d: 0
+ * /gains/THJ4/i: 1
+ * /gains/THJ4/p: 10
+ * /gains/THJ5/d: 0
+ * /gains/THJ5/i: 1
+ * /gains/THJ5/p: 10
+ * /gains/arm_1_joint/d: 0.5
+ * /gains/arm_1_joint/i: 0.0
+ * /gains/arm_1_joint/i_clamp: 3
+ * /gains/arm_1_joint/p: 400
+ * /gains/arm_1_joint/torque_clamp: 60
+ * /gains/arm_2_joint/d: 5.0
+ * /gains/arm_2_joint/i: 0.5
+ * /gains/arm_2_joint/i_clamp: 3
+ * /gains/arm_2_joint/p: 750
+ * /gains/arm_2_joint/torque_clamp: 50
+ * /gains/arm_3_joint/d: 0.5
+ * /gains/arm_3_joint/i: 0.1
+ * /gains/arm_3_joint/i_clamp: 3
+ * /gains/arm_3_joint/p: 400
+ * /gains/arm_3_joint/torque_clamp: 50
+ * /gains/arm_4_joint/d: 1.0
+ * /gains/arm_4_joint/i: 0.1
+ * /gains/arm_4_joint/i_clamp: 3
+ * /gains/arm_4_joint/p: 400
+ * /gains/arm_4_joint/torque_clamp: 50
+ * /gains/arm_5_joint/d: 0.1
+ * /gains/arm_5_joint/i: 0.01
+ * /gains/arm_5_joint/i_clamp: 3
+ * /gains/arm_5_joint/p: 100
+ * /gains/arm_5_joint/torque_clamp: 50
+ * /gains/arm_6_joint/d: 0.1
+ * /gains/arm_6_joint/i: 0.01
+ * /gains/arm_6_joint/i_clamp: 3
+ * /gains/arm_6_joint/p: 100
+ * /gains/arm_6_joint/torque_clamp: 50
+ * /gains/arm_7_joint/d: 0.1
+ * /gains/arm_7_joint/i: 0.01
+ * /gains/arm_7_joint/i_clamp: 3
+ * /gains/arm_7_joint/p: 50
+ * /gains/arm_7_joint/torque_clamp: 50
+ * /gains/gripper_finger_joint/d: 0
+ * /gains/gripper_finger_joint/i: 0
+ * /gains/gripper_finger_joint/i_clamp: 3
+ * /gains/gripper_finger_joint/p: 250
+ * /gains/gripper_finger_joint/p_gain: 200
+ * /gains/gripper_finger_joint/torque_clamp: 60
+ * /gains/gripper_left_finger_joint/d: 0
+ * /gains/gripper_left_finger_joint/i: 0
+ * /gains/gripper_left_finger_joint/p: 200
+ * /gains/gripper_left_finger_joint/p_gain: 200
+ * /gains/gripper_right_finger_joint/d: 0
+ * /gains/gripper_right_finger_joint/i: 0
+ * /gains/gripper_right_finger_joint/p: 200
+ * /gains/gripper_right_finger_joint/p_gain: 200
+ * /gains/hand_index_abd_joint/d: 0.01
+ * /gains/hand_index_abd_joint/i: 0.01
+ * /gains/hand_index_abd_joint/i_clamp: 1
+ * /gains/hand_index_abd_joint/p: 5
+ * /gains/hand_index_flex_1_joint/d: 0.01
+ * /gains/hand_index_flex_1_joint/i: 0.01
+ * /gains/hand_index_flex_1_joint/i_clamp: 1
+ * /gains/hand_index_flex_1_joint/p: 5
+ * /gains/hand_index_flex_2_joint/d: 0.01
+ * /gains/hand_index_flex_2_joint/i: 0.01
+ * /gains/hand_index_flex_2_joint/i_clamp: 1
+ * /gains/hand_index_flex_2_joint/p: 5
+ * /gains/hand_index_flex_3_joint/d: 0.01
+ * /gains/hand_index_flex_3_joint/i: 0.01
+ * /gains/hand_index_flex_3_joint/i_clamp: 1
+ * /gains/hand_index_flex_3_joint/p: 5
+ * /gains/hand_index_joint/d: 0.01
+ * /gains/hand_index_joint/i: 0.01
+ * /gains/hand_index_joint/i_clamp: 1
+ * /gains/hand_index_joint/p: 5
+ * /gains/hand_index_virtual_1_joint/d: 0.01
+ * /gains/hand_index_virtual_1_joint/i: 0.01
+ * /gains/hand_index_virtual_1_joint/i_clamp: 1
+ * /gains/hand_index_virtual_1_joint/p: 5
+ * /gains/hand_index_virtual_2_joint/d: 0.01
+ * /gains/hand_index_virtual_2_joint/i: 0.01
+ * /gains/hand_index_virtual_2_joint/i_clamp: 1
+ * /gains/hand_index_virtual_2_joint/p: 5
+ * /gains/hand_index_virtual_3_joint/d: 0.01
+ * /gains/hand_index_virtual_3_joint/i: 0.01
+ * /gains/hand_index_virtual_3_joint/i_clamp: 1
+ * /gains/hand_index_virtual_3_joint/p: 5
+ * /gains/hand_little_abd_joint/d: 0.01
+ * /gains/hand_little_abd_joint/i: 0.01
+ * /gains/hand_little_abd_joint/i_clamp: 1
+ * /gains/hand_little_abd_joint/p: 5
+ * /gains/hand_little_flex_1_joint/d: 0.01
+ * /gains/hand_little_flex_1_joint/i: 0.01
+ * /gains/hand_little_flex_1_joint/i_clamp: 1
+ * /gains/hand_little_flex_1_joint/p: 5
+ * /gains/hand_little_flex_2_joint/d: 0.01
+ * /gains/hand_little_flex_2_joint/i: 0.01
+ * /gains/hand_little_flex_2_joint/i_clamp: 1
+ * /gains/hand_little_flex_2_joint/p: 5
+ * /gains/hand_little_flex_3_joint/d: 0.01
+ * /gains/hand_little_flex_3_joint/i: 0.01
+ * /gains/hand_little_flex_3_joint/i_clamp: 1
+ * /gains/hand_little_flex_3_joint/p: 5
+ * /gains/hand_little_virtual_1_joint/d: 0.01
+ * /gains/hand_little_virtual_1_joint/i: 0.01
+ * /gains/hand_little_virtual_1_joint/i_clamp: 1
+ * /gains/hand_little_virtual_1_joint/p: 5
+ * /gains/hand_little_virtual_2_joint/d: 0.01
+ * /gains/hand_little_virtual_2_joint/i: 0.01
+ * /gains/hand_little_virtual_2_joint/i_clamp: 1
+ * /gains/hand_little_virtual_2_joint/p: 5
+ * /gains/hand_little_virtual_3_joint/d: 0.01
+ * /gains/hand_little_virtual_3_joint/i: 0.01
+ * /gains/hand_little_virtual_3_joint/i_clamp: 1
+ * /gains/hand_little_virtual_3_joint/p: 5
+ * /gains/hand_middle_abd_joint/d: 0.01
+ * /gains/hand_middle_abd_joint/i: 0.01
+ * /gains/hand_middle_abd_joint/i_clamp: 1
+ * /gains/hand_middle_abd_joint/p: 5
+ * /gains/hand_middle_flex_1_joint/d: 0.01
+ * /gains/hand_middle_flex_1_joint/i: 0.01
+ * /gains/hand_middle_flex_1_joint/i_clamp: 1
+ * /gains/hand_middle_flex_1_joint/p: 5
+ * /gains/hand_middle_flex_2_joint/d: 0.01
+ * /gains/hand_middle_flex_2_joint/i: 0.01
+ * /gains/hand_middle_flex_2_joint/i_clamp: 1
+ * /gains/hand_middle_flex_2_joint/p: 5
+ * /gains/hand_middle_flex_3_joint/d: 0.01
+ * /gains/hand_middle_flex_3_joint/i: 0.01
+ * /gains/hand_middle_flex_3_joint/i_clamp: 1
+ * /gains/hand_middle_flex_3_joint/p: 5
+ * /gains/hand_middle_virtual_1_joint/d: 0.01
+ * /gains/hand_middle_virtual_1_joint/i: 0.01
+ * /gains/hand_middle_virtual_1_joint/i_clamp: 1
+ * /gains/hand_middle_virtual_1_joint/p: 5
+ * /gains/hand_middle_virtual_2_joint/d: 0.01
+ * /gains/hand_middle_virtual_2_joint/i: 0.01
+ * /gains/hand_middle_virtual_2_joint/i_clamp: 1
+ * /gains/hand_middle_virtual_2_joint/p: 5
+ * /gains/hand_middle_virtual_3_joint/d: 0.01
+ * /gains/hand_middle_virtual_3_joint/i: 0.01
+ * /gains/hand_middle_virtual_3_joint/i_clamp: 1
+ * /gains/hand_middle_virtual_3_joint/p: 5
+ * /gains/hand_mrl_joint/d: 0.01
+ * /gains/hand_mrl_joint/i: 0.01
+ * /gains/hand_mrl_joint/i_clamp: 1
+ * /gains/hand_mrl_joint/p: 5
+ * /gains/hand_ring_abd_joint/d: 0.01
+ * /gains/hand_ring_abd_joint/i: 0.01
+ * /gains/hand_ring_abd_joint/i_clamp: 1
+ * /gains/hand_ring_abd_joint/p: 5
+ * /gains/hand_ring_flex_1_joint/d: 0.01
+ * /gains/hand_ring_flex_1_joint/i: 0.01
+ * /gains/hand_ring_flex_1_joint/i_clamp: 1
+ * /gains/hand_ring_flex_1_joint/p: 5
+ * /gains/hand_ring_flex_2_joint/d: 0.01
+ * /gains/hand_ring_flex_2_joint/i: 0.01
+ * /gains/hand_ring_flex_2_joint/i_clamp: 1
+ * /gains/hand_ring_flex_2_joint/p: 5
+ * /gains/hand_ring_flex_3_joint/d: 0.01
+ * /gains/hand_ring_flex_3_joint/i: 0.01
+ * /gains/hand_ring_flex_3_joint/i_clamp: 1
+ * /gains/hand_ring_flex_3_joint/p: 5
+ * /gains/hand_ring_virtual_1_joint/d: 0.01
+ * /gains/hand_ring_virtual_1_joint/i: 0.01
+ * /gains/hand_ring_virtual_1_joint/i_clamp: 1
+ * /gains/hand_ring_virtual_1_joint/p: 5
+ * /gains/hand_ring_virtual_2_joint/d: 0.01
+ * /gains/hand_ring_virtual_2_joint/i: 0.01
+ * /gains/hand_ring_virtual_2_joint/i_clamp: 1
+ * /gains/hand_ring_virtual_2_joint/p: 5
+ * /gains/hand_ring_virtual_3_joint/d: 0.01
+ * /gains/hand_ring_virtual_3_joint/i: 0.01
+ * /gains/hand_ring_virtual_3_joint/i_clamp: 1
+ * /gains/hand_ring_virtual_3_joint/p: 5
+ * /gains/hand_thumb_abd_joint/d: 0.01
+ * /gains/hand_thumb_abd_joint/i: 0.01
+ * /gains/hand_thumb_abd_joint/i_clamp: 1
+ * /gains/hand_thumb_abd_joint/p: 5
+ * /gains/hand_thumb_flex_1_joint/d: 0.01
+ * /gains/hand_thumb_flex_1_joint/i: 0.01
+ * /gains/hand_thumb_flex_1_joint/i_clamp: 1
+ * /gains/hand_thumb_flex_1_joint/p: 5
+ * /gains/hand_thumb_flex_2_joint/d: 0.01
+ * /gains/hand_thumb_flex_2_joint/i: 0.01
+ * /gains/hand_thumb_flex_2_joint/i_clamp: 1
+ * /gains/hand_thumb_flex_2_joint/p: 5
+ * /gains/hand_thumb_flex_3_joint/d: 0.01
+ * /gains/hand_thumb_flex_3_joint/i: 0.01
+ * /gains/hand_thumb_flex_3_joint/i_clamp: 1
+ * /gains/hand_thumb_flex_3_joint/p: 5
+ * /gains/hand_thumb_joint/d: 0.01
+ * /gains/hand_thumb_joint/i: 0.01
+ * /gains/hand_thumb_joint/i_clamp: 1
+ * /gains/hand_thumb_joint/p: 5
+ * /gains/hand_thumb_virtual_1_joint/d: 0.01
+ * /gains/hand_thumb_virtual_1_joint/i: 0.01
+ * /gains/hand_thumb_virtual_1_joint/i_clamp: 1
+ * /gains/hand_thumb_virtual_1_joint/p: 5
+ * /gains/hand_thumb_virtual_2_joint/d: 0.01
+ * /gains/hand_thumb_virtual_2_joint/i: 0.01
+ * /gains/hand_thumb_virtual_2_joint/i_clamp: 1
+ * /gains/hand_thumb_virtual_2_joint/p: 5
+ * /gains/hand_thumb_virtual_3_joint/d: 0.01
+ * /gains/hand_thumb_virtual_3_joint/i: 0.01
+ * /gains/hand_thumb_virtual_3_joint/i_clamp: 1
+ * /gains/hand_thumb_virtual_3_joint/p: 5
+ * /gains/head_1_joint/d: 0
+ * /gains/head_1_joint/i: 10
+ * /gains/head_1_joint/i_clamp: 1.5
+ * /gains/head_1_joint/p: 100
+ * /gains/head_2_joint/d: 0
+ * /gains/head_2_joint/i: 10
+ * /gains/head_2_joint/i_clamp: 1.5
+ * /gains/head_2_joint/p: 100
+ * /gains/suspension_left_joint/d: 250
+ * /gains/suspension_left_joint/i: 0.1
+ * /gains/suspension_left_joint/i_clamp: 1.5
+ * /gains/suspension_left_joint/p: 30000
+ * /gains/suspension_right_joint/d: 250
+ * /gains/suspension_right_joint/i: 0.1
+ * /gains/suspension_right_joint/i_clamp: 1.5
+ * /gains/suspension_right_joint/p: 30000
+ * /gains/torso_lift_joint/d: 25
+ * /gains/torso_lift_joint/i: 0.02
+ * /gains/torso_lift_joint/i_clamp: 1.5
+ * /gains/torso_lift_joint/p: 90000
+ * /gains/xtion_frame_joint/d: 0
+ * /gains/xtion_frame_joint/i: 0
+ * /gains/xtion_frame_joint/i_clamp: 1.5
+ * /gains/xtion_frame_joint/p: 0.5
+ * /gripper_controller/constraints/goal_time: 0.6
+ * /gripper_controller/constraints/gripper_finger_joint/goal: 0.02
+ * /gripper_controller/constraints/stopped_velocity_tolerance: 5.0
+ * /gripper_controller/joints: ['gripper_finger_...
+ * /gripper_controller/type: position_controll...
+ * /gripper_grasping/close_configuration: [0.8]
+ * /gripper_grasping/controller_name: gripper
+ * /gripper_grasping/grasper/closing_time: 1.0
+ * /gripper_grasping/grasper/pressure_configuration: 0.08
+ * /gripper_grasping/grasper/timeout: 2.0
+ * /gripper_grasping/gripper_joint_name: gripper_finger_joint
+ * /gripper_grasping/gripper_motor_name: gripper_motor
+ * /gripper_grasping/model: robotiq-2f-85
+ * /gripper_grasping/pub_rate: 50
+ * /gripper_grasping/real_joint_names: ['gripper_finger_...
+ * /head_controller/constraints/goal_time: 2.0
+ * /head_controller/constraints/head_1_joint/goal: 0.02
+ * /head_controller/constraints/head_2_joint/goal: 0.02
+ * /head_controller/constraints/stopped_velocity_tolerance: 5.0
+ * /head_controller/joints: ['head_1_joint', ...
+ * /head_controller/point_head_action/pan_link: head_1_link
+ * /head_controller/point_head_action/success_angle_threshold: 0.01
+ * /head_controller/point_head_action/tilt_link: head_2_link
+ * /head_controller/type: position_controll...
+ * /home_gripper/suffix: 
+ * /imu/base_imu/frame: base_imu_link
+ * /imu/base_imu/gazebo_sensor_name: imu_sensor
+ * /imu_sensor_controller/publish_rate: 50
+ * /imu_sensor_controller/type: imu_sensor_contro...
+ * /joint_state_controller/extra_joints: [{'name': 'caster...
+ * /joint_state_controller/publish_rate: 50
+ * /joint_state_controller/type: joint_state_contr...
+ * /joint_torque_sensor_state_controller/extra_joints: [{'name': 'caster...
+ * /joystick_relay/priority: False
+ * /joystick_relay/turbo/angular_max: 1.3962634015954636
+ * /joystick_relay/turbo/angular_min: 0.2617993877991494
+ * /joystick_relay/turbo/linear_backward_max: 0.3
+ * /joystick_relay/turbo/linear_backward_min: 0.1
+ * /joystick_relay/turbo/linear_forward_max: 0.5
+ * /joystick_relay/turbo/linear_forward_min: 0.1
+ * /joystick_relay/turbo/steps: 6
+ * /mobile_base_controller/angular/z/has_acceleration_limits: True
+ * /mobile_base_controller/angular/z/has_velocity_limits: True
+ * /mobile_base_controller/angular/z/max_acceleration: 2.0943951023931953
+ * /mobile_base_controller/angular/z/max_velocity: 2.0943951023931953
+ * /mobile_base_controller/base_frame_id: /base_footprint
+ * /mobile_base_controller/cmd_vel_timeout: 0.25
+ * /mobile_base_controller/left_wheel: wheel_left_joint
+ * /mobile_base_controller/linear/x/has_acceleration_limits: True
+ * /mobile_base_controller/linear/x/has_velocity_limits: True
+ * /mobile_base_controller/linear/x/max_acceleration: 1.0
+ * /mobile_base_controller/linear/x/max_velocity: 1.0
+ * /mobile_base_controller/linear/x/min_velocity: -0.2
+ * /mobile_base_controller/odom_frame_id: /odom
+ * /mobile_base_controller/pose_covariance_diagonal: [0.001, 0.001, 10...
+ * /mobile_base_controller/preserve_turning_radius: True
+ * /mobile_base_controller/publish_rate: 50.0
+ * /mobile_base_controller/publish_wheel_data: True
+ * /mobile_base_controller/right_wheel: wheel_right_joint
+ * /mobile_base_controller/twist_covariance_diagonal: [0.001, 0.001, 10...
+ * /mobile_base_controller/type: diff_drive_contro...
+ * /move_group/allow_trajectory_execution: True
+ * /move_group/arm/longest_valid_segment_fraction: 0.01
+ * /move_group/arm/planner_configs: ['SBLkConfigDefau...
+ * /move_group/arm/projection_evaluator: joints(arm_1_join...
+ * /move_group/arm_torso/longest_valid_segment_fraction: 0.01
+ * /move_group/arm_torso/planner_configs: ['SBLkConfigDefau...
+ * /move_group/arm_torso/projection_evaluator: joints(torso_lift...
+ * /move_group/capabilities: 
+ * /move_group/controller_list: [{'name': 'arm_co...
+ * /move_group/controller_manager_name: controller_manager
+ * /move_group/controller_manager_ns: controller_manager
+ * /move_group/disable_capabilities: 
+ * /move_group/jiggle_fraction: 0.05
+ * /move_group/max_safe_path_cost: 1
+ * /move_group/moveit_controller_manager: moveit_simple_con...
+ * /move_group/moveit_manage_controllers: True
+ * /move_group/planner_configs/BKPIECEkConfigDefault/type: geometric::BKPIECE
+ * /move_group/planner_configs/ESTkConfigDefault/type: geometric::EST
+ * /move_group/planner_configs/KPIECEkConfigDefault/type: geometric::KPIECE
+ * /move_group/planner_configs/LBKPIECEkConfigDefault/type: geometric::LBKPIECE
+ * /move_group/planner_configs/PRMkConfigDefault/type: geometric::PRM
+ * /move_group/planner_configs/PRMstarkConfigDefault/type: geometric::PRMstar
+ * /move_group/planner_configs/RRTConnectkConfigDefault/type: geometric::RRTCon...
+ * /move_group/planner_configs/RRTkConfigDefault/type: geometric::RRT
+ * /move_group/planner_configs/RRTstarkConfigDefault/type: geometric::RRTstar
+ * /move_group/planner_configs/SBLkConfigDefault/type: geometric::SBL
+ * /move_group/planner_configs/TRRTkConfigDefault/type: geometric::TRRT
+ * /move_group/planning_plugin: ompl_interface/OM...
+ * /move_group/planning_scene_monitor/publish_geometry_updates: True
+ * /move_group/planning_scene_monitor/publish_planning_scene: True
+ * /move_group/planning_scene_monitor/publish_state_updates: True
+ * /move_group/planning_scene_monitor/publish_transforms_updates: True
+ * /move_group/request_adapters: default_planner_r...
+ * /move_group/start_state_max_bounds_error: 0.1
+ * /move_group/trajectory_execution/allowed_execution_duration_scaling: 1.2
+ * /move_group/trajectory_execution/allowed_goal_duration_margin: 0.5
+ * /move_group/use_controller_manager: True
+ * /pal_robot_info/arm: True
+ * /pal_robot_info/arm_type: tiago_arm
+ * /pal_robot_info/base_type: pmb2
+ * /pal_robot_info/camera_model: orbbec-astra
+ * /pal_robot_info/end_effector: robotiq-2f-85
+ * /pal_robot_info/ft_sensor: schunk-ft
+ * /pal_robot_info/laser_model: sick-571
+ * /pal_robot_info/type: tiago
+ * /play_motion/approach_planner/exclude_from_planning_joints: ['head_1_joint', ...
+ * /play_motion/approach_planner/joint_tolerance: 0.01
+ * /play_motion/approach_planner/planning_groups: ['arm_torso', 'arm']
+ * /play_motion/approach_planner/skip_planning_approach_min_dur: 0.5
+ * /play_motion/approach_planner/skip_planning_approach_vel: 0.5
+ * /play_motion/controllers: ['arm_controller'...
+ * /play_motion/disable_motion_planning: False
+ * /play_motion/motions/close/joints: ['gripper_finger_...
+ * /play_motion/motions/close/meta/description: Closes gripper
+ * /play_motion/motions/close/meta/name: Close Gripper
+ * /play_motion/motions/close/meta/usage: demo
+ * /play_motion/motions/close/points: [{'positions': [0...
+ * /play_motion/motions/close_gripper/joints: ['gripper_finger_...
+ * /play_motion/motions/close_gripper/points: [{'positions': [0...
+ * /play_motion/motions/close_gripper_half/joints: ['gripper_finger_...
+ * /play_motion/motions/close_gripper_half/points: [{'positions': [0...
+ * /play_motion/motions/close_half/joints: ['gripper_finger_...
+ * /play_motion/motions/close_half/meta/description: Closes gripper ha...
+ * /play_motion/motions/close_half/meta/name: Close Gripper Half
+ * /play_motion/motions/close_half/meta/usage: demo
+ * /play_motion/motions/close_half/points: [{'positions': [0...
+ * /play_motion/motions/do_weights/joints: ['arm_1_joint', '...
+ * /play_motion/motions/do_weights/meta/description: Do weights
+ * /play_motion/motions/do_weights/meta/name: Do Weights
+ * /play_motion/motions/do_weights/meta/usage: demo
+ * /play_motion/motions/do_weights/points: [{'positions': [1...
+ * /play_motion/motions/head_tour/joints: ['head_1_joint', ...
+ * /play_motion/motions/head_tour/meta/description: head_tour
+ * /play_motion/motions/head_tour/meta/name: Head Tour
+ * /play_motion/motions/head_tour/meta/usage: demo
+ * /play_motion/motions/head_tour/points: [{'positions': [0...
+ * /play_motion/motions/hold_object_home/joints: ['torso_lift_join...
+ * /play_motion/motions/hold_object_home/meta/description: Go to home positi...
+ * /play_motion/motions/hold_object_home/meta/name: hold_object_home
+ * /play_motion/motions/hold_object_home/meta/usage: demo
+ * /play_motion/motions/hold_object_home/points: [{'positions': [0...
+ * /play_motion/motions/home/joints: ['torso_lift_join...
+ * /play_motion/motions/home/meta/description: Go home
+ * /play_motion/motions/home/meta/name: Home
+ * /play_motion/motions/home/meta/usage: demo
+ * /play_motion/motions/home/points: [{'positions': [0...
+ * /play_motion/motions/inspect_surroundings/joints: ['head_1_joint', ...
+ * /play_motion/motions/inspect_surroundings/meta/description: Inspect surroundi...
+ * /play_motion/motions/inspect_surroundings/meta/name: Inspect Surroundings
+ * /play_motion/motions/inspect_surroundings/meta/usage: demo
+ * /play_motion/motions/inspect_surroundings/points: [{'positions': [-...
+ * /play_motion/motions/offer/joints: ['torso_lift_join...
+ * /play_motion/motions/offer/meta/description: Offer Gripper
+ * /play_motion/motions/offer/meta/name: Offer Gripper
+ * /play_motion/motions/offer/meta/usage: demo
+ * /play_motion/motions/offer/points: [{'positions': [0...
+ * /play_motion/motions/offer_gripper/joints: ['torso_lift_join...
+ * /play_motion/motions/offer_gripper/points: [{'positions': [0...
+ * /play_motion/motions/open/joints: ['gripper_finger_...
+ * /play_motion/motions/open/meta/description: Open gripper
+ * /play_motion/motions/open/meta/name: Open Gripper
+ * /play_motion/motions/open/meta/usage: demo
+ * /play_motion/motions/open/points: [{'positions': [0...
+ * /play_motion/motions/open_gripper/joints: ['gripper_finger_...
+ * /play_motion/motions/open_gripper/points: [{'positions': [0...
+ * /play_motion/motions/pick_from_floor/joints: ['torso_lift_join...
+ * /play_motion/motions/pick_from_floor/meta/description: Pick a shirt-like...
+ * /play_motion/motions/pick_from_floor/meta/name: Pick from floor
+ * /play_motion/motions/pick_from_floor/meta/usage: demo
+ * /play_motion/motions/pick_from_floor/points: [{'positions': [0...
+ * /play_motion/motions/point/joints: ['gripper_finger_...
+ * /play_motion/motions/point/meta/description: Closes gripper to...
+ * /play_motion/motions/point/meta/name: Point
+ * /play_motion/motions/point/meta/usage: demo
+ * /play_motion/motions/point/points: [{'positions': [0...
+ * /play_motion/motions/pregrasp_weight/joints: ['torso_lift_join...
+ * /play_motion/motions/pregrasp_weight/meta/description: Pregrasp weight
+ * /play_motion/motions/pregrasp_weight/meta/name: Pregrasp Weight
+ * /play_motion/motions/pregrasp_weight/meta/usage: demo
+ * /play_motion/motions/pregrasp_weight/points: [{'positions': [0...
+ * /play_motion/motions/prepare_grasp/joints: ['torso_lift_join...
+ * /play_motion/motions/prepare_grasp/meta/description: Prepare grasp pos...
+ * /play_motion/motions/prepare_grasp/meta/name: Prepare Grasp
+ * /play_motion/motions/prepare_grasp/meta/usage: demo
+ * /play_motion/motions/prepare_grasp/points: [{'positions': [0...
+ * /play_motion/motions/reach_floor/joints: ['torso_lift_join...
+ * /play_motion/motions/reach_floor/meta/description: Reach floor
+ * /play_motion/motions/reach_floor/meta/name: Reach Floor
+ * /play_motion/motions/reach_floor/meta/usage: demo
+ * /play_motion/motions/reach_floor/points: [{'positions': [0...
+ * /play_motion/motions/reach_max/joints: ['torso_lift_join...
+ * /play_motion/motions/reach_max/meta/description: Reach max
+ * /play_motion/motions/reach_max/meta/name: Reach Max
+ * /play_motion/motions/reach_max/meta/usage: demo
+ * /play_motion/motions/reach_max/points: [{'positions': [0...
+ * /play_motion/motions/shake_hands/joints: ['gripper_finger_...
+ * /play_motion/motions/shake_hands/meta/description: shake_hands
+ * /play_motion/motions/shake_hands/meta/name: Shake Hands
+ * /play_motion/motions/shake_hands/meta/usage: demo
+ * /play_motion/motions/shake_hands/points: [{'positions': [0...
+ * /play_motion/motions/unfold_arm/joints: ['torso_lift_join...
+ * /play_motion/motions/unfold_arm/meta/description: unfold_arm
+ * /play_motion/motions/unfold_arm/meta/name: Unfold arm
+ * /play_motion/motions/unfold_arm/meta/usage: demo
+ * /play_motion/motions/unfold_arm/points: [{'positions': [0...
+ * /play_motion/motions/wave/joints: ['arm_1_joint', '...
+ * /play_motion/motions/wave/meta/description: wave
+ * /play_motion/motions/wave/meta/name: Wave
+ * /play_motion/motions/wave/meta/usage: demo
+ * /play_motion/motions/wave/points: [{'positions': [0...
+ * /robot_description: <?xml version="1....
+ * /robot_description_kinematics/arm/kinematics_solver: kdl_kinematics_pl...
+ * /robot_description_kinematics/arm/kinematics_solver_attempts: 3
+ * /robot_description_kinematics/arm/kinematics_solver_search_resolution: 0.005
+ * /robot_description_kinematics/arm/kinematics_solver_timeout: 0.005
+ * /robot_description_kinematics/arm_torso/kinematics_solver: kdl_kinematics_pl...
+ * /robot_description_kinematics/arm_torso/kinematics_solver_attempts: 3
+ * /robot_description_kinematics/arm_torso/kinematics_solver_search_resolution: 0.005
+ * /robot_description_kinematics/arm_torso/kinematics_solver_timeout: 0.005
+ * /robot_description_planning/default_robot_link_padding/arm_5_link: 0.02
+ * /robot_description_planning/default_velocity_scaling_factor: 1.0
+ * /robot_description_planning/joint_limits/arm_1_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/arm_1_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/arm_1_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/arm_1_joint/max_velocity: 2.7
+ * /robot_description_planning/joint_limits/arm_2_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/arm_2_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/arm_2_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/arm_2_joint/max_velocity: 3.66
+ * /robot_description_planning/joint_limits/arm_3_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/arm_3_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/arm_3_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/arm_3_joint/max_velocity: 4.58
+ * /robot_description_planning/joint_limits/arm_4_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/arm_4_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/arm_4_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/arm_4_joint/max_velocity: 4.58
+ * /robot_description_planning/joint_limits/arm_5_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/arm_5_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/arm_5_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/arm_5_joint/max_velocity: 1.95
+ * /robot_description_planning/joint_limits/arm_6_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/arm_6_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/arm_6_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/arm_6_joint/max_velocity: 1.76
+ * /robot_description_planning/joint_limits/arm_7_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/arm_7_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/arm_7_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/arm_7_joint/max_velocity: 1.76
+ * /robot_description_planning/joint_limits/gripper_finger_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/gripper_finger_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/gripper_finger_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/gripper_finger_joint/max_velocity: 0.01
+ * /robot_description_planning/joint_limits/gripper_left_finger_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/gripper_left_finger_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/gripper_left_finger_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/gripper_left_finger_joint/max_velocity: 0.01
+ * /robot_description_planning/joint_limits/gripper_right_finger_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/gripper_right_finger_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/gripper_right_finger_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/gripper_right_finger_joint/max_velocity: 0.01
+ * /robot_description_planning/joint_limits/torso_lift_joint/has_acceleration_limits: False
+ * /robot_description_planning/joint_limits/torso_lift_joint/has_velocity_limits: True
+ * /robot_description_planning/joint_limits/torso_lift_joint/max_acceleration: 0
+ * /robot_description_planning/joint_limits/torso_lift_joint/max_velocity: 0.07
+ * /robot_description_semantic: <?xml version="1....
+ * /robot_state_publisher/publish_frequency: 50.0
+ * /robot_state_publisher/tf_prefix: 
+ * /rosdistro: noetic
+ * /rosversion: 1.16.0
+ * /torso_controller/constraints/goal_time: 0.6
+ * /torso_controller/constraints/stopped_velocity_tolerance: 5.0
+ * /torso_controller/constraints/torso_lift_joint/goal: 0.02
+ * /torso_controller/joints: ['torso_lift_joint']
+ * /torso_controller/type: position_controll...
+ * /twist_mux/locks: [{'name': 'pause'...
+ * /twist_mux/topics: [{'name': 'naviga...
+ * /use_sim_time: True
+ * /velocity/pid_gains/caster_back_left_1_joint/d: 0
+ * /velocity/pid_gains/caster_back_left_1_joint/i: 0
+ * /velocity/pid_gains/caster_back_left_1_joint/i_clamp: 0
+ * /velocity/pid_gains/caster_back_left_1_joint/p: 0
+ * /velocity/pid_gains/caster_back_left_2_joint/d: 0
+ * /velocity/pid_gains/caster_back_left_2_joint/i: 0
+ * /velocity/pid_gains/caster_back_left_2_joint/i_clamp: 0
+ * /velocity/pid_gains/caster_back_left_2_joint/p: 0
+ * /velocity/pid_gains/caster_back_right_1_joint/d: 0
+ * /velocity/pid_gains/caster_back_right_1_joint/i: 0
+ * /velocity/pid_gains/caster_back_right_1_joint/i_clamp: 0
+ * /velocity/pid_gains/caster_back_right_1_joint/p: 0
+ * /velocity/pid_gains/caster_back_right_2_joint/d: 0
+ * /velocity/pid_gains/caster_back_right_2_joint/i: 0
+ * /velocity/pid_gains/caster_back_right_2_joint/i_clamp: 0
+ * /velocity/pid_gains/caster_back_right_2_joint/p: 0
+ * /velocity/pid_gains/caster_front_left_1_joint/d: 0
+ * /velocity/pid_gains/caster_front_left_1_joint/i: 0
+ * /velocity/pid_gains/caster_front_left_1_joint/i_clamp: 0
+ * /velocity/pid_gains/caster_front_left_1_joint/p: 0
+ * /velocity/pid_gains/caster_front_left_2_joint/d: 0
+ * /velocity/pid_gains/caster_front_left_2_joint/i: 0
+ * /velocity/pid_gains/caster_front_left_2_joint/i_clamp: 0
+ * /velocity/pid_gains/caster_front_left_2_joint/p: 0
+ * /velocity/pid_gains/caster_front_right_1_joint/d: 0
+ * /velocity/pid_gains/caster_front_right_1_joint/i: 0
+ * /velocity/pid_gains/caster_front_right_1_joint/i_clamp: 0
+ * /velocity/pid_gains/caster_front_right_1_joint/p: 0
+ * /velocity/pid_gains/caster_front_right_2_joint/d: 0
+ * /velocity/pid_gains/caster_front_right_2_joint/i: 0
+ * /velocity/pid_gains/caster_front_right_2_joint/i_clamp: 0
+ * /velocity/pid_gains/caster_front_right_2_joint/p: 0
+ * /velocity/pid_gains/wheel_left_joint/d: 0
+ * /velocity/pid_gains/wheel_left_joint/i: 0
+ * /velocity/pid_gains/wheel_left_joint/i_clamp: 1.0
+ * /velocity/pid_gains/wheel_left_joint/p: 30
+ * /velocity/pid_gains/wheel_right_joint/d: 0
+ * /velocity/pid_gains/wheel_right_joint/i: 0
+ * /velocity/pid_gains/wheel_right_joint/i_clamp: 1.0
+ * /velocity/pid_gains/wheel_right_joint/p: 30
+
+NODES
+  /
+    bringup_controllers_spawner_ft (controller_manager/spawner)
+    bringup_controllers_spawner_imu (controller_manager/spawner)
+    default_controllers_spawner (controller_manager/spawner)
+    gazebo (gazebo_ros/gzserver)
+    gazebo_gui (gazebo_ros/gzclient)
+    gripper_controllers_spawner (controller_manager/spawner)
+    gripper_grasping (pal_robotiq_gripper_wrapper/gripper_grasping.py)
+    home_gripper (pal_robotiq_controller_configuration/home_gripper.py)
+    image_raw_to_rect_color_relay (topic_tools/relay)
+    is_already_there (play_motion/is_already_there.py)
+    joystick_relay (twist_mux/joystick_relay.py)
+    load_motions (pal_motion_loader/load_available_motions.py)
+    move_group (moveit_ros_move_group/move_group)
+    play_motion (play_motion/play_motion)
+    robot_state_publisher (robot_state_publisher/robot_state_publisher)
+    spawn_model (gazebo_ros/spawn_model)
+    tf_lookup (tf_lookup/tf_lookup)
+    tuck_arm (tiago_gazebo/tuck_arm.py)
+    twist_marker (twist_mux/twist_marker)
+    twist_mux (twist_mux/twist_mux)
+  /head_controller/
+    point_head_action (head_action/head_action)
+  /xtion/rgb/
+    image_proc (image_proc/image_proc)
+
+auto-starting new master
+[1mprocess[master]: started with pid [36821][0m
+[1mROS_MASTER_URI=http://localhost:11350[0m
+]2;/home/adriano/Desktop/tiago_ws/src/tiago_simulation/tiago_gazebo/launch/tiago_gazebo.launch http://localhost:11350
+[1msetting /run_id to 4cf86fb4-d184-11ee-bd01-11b9d93379fc[0m
+[33m[ WARN] [1708607666.670280648]: Falling back to using the move_group node's namespace (deprecated Melodic behavior).[0m
+[33m[ WARN] [1708607666.720537980]: Transformer::setExtrapolationLimit is deprecated and does not do anything[0m
+[33m[ WARN] [1708607666.766547497]: Link base_sonar_01_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.766547703]: Link base_sonar_01_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.766582849]: Link base_sonar_02_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.766594308]: Link base_sonar_03_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.766621139]: Link caster_back_left_1_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.767215579]: Link caster_back_right_1_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.767272973]: Link caster_front_left_1_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.767307651]: Link caster_front_right_1_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.769955030]: Link base_sonar_02_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.770203457]: Link base_sonar_03_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.770343564]: Link caster_back_left_1_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.770487237]: Link caster_back_right_1_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.770626737]: Link caster_front_left_1_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.770752155]: Link caster_front_right_1_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607666.967381830]: The input topic '/xtion/rgb/image_raw' is not yet advertised[0m
+[33m[ WARN] [1708607666.968494697]: The input topic '/xtion/rgb/camera_info' is not yet advertised[0m
+[33m[ WARN] [1708607666.977722853]: Link base_cover_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607667.007234951]: Link base_cover_link has visual geometry but no collision geometry. Collision geometry will be left empty. Fix your URDF file by explicitly specifying collision geometry.[0m
+[33m[ WARN] [1708607667.030541024]: Kinematics solver doesn't support #attempts anymore, but only a timeout.
+Please remove the parameter '/robot_description_kinematics/arm/kinematics_solver_attempts' from your configuration.[0m
+[33m[ WARN] [1708607667.070138553]: Kinematics solver doesn't support #attempts anymore, but only a timeout.
+Please remove the parameter '/robot_description_kinematics/arm/kinematics_solver_attempts' from your configuration.[0m
+[33m[ WARN] [1708607667.409997388]: Resolution not specified for Octomap. Assuming resolution = 0.1 instead[0m
+[0m[ INFO] [1708607667.095110433]: waitForService: Service [/gazebo/set_physics_properties] has not been advertised, waiting...[0m
+[0m[ INFO] [1708607667.096698166]: Finished loading Gazebo ROS API Plugin.[0m
+Error: Non-unique names detected in <link name='link'>
+  <collision name='surface'>
+    <pose>0 0 0.4 0 -0 0</pose>
+    <geometry>
+      <box>
+        <size>1 0.8 0.03</size>
+      </box>
+    </geometry>
+  </collision>
+  <visual name='visual1'>
+    <pose>0 0 0.4 0 -0 0</pose>
+    <geometry>
+      <box>
+        <size>1 0.8 0.03</size>
+      </box>
+    </geometry>
+    <material>
+      <script>
+        <uri>file://media/materials/scripts/gazebo.material</uri>
+        <name>Gazebo/Wood</name>
+      </script>
+    </material>
+  </visual>
+  <collision name='front_left_leg'>
+    <pose>0.48 0.38 0.2 0 -0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.02</radius>
+        <length>0.4</length>
+      </cylinder>
+    </geometry>
+  </collision>
+  <visual name='front_left_leg'>
+    <pose>0.48 0.38 0.2 0 -0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.02</radius>
+        <length>0.4</length>
+      </cylinder>
+    </geometry>
+    <material>
+      <script>
+        <uri>file://media/materials/scripts/gazebo.material</uri>
+        <name>Gazebo/Grey</name>
+      </script>
+    </material>
+  </visual>
+  <collision name='front_right_leg'>
+    <pose>0.48 -0.38 0.2 0 -0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.02</radius>
+        <length>0.4</length>
+      </cylinder>
+    </geometry>
+  </collision>
+  <visual name='front_right_leg'>
+    <pose>0.48 -0.38 0.2 0 -0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.02</radius>
+        <length>0.4</length>
+      </cylinder>
+    </geometry>
+    <material>
+      <script>
+        <uri>file://media/materials/scripts/gazebo.material</uri>
+        <name>Gazebo/Grey</name>
+      </script>
+    </material>
+  </visual>
+  <collision name='back_right_leg'>
+    <pose>-0.48 -0.38 0.2 0 -0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.02</radius>
+        <length>0.4</length>
+      </cylinder>
+    </geometry>
+  </collision>
+  <visual name='back_right_leg'>
+    <pose>-0.48 -0.38 0.2 0 -0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.02</radius>
+        <length>0.4</length>
+      </cylinder>
+    </geometry>
+    <material>
+      <script>
+        <uri>file://media/materials/scripts/gazebo.material</uri>
+        <name>Gazebo/Grey</name>
+      </script>
+    </material>
+  </visual>
+  <collision name='back_left_leg'>
+    <pose>-0.48 0.38 0.2 0 -0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.02</radius>
+        <length>0.4</length>
+      </cylinder>
+    </geometry>
+  </collision>
+  <visual name='back_left_leg'>
+    <pose>-0.48 0.38 0.2 0 -0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.02</radius>
+        <length>0.4</length>
+      </cylinder>
+    </geometry>
+    <material>
+      <script>
+        <uri>file://media/materials/scripts/gazebo.material</uri>
+        <name>Gazebo/Grey</name>
+      </script>
+    </material>
+  </visual>
+  <velocity_decay>
+    <linear>0</linear>
+    <angular>0</angular>
+  </velocity_decay>
+  <self_collide>0</self_collide>
+  <kinematic>0</kinematic>
+  <gravity>1</gravity>
+  <sensor name='wall_contact_sensor' type='contact'>
+    <update_rate>100</update_rate>
+    <always_on>1</always_on>
+    <contact>
+      <collision>surface</collision>
+      <topic>/base_bumper_contact</topic>
+    </contact>
+    <plugin name='gazebo_ros_bumper_controller' filename='libgazebo_ros_bumper.so'>
+      <alwaysOn>1</alwaysOn>
+      <updateRate>100.0</updateRate>
+      <bumperTopicName>/table_contact</bumperTopicName>
+      <frameName>world</frameName>
+    </plugin>
+  </sensor>
+</link>
+
+[31m[ERROR] [1708607668.188891473]: SpawnModel: Failure - model name tiago already exist.[0m
+[31m[ERROR] [1708607668.847670982]: Failed to initialize gazebo_ros_control plugin.
+Joint 'wheel_right_joint' not found in Gazebo model.[0m
+[31m[FATAL] [1708607668.847802640]: Could not initialize robot simulation interface[0m
+[33m[ WARN] [1708607673.969925714, 5.000000000]: Could not get list of controllers from controller manager.[0m
+[33m[ WARN] [1708607673.983050494, 5.014000000]: Waiting for arm_controller/follow_joint_trajectory to come up[0m
+[33m[ WARN] [1708607680.154970070, 10.001000000]: Could not get list of controllers from controller manager.[0m
+[33m[ WARN] [1708607681.567171268, 11.014000000]: Waiting for arm_controller/follow_joint_trajectory to come up[0m
+[33m[ WARN] [1708607686.005355502, 15.001000000]: Could not get list of controllers from controller manager.[0m
+[31m[ERROR] [1708607688.399640346, 17.014000000]: Action client not connected: arm_controller/follow_joint_trajectory[0m
+[33m[ WARN] [1708607692.874562356, 21.003000000]: Could not get list of controllers from controller manager.[0m
+[33m[ WARN] [1708607694.031448377, 22.039000000]: Waiting for torso_controller/follow_joint_trajectory to come up[0m
+[WARN] [1708607697.361442, 25.286000]: Controller Spawner couldn't find the expected controller_manager ROS interface.
+[INFO] [1708607667.226685, 0.000000]: Controller Spawner: Waiting for service controller_manager/load_controller
+[WARN] [1708607697.396245, 25.320000]: Controller Spawner couldn't find the expected controller_manager ROS interface.
+[INFO] [1708607667.262857, 0.000000]: Controller Spawner: Waiting for service controller_manager/load_controller
+[33m[ WARN] [1708607699.119859968, 27.001000000]: Could not get list of controllers from controller manager.[0m
+[33m[ WARN] [1708607700.182636052, 28.039000000]: Waiting for torso_controller/follow_joint_trajectory to come up[0m
+[33m[ WARN] [1708607705.252316473, 33.000000000]: Could not get list of controllers from controller manager.[0m
+[31m[ERROR] [1708607706.312927415, 34.039000000]: Action client not connected: torso_controller/follow_joint_trajectory[0m
+[33m[ WARN] [1708607710.368058691, 38.001000000]: Could not get list of controllers from controller manager.[0m
+[33m[ WARN] [1708607711.452581657, 39.062000000]: Waiting for head_controller/follow_joint_trajectory to come up[0m
+[33m[ WARN] [1708607716.515333079, 44.000000000]: Could not get list of controllers from controller manager.[0m
+[33m[ WARN] [1708607717.606549426, 45.062000000]: Waiting for head_controller/follow_joint_trajectory to come up[0m
+[33m[ WARN] [1708607721.650915859, 49.000000000]: Could not get list of controllers from controller manager.[0m
+[31m[ERROR] [1708607723.777326711, 51.062000000]: Action client not connected: head_controller/follow_joint_trajectory[0m
+[33m[ WARN] [1708607726.807427309, 54.000000000]: Could not get list of controllers from controller manager.[0m
+[33m[ WARN] [1708607729.063672142, 56.133000000]: Waiting for gripper_controller/follow_joint_trajectory to come up[0m
+[0m[ INFO] [1708607666.610658020]: tf_lookup starting[0m
+[0m[ INFO] [1708607666.694216041]: Topic handler 'navigation' subscribed to topic 'nav_vel': timeout = 0.500000s, priority = 10[0m
+[0m[ INFO] [1708607666.711090277]: Topic handler 'joystick' subscribed to topic 'joy_vel': timeout = 0.500000s, priority = 100[0m
+[0m[ INFO] [1708607666.720109395]: Topic handler 'keyboard' subscribed to topic 'key_vel': timeout = 0.500000s, priority = 90[0m
+[0m[ INFO] [1708607666.726098069]: Topic handler 'tablet' subscribed to topic 'tab_vel': timeout = 0.500000s, priority = 100[0m
+[0m[ INFO] [1708607666.739102735]: Topic handler 'marker' subscribed to topic 'marker_vel': timeout = 0.500000s, priority = 99[0m
+[0m[ INFO] [1708607666.740582796]: Topic handler 'phone' subscribed to topic 'phone_vel': timeout = 0.500000s, priority = 98[0m
+[0m[ INFO] [1708607666.742062772]: Topic handler 'rviz_joy' subscribed to topic 'rviz_joy_vel': timeout = 0.500000s, priority = 95[0m
+[0m[ INFO] [1708607666.752993788]: Topic handler 'servoing_cmd_vel' subscribed to topic 'servoing_cmd_vel': timeout = 0.500000s, priority = 20[0m
+[0m[ INFO] [1708607666.755142314]: Topic handler 'pause' subscribed to topic 'pause_navigation': timeout = None, priority = 100[0m
+[0m[ INFO] [1708607666.756482138]: Topic handler 'loop_closure' subscribed to topic 'stop_closing_loop': timeout = None, priority = 200[0m
+[0m[ INFO] [1708607666.760969695]: Topic handler 'joystick' subscribed to topic 'joy_priority': timeout = None, priority = 100[0m
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Unable to connect to move_group action server 'move_group' within allotted time (0s)
+[0m[ INFO] [1708607666.526850069]: Load description from: /robot_description[0m
+[0m[ INFO] [1708607666.733963701]: Loading robot model 'tiago'...[0m
+[0m[ INFO] [1708607666.733997331]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[0m[ INFO] [1708607667.403784379]: Publishing maintained planning scene on 'monitored_planning_scene'[0m
+[0m[ INFO] [1708607667.405420670]: Listening to 'joint_states' for joint states[0m
+[0m[ INFO] [1708607667.407535124]: Listening to '/attached_collision_object' for attached collision objects[0m
+[0m[ INFO] [1708607667.407546941]: Starting planning scene monitor[0m
+[0m[ INFO] [1708607667.408544343]: Listening to '/planning_scene'[0m
+[0m[ INFO] [1708607667.408550696]: Starting world geometry update monitor for collision objects, attached objects, octomap updates.[0m
+[0m[ INFO] [1708607667.409312764]: Listening to '/collision_object'[0m
+[0m[ INFO] [1708607667.409864985]: Listening to '/planning_scene_world' for planning scene world geometry[0m
+[0m[ INFO] [1708607667.410121406]: No 3D sensor plugin(s) defined for octomap updates[0m
+[0m[ INFO] [1708607668.135462332]: Loading planning pipeline ''[0m
+[0m[ INFO] [1708607668.184442457]: Using planning interface 'OMPL'[0m
+[0m[ INFO] [1708607668.188860699]: Param 'default_workspace_bounds' was not set. Using default value: 10[0m
+[0m[ INFO] [1708607668.189405981]: Param 'start_state_max_bounds_error' was set to 0.1[0m
+[0m[ INFO] [1708607668.189774778]: Param 'start_state_max_dt' was not set. Using default value: 0.5[0m
+[0m[ INFO] [1708607668.190145047]: Param 'start_state_max_dt' was not set. Using default value: 0.5[0m
+[0m[ INFO] [1708607668.190491053]: Param 'jiggle_fraction' was set to 0.05[0m
+[0m[ INFO] [1708607668.190826626]: Param 'max_sampling_attempts' was not set. Using default value: 100[0m
+[0m[ INFO] [1708607668.190877097]: Using planning request adapter 'Add Time Parameterization'[0m
+[0m[ INFO] [1708607668.190898810]: Using planning request adapter 'Fix Workspace Bounds'[0m
+[0m[ INFO] [1708607668.190910145]: Using planning request adapter 'Fix Start State Bounds'[0m
+[0m[ INFO] [1708607668.190920964]: Using planning request adapter 'Fix Start State In Collision'[0m
+[0m[ INFO] [1708607668.190934576]: Using planning request adapter 'Fix Start State Path Constraints'[0m
+[96mLoading 'move_group/ApplyPlanningSceneService'...
+[0m[96mLoading 'move_group/ClearOctomapService'...
+[0m[96mLoading 'move_group/MoveGroupCartesianPathService'...
+[0m[96mLoading 'move_group/MoveGroupExecuteTrajectoryAction'...
+[0m[96mLoading 'move_group/MoveGroupGetPlanningSceneService'...
+[0m[96mLoading 'move_group/MoveGroupKinematicsService'...
+[0m[96mLoading 'move_group/MoveGroupMoveAction'...
+[0m[96mLoading 'move_group/MoveGroupPickPlaceAction'...
+[0m[96mLoading 'move_group/MoveGroupPlanService'...
+[0m[96mLoading 'move_group/MoveGroupQueryPlannersService'...
+[0m[96mLoading 'move_group/MoveGroupStateValidationService'...
+[0m[92m
+You can start planning now!
+
+[0m[INFO] [1708607667.399310, 0.000000]: Waiting for play_motion...
+[INFO] [1708607732.210952, 58.586000]: ...connected.
+Traceback (most recent call last):
+  File "/home/adriano/Desktop/tiago_ws/src/tiago_simulation/tiago_gazebo/scripts/tuck_arm.py", line 15, in <module>
+    rospy.wait_for_message("joint_states", JointState)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rospy/client.py", line 428, in wait_for_message
+    raise rospy.exceptions.ROSInterruptException("rospy shutdown")
+rospy.exceptions.ROSInterruptException: rospy shutdown
+[INFO] [1708607667.487351, 0.000000]: Initializing Gripper Grasper...
+[INFO] [1708607667.514544, 0.000000]: timeout2.0closing_time0.2
+[INFO] [1708607667.517114, 0.000000]: Initialized dynamic reconfigure on: /gripper_grasping
+[INFO] [1708607667.518523, 0.000000]: Subscribed to topic: /gripper_controller/state
+[INFO] [1708607667.519400, 0.000000]: Publishing to topic: /gripper_controller/command
+[INFO] [1708607667.520169, 0.000000]: Offering grasp service on: /gripper_controller/grasp
+[INFO] [1708607667.520524, 0.000000]: Done initializing Gripper Grasp Service!
+[INFO] [1708607667.521181, 0.000000]: Offering release service on: /gripper_controller/release
+[INFO] [1708607667.521514, 0.000000]: Done initializing Gripper Release Service!
+Traceback (most recent call last):
+  File "/home/adriano/Desktop/tiago_ws/src/pal_motion_loader/scripts/load_available_motions.py", line 39, in <module>
+    main()
+  File "/home/adriano/Desktop/tiago_ws/src/pal_motion_loader/scripts/load_available_motions.py", line 16, in main
+    js = rospy.wait_for_message('/joint_states', JointState)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rospy/client.py", line 428, in wait_for_message
+    raise rospy.exceptions.ROSInterruptException("rospy shutdown")
+rospy.exceptions.ROSInterruptException: rospy shutdown
+[INFO] [1708607667.467509, 0.000000]: Waiting for gripper_controller...
+[INFO] [1708607732.315320, 58.681000]: ...connected.
+Traceback (most recent call last):
+  File "/home/adriano/Desktop/tiago_ws/src/pal_robotiq_gripper/pal_robotiq_controller_configuration/scripts/home_gripper.py", line 23, in <module>
+    rospy.wait_for_message("joint_states", JointState)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rospy/client.py", line 428, in wait_for_message
+    raise rospy.exceptions.ROSInterruptException("rospy shutdown")
+rospy.exceptions.ROSInterruptException: rospy shutdown
+[WARN] [1708607732.412963, 58.764000]: Controller Spawner couldn't find the expected controller_manager ROS interface.
+[INFO] [1708607667.272527, 0.000000]: Controller Spawner: Waiting for service controller_manager/load_controller
+terminate called after throwing an instance of 'boost::wrapexcept<boost::lock_error>'
+  what():  boost: mutex lock failed in pthread_mutex_lock: Invalid argument
+[WARN] [1708607732.713564, 58.952000]: Controller Spawner couldn't find the expected controller_manager ROS interface.
+[INFO] [1708607667.201484, 0.000000]: Controller Spawner: Waiting for service controller_manager/load_controller
+Aborted (core dumped)
+[1mprocess[rosout-1]: started with pid [36851][0m
+started core service [/rosout]
+[1mprocess[gazebo-2]: started with pid [36858][0m
+[1mprocess[gazebo_gui-3]: started with pid [36862][0m
+[1mprocess[spawn_model-4]: started with pid [36867][0m
+[1mprocess[default_controllers_spawner-5]: started with pid [36869][0m
+[1mprocess[head_controller/point_head_action-6]: started with pid [36870][0m
+[1mprocess[bringup_controllers_spawner_imu-7]: started with pid [36871][0m
+[1mprocess[bringup_controllers_spawner_ft-8]: started with pid [36872][0m
+[1mprocess[gripper_controllers_spawner-9]: started with pid [36873][0m
+[1mprocess[gripper_grasping-10]: started with pid [36878][0m
+[1mprocess[home_gripper-11]: started with pid [36881][0m
+[1mprocess[load_motions-12]: started with pid [36883][0m
+[1mprocess[play_motion-13]: started with pid [36888][0m
+[1mprocess[is_already_there-14]: started with pid [36905][0m
+[1mprocess[move_group-15]: started with pid [36906][0m
+[1mprocess[robot_state_publisher-16]: started with pid [36907][0m
+[1mprocess[tf_lookup-17]: started with pid [36909][0m
+[1mprocess[twist_mux-18]: started with pid [36915][0m
+[1mprocess[twist_marker-19]: started with pid [36921][0m
+[1mprocess[joystick_relay-20]: started with pid [36942][0m
+[1mprocess[image_raw_to_rect_color_relay-21]: started with pid [36982][0m
+[1mprocess[tuck_arm-22]: started with pid [36998][0m
+[1mprocess[xtion/rgb/image_proc-23]: started with pid [37000][0m
+[1m[spawn_model-4] process has finished cleanly
+log file: /home/adriano/.ros/log/4cf86fb4-d184-11ee-bd01-11b9d93379fc/spawn_model-4*.log[0m
+[1m[bringup_controllers_spawner_ft-8] process has finished cleanly
+log file: /home/adriano/.ros/log/4cf86fb4-d184-11ee-bd01-11b9d93379fc/bringup_controllers_spawner_ft-8*.log[0m
+[1m[bringup_controllers_spawner_imu-7] process has finished cleanly
+log file: /home/adriano/.ros/log/4cf86fb4-d184-11ee-bd01-11b9d93379fc/bringup_controllers_spawner_imu-7*.log[0m
+[xtion/rgb/image_proc-23] killing on exit
+[tuck_arm-22] killing on exit
+[image_raw_to_rect_color_relay-21] killing on exit
+[joystick_relay-20] killing on exit
+[twist_marker-19] killing on exit
+[twist_mux-18] killing on exit
+[tf_lookup-17] killing on exit
+[move_group-15] killing on exit
+[is_already_there-14] killing on exit
+[robot_state_publisher-16] killing on exit
+[play_motion-13] killing on exit
+[load_motions-12] killing on exit
+[home_gripper-11] killing on exit
+[gripper_grasping-10] killing on exit
+[gripper_controllers_spawner-9] killing on exit
+[head_controller/point_head_action-6] killing on exit
+[default_controllers_spawner-5] killing on exit
+[gazebo_gui-3] killing on exit
+[gazebo-2] killing on exit
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m
+to:         cannot open `to' (No such file or directory)
+indicate:   cannot open `indicate' (No such file or directory)
+that:       cannot open `that' (No such file or directory)
+the:        cannot open `the' (No such file or directory)
+simulation: cannot open `simulation' (No such file or directory)
+is:         cannot open `is' (No such file or directory)
+done:       cannot open `done' (No such file or directory)

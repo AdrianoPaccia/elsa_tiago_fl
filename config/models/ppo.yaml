@@ -1,0 +1,21 @@
+save_dir: save/
+device: cuda
+seed: 42
+model_name: 'ppo'
+
+# Cartpole
+training_parameters:
+  lr: 1e-3
+  batch_size: 64
+  num_steps: 10000
+  gamma: 0.99
+  ppo_steps: 5
+  ppo_clip: 0.2
+  num_eval_episodes: 100
+  training_step_evaluate: 2000
+
+fl_parameters:
+  sample_clients: 1
+  total_clients: 1
+  num_rounds: 2
+  iterations_per_fl_round: 1

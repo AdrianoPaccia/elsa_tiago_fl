@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- Arguments-->
+    <arg name="sim_world" default="elsa"/>
+    <arg name="env" default="tiago-v0" doc="Path to yml file with environment description."/>
+    <arg name="model" default="ppo_continue" doc="Path to yml file with model configuration."/>
+    <arg name="is_multimodal" default="false" /> 
+    <arg name="num_steps" default="100" />
+    <rosparam file="$(find elsa_tiago_fl)/config/envs/$(arg env).yaml" command="load"/>
+    <rosparam file="$(find tiago_gym)/config/tiago_train_params.yaml" command="load"/>
+
+    <!-- Gazebo Part
+    <include file="$(find tiago_gazebo)/launch/tiago_gazebo.launch" >
+        <arg name="world" value="$(arg sim_world)"/>
+        <arg name="end_effector" value="robotiq-2f-85"/>
+        <arg name="public_sim" value="true"/>
+    </include>-->
+
+    <group if="$(eval 'multimodal' == True)">
+        <node pkg="tiago_gym" type="look_hand.py" name="look_hand_node" output="screen">
+            <!-- Add any node-specific parameters here if needed -->
+        </node>
+        <!-- Launch an image viewer for visualization (e.g., image_view from image_transport) -->
+        <node pkg="image_view" type="image_view" name="image_view_node" respawn="false" output="screen">
+            <remap from="/image" to="/xtion/rgb/image_raw"/>
+        </node>
+    </group>
+
+    <!-- Federated learning part -->
+
+
+    <!-- launch trainer -->
+    <node pkg="elsa_tiago_fl" name="tiago_trainer" type="gym_fl_train.py" output="screen">    
+        <param name="model" value="$(arg model)" />
+        <param name="env" value="$(arg env)" />
+        <param name="num_steps" value="$(arg num_steps)" />
+    </node>
+</launch>

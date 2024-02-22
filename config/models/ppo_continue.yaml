@@ -1,0 +1,31 @@
+save_dir: save/
+device: cuda
+seed: 42
+model_name: 'ppo_continue'
+
+training_parameters:
+  lr: 0.001
+  batch_size: 32
+  net_width: 128
+  net_width_multi: [512,256,128]
+  distribution: 'GS_ms' # [Beta,GS_ms,GS_m]
+  T_horizon: 128
+  num_steps: 128 #320
+  gamma: 0.99
+  lambd: 0.95
+  clip_ratio: 0.2
+  value_coef: 1.0
+  policy_coef: 0.5
+  entropy_coef: 0.01
+  entropy_coef_decay: 0.99
+  l2_reg: 0.001 #L2 regulization coefficient for Critic
+  ppo_steps: 5
+  ppo_clip: 0.2
+  num_eval_episodes: 5
+  training_step_evaluate: 50
+
+fl_parameters:
+  sample_clients: 1
+  total_clients: 1
+  num_rounds: 10
+  iterations_per_fl_round: 1

@@ -1,0 +1,27 @@
+dqn_new
+{
+	Env: TiagoSimpleEnv-v0
+	Batch size: 8
+	lr: 1e-4
+	seed: 42
+	FL Flower: True
+	Sample Clients: 1
+	Total Clients: 1
+	FL Rounds: 5
+	Iterations per FL Round: 1
+}
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Creating Multiple Prcesses
+[DEBUG/MainProcess] created semlock with handle 140538656731136
+[DEBUG/MainProcess] created semlock with handle 140538652225536
+[DEBUG/MainProcess] created semlock with handle 140538636505088
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7ff87a6b7440'
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7ff87a6b6b00'
+[DEBUG/MainProcess] created semlock with handle 140538610208768
+[DEBUG/MainProcess] created semlock with handle 140538603761664
+[DEBUG/MainProcess] created semlock with handle 140538603757568
+[DEBUG/MainProcess] created semlock with handle 140538603753472
+[DEBUG/MainProcess] created semlock with handle 140538603749376
+[DEBUG/MainProcess] requesting creation of a shared 'Value' object

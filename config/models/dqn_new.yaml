@@ -1,0 +1,27 @@
+save_dir: save/
+device: cuda
+seed: 42
+model_name: 'dqn_new'
+
+# Cartpole
+training_parameters:
+  lr: 1e-4
+  batch_size: 8
+  num_steps: 50
+  train_steps: 1000
+  gamma: 0.90
+  tau: 1.0
+  update_target_net: 100
+  eps_start: 1.0
+  eps_end: 0.05
+  eps_decay: 10000
+  num_eval_episodes: 2
+  training_step_evaluate: 100
+  replay_buffer_size: 2000
+  min_len_replay_buffer: 10
+
+fl_parameters:
+  sample_clients: 1
+  total_clients: 1
+  num_rounds: 5
+  iterations_per_fl_round: 1
