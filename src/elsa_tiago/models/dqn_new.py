@@ -13,10 +13,10 @@ import random
 from tqdm import tqdm
 
 from models.model import BasicModel,MLP,CNN
-from elsa_tiago_fl.utils.communication_utils import log_communication
-from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
-from elsa_tiago_fl.utils.logger import Logger
-from elsa_tiago_fl.utils.rl_utils import Transition, BasicReplayBuffer,transition_from_batch
+from elsa_tiago.utils.communication_utils import log_communication
+from elsa_tiago.utils.evaluation_utils import fl_evaluate
+from elsa_tiago.utils.logger import Logger
+from elsa_tiago.utils.rl_utils import Transition, BasicReplayBuffer,transition_from_batch
 
 
 

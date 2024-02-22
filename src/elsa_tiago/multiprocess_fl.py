@@ -4,28 +4,28 @@ from utils.evaluation_utils import Evaluator
 import torch
 import multiprocessing as mp
 from typing import Dict, Optional
-from elsa_tiago_fl.utils.rl_utils import BasicReplayBuffer,Transition
+from elsa_tiago.utils.rl_utils import BasicReplayBuffer,Transition
 import os
 import gym
 from collections import deque
 from flwr.common import NDArrays, Scalar
 from argparse import Namespace
-from elsa_tiago_fl.utils.checkpoint import save_model
-from elsa_tiago_fl.utils.utils_parallel import (
+from elsa_tiago.utils.checkpoint import save_model
+from elsa_tiago.utils.utils_parallel import (
     set_parameters_model,
     get_parameters_from_model,
     weighted_average,
 )
 from gym.envs.registration import register
-from elsa_tiago_fl.utils.logger import Logger
+from elsa_tiago.utils.logger import Logger
 import copy
 import time
 import numpy as np
-from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
+from elsa_tiago.utils.evaluation_utils import fl_evaluate
 from tqdm import tqdm
-from elsa_tiago_fl.utils.communication_utils import log_communication
+from elsa_tiago.utils.communication_utils import log_communication
 import pickle
-from elsa_tiago_fl.utils.mp_utils import WorkerProcess,PolicyUpdateProcess,get_shared_params,ExperienceQueue
+from elsa_tiago.utils.mp_utils import WorkerProcess,PolicyUpdateProcess,get_shared_params,ExperienceQueue
 import sys
 import logging
 

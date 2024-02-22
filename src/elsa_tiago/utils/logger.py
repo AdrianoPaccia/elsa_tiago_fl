@@ -4,7 +4,7 @@ import wandb as wb
 import torch
 
 # import wandb as wb
-from elsa_tiago_fl.utils.utils import Singleton
+from elsa_tiago.utils.utils import Singleton
 
 
 class Logger(metaclass=Singleton):

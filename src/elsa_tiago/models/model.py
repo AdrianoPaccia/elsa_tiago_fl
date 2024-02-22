@@ -4,8 +4,8 @@ import torch
 import torch.nn as nn
 import gym
 
-from elsa_tiago_fl.utils.logger import Logger
-from elsa_tiago_fl.utils.rl_utils import BasicReplayBuffer
+from elsa_tiago.utils.logger import Logger
+from elsa_tiago.utils.rl_utils import BasicReplayBuffer
 import torch.nn.functional as F
 
 
