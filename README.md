@@ -18,10 +18,10 @@ Tested on Ubuntu 20.04 only.
      cd openai_ros;git checkout version2
      cd /home/user/tiago_public_ws;catkin_make;source devel/setup.bash
     ``` 
-- Install tiago_gym_parallel package into your TIAGo workspace
+- Install elsa_tiago_gym package into your TIAGo workspace
     ``` bash
      cd /home/user/tiago_public_ws/src
-     git clone https://github.com/AdrianoPaccia/tiago_gym_parallel.git
+     git clone https://github.com/AdrianoPaccia/elsa_tiago_gym.git
      cd /home/user/tiago_public_ws;catkin_make;source devel/setup.bash
     ``` 
 - Install elsa_tiago_fl package into your TIAGo workspace
