@@ -6,7 +6,7 @@
     <arg name="num_steps" default='100' />
 
     <rosparam file="$(find elsa_tiago_fl)/config/envs/$(arg env).yaml" command="load"/>
-    <rosparam file="$(find tiago_gym)/config/tiago_train_params.yaml" command="load"/>
+    <rosparam file="$(find elsa_tiago_gym)/config/tiago_train_params.yaml" command="load"/>
 
     <!-- launch trainer 
     <node pkg="elsa_tiago_fl" name="tiago_trainer" type="gym_fl_train.py" output="screen">    
