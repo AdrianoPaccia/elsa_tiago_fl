@@ -6,8 +6,8 @@ model_name: 'dqn_new'
 # Cartpole
 training_parameters:
   lr: 1e-4
-  batch_size: 8
-  num_steps: 50
+  batch_size: 64
+  num_steps: 500
   train_steps: 1000
   gamma: 0.90
   tau: 1.0
@@ -18,7 +18,7 @@ training_parameters:
   num_eval_episodes: 2
   training_step_evaluate: 100
   replay_buffer_size: 2000
-  min_len_replay_buffer: 10
+  min_len_replay_buffer: 100
 
 fl_parameters:
   sample_clients: 1
