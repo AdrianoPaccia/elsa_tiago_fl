@@ -52,14 +52,23 @@ class PolicyUpdateProcess(mp.Process):
         pbar = tqdm(total=self.config.train_steps)
 
         # prefilling of the buffer at first
-        log_debug(f'Filling replay buffer ...',self.screen)
+        log_debug(f'Prefilling replay buffer ...',self.screen)
         tic()
+        perc_capacity = 0
+        old_prefilling_capacity = 0
         while len(self.replay_buffer.memory) < self.config.min_len_replay_buffer:
             self.get_transitions()
+            prefilling_capacity = round(len(self.replay_buffer.memory) / self.config.min_len_replay_buffer *100,0)
             perc_capacity = round(self.replay_buffer.get_capacity()*100,0)
+            if prefilling_capacity - old_prefilling_capacity >=1:
+                log_debug(f'Prefilling at {prefilling_capacity}% (buffer at {perc_capacity}%)',True)
+            time.sleep(1)
+            old_prefilling_capacity = prefilling_capacity
+            
         n = self.config.min_len_replay_buffer
         t = round(toc(),3)
         log_debug(f'Filling the {n} exp required {t}sec, giving {n/t} transition/sec',True)
+        log_debug(f'---------------------------------------------------------------------------',True)
 
         for iter in range(self.config.fl_parameters.iterations_per_fl_round):
             for i_step in range(self.config.train_steps):

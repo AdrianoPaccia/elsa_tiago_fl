@@ -18,7 +18,7 @@ training_parameters:
   num_eval_episodes: 2
   training_step_evaluate: 100
   replay_buffer_size: 2000
-  min_len_replay_buffer: 100
+  min_len_replay_buffer: 1000
 
 fl_parameters:
   sample_clients: 1

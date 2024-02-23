@@ -35,13 +35,10 @@ def main() -> None:
     config = load_config(args)
     seed_everything(config.seed)
 
-
-
     #launch the simulation environments
-    launch_simulations(config.n_workers,speed=0.001)# gui=False)
+    launch_simulations(config.n_workers,speed=config.velocity,gui=config.gui)# gui=False)
     #kill_simulations()
 
-    #subprocess.run([sim_path, str(config.n_workers)])
 
     # Delete previous memory files
     pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")
@@ -80,7 +77,6 @@ def main() -> None:
         on_fit_config_fn=get_config_fn(),  # Log path hardcoded according to /save dir
         on_evaluate_config_fn=get_config_fn(),
     )
-
 
     # Specify client resources if you need GPU (defaults to 1 CPU and 0 GPU)
     client_resources = None
