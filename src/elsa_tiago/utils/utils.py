@@ -48,6 +48,13 @@ def parse_args():
         help="Number of workers running in parallel.",
     )
 
+    parser.add_argument(
+        "-gui",
+        "--gui",
+        type=bool,
+        default=False,
+        help="Get all the environment visible on the screen.",
+    )
     # Overwrite config parameters
     parser.add_argument(
         "-steps", "--num-steps", type=int, help="Number of training steps"

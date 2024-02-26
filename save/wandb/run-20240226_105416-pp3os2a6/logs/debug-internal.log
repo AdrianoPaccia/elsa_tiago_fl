@@ -1,0 +1,52 @@
+2024-02-26 10:54:16,168 INFO    StreamThr :234877 [internal.py:wandb_internal():86] W&B internal server running at pid: 234877, started at: 2024-02-26 10:54:16.167916
+2024-02-26 10:54:16,169 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: status
+2024-02-26 10:54:16,174 INFO    WriterThread:234877 [datastore.py:open_for_write():85] open: save/wandb/run-20240226_105416-pp3os2a6/run-pp3os2a6.wandb
+2024-02-26 10:54:16,174 DEBUG   SenderThread:234877 [sender.py:send():380] send: header
+2024-02-26 10:54:16,180 DEBUG   SenderThread:234877 [sender.py:send():380] send: run
+2024-02-26 10:54:17,116 INFO    SenderThread:234877 [dir_watcher.py:__init__():211] watching files in: save/wandb/run-20240226_105416-pp3os2a6/files
+2024-02-26 10:54:17,116 INFO    SenderThread:234877 [sender.py:_start_run_threads():1124] run started: pp3os2a6 with start time 1708941256.168358
+2024-02-26 10:54:17,126 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: check_version
+2024-02-26 10:54:17,126 DEBUG   SenderThread:234877 [sender.py:send_request():407] send_request: check_version
+2024-02-26 10:54:17,206 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: run_start
+2024-02-26 10:54:17,243 DEBUG   HandlerThread:234877 [system_info.py:__init__():32] System info init
+2024-02-26 10:54:17,243 DEBUG   HandlerThread:234877 [system_info.py:__init__():47] System info init done
+2024-02-26 10:54:17,243 INFO    HandlerThread:234877 [system_monitor.py:start():194] Starting system monitor
+2024-02-26 10:54:17,243 INFO    SystemMonitor:234877 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-02-26 10:54:17,244 INFO    HandlerThread:234877 [system_monitor.py:probe():214] Collecting system info
+2024-02-26 10:54:17,244 INFO    SystemMonitor:234877 [interfaces.py:start():190] Started cpu monitoring
+2024-02-26 10:54:17,245 INFO    SystemMonitor:234877 [interfaces.py:start():190] Started disk monitoring
+2024-02-26 10:54:17,245 INFO    SystemMonitor:234877 [interfaces.py:start():190] Started gpu monitoring
+2024-02-26 10:54:17,246 INFO    SystemMonitor:234877 [interfaces.py:start():190] Started memory monitoring
+2024-02-26 10:54:17,247 INFO    SystemMonitor:234877 [interfaces.py:start():190] Started network monitoring
+2024-02-26 10:54:17,317 DEBUG   HandlerThread:234877 [system_info.py:probe():196] Probing system
+2024-02-26 10:54:17,319 DEBUG   HandlerThread:234877 [system_info.py:_probe_git():181] Probing git
+2024-02-26 10:54:17,327 DEBUG   HandlerThread:234877 [system_info.py:_probe_git():189] Probing git done
+2024-02-26 10:54:17,327 DEBUG   HandlerThread:234877 [system_info.py:probe():244] Probing system done
+2024-02-26 10:54:17,327 DEBUG   HandlerThread:234877 [system_monitor.py:probe():223] {'os': 'Linux-5.15.0-97-generic-x86_64-with-glibc2.31', 'python': '3.10.6', 'heartbeatAt': '2024-02-26T09:54:17.317552', 'startedAt': '2024-02-26T09:54:16.161893', 'docker': None, 'cuda': None, 'args': ('--node-ip-address=130.237.6.84', '--node-manager-port=44075', '--object-store-name=/tmp/ray/session_2024-02-26_10-54-02_272317_232827/sockets/plasma_store', '--raylet-name=/tmp/ray/session_2024-02-26_10-54-02_272317_232827/sockets/raylet', '--redis-address=None', '--temp-dir=/tmp/ray', '--metrics-agent-port=46800', '--logging-rotate-bytes=536870912', '--logging-rotate-backup-count=5', '--gcs-address=130.237.6.84:61622', '--session-name=session_2024-02-26_10-54-02_272317_232827', '--temp-dir=/tmp/ray', '--webui=', '--startup-token=16', '--worker-launch-time-ms=1708941246434'), 'state': 'running', 'program': '/home/adriano/.pyenv/versions/elsa_env/lib/python3.10/site-packages/ray/_private/workers/default_worker.py', 'codePathLocal': None, 'git': {'remote': 'https://github.com/AdrianoPaccia/ELSA_tiago_fl.git', 'commit': 'e3009cd585bb2c0d04610409e62d1ee29895e123'}, 'email': 'adriano@pacciarelli.com', 'root': '/home/adriano/Desktop/tiago_ws/src/elsa_tiago_fl', 'host': 'oem-IdeaPad-Gaming-3-16IAH7', 'username': 'adriano', 'executable': '/home/adriano/.pyenv/versions/elsa_env/bin/python3', 'cpu_count': 10, 'cpu_count_logical': 16, 'cpu_freq': {'current': 2938.125875, 'min': 400.0, 'max': 4350.0}, 'cpu_freq_per_core': [{'current': 3631.476, 'min': 400.0, 'max': 4600.0}, {'current': 2700.0, 'min': 400.0, 'max': 4600.0}, {'current': 2700.0, 'min': 400.0, 'max': 4600.0}, {'current': 2700.0, 'min': 400.0, 'max': 4600.0}, {'current': 3686.615, 'min': 400.0, 'max': 4700.0}, {'current': 3689.81, 'min': 400.0, 'max': 4700.0}, {'current': 3650.651, 'min': 400.0, 'max': 4700.0}, {'current': 3611.153, 'min': 400.0, 'max': 4700.0}, {'current': 2700.0, 'min': 400.0, 'max': 4600.0}, {'current': 2700.0, 'min': 400.0, 'max': 4600.0}, {'current': 3620.51, 'min': 400.0, 'max': 4600.0}, {'current': 2700.0, 'min': 400.0, 'max': 4600.0}, {'current': 2899.997, 'min': 400.0, 'max': 3500.0}, {'current': 2700.0, 'min': 400.0, 'max': 3500.0}, {'current': 2900.033, 'min': 400.0, 'max': 3500.0}, {'current': 2900.045, 'min': 400.0, 'max': 3500.0}], 'disk': {'/': {'total': 180.85349655151367, 'used': 55.776065826416016}}, 'gpu': 'NVIDIA GeForce RTX 3060 Laptop GPU', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 3060 Laptop GPU', 'memory_total': 6442450944}], 'memory': {'total': 15.344688415527344}}
+2024-02-26 10:54:17,327 INFO    HandlerThread:234877 [system_monitor.py:probe():224] Finished collecting system info
+2024-02-26 10:54:17,327 INFO    HandlerThread:234877 [system_monitor.py:probe():227] Publishing system info
+2024-02-26 10:54:17,327 DEBUG   HandlerThread:234877 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2024-02-26 10:54:17,327 DEBUG   HandlerThread:234877 [system_info.py:_save_pip():68] Saving pip packages done
+2024-02-26 10:54:17,328 INFO    HandlerThread:234877 [system_monitor.py:probe():229] Finished publishing system info
+2024-02-26 10:54:17,331 DEBUG   SenderThread:234877 [sender.py:send():380] send: files
+2024-02-26 10:54:17,332 INFO    SenderThread:234877 [sender.py:_save_file():1380] saving file wandb-metadata.json with policy now
+2024-02-26 10:54:17,336 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-26 10:54:17,336 DEBUG   SenderThread:234877 [sender.py:send_request():407] send_request: stop_status
+2024-02-26 10:54:17,338 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-26 10:54:17,540 DEBUG   SenderThread:234877 [sender.py:send():380] send: telemetry
+2024-02-26 10:54:17,541 DEBUG   SenderThread:234877 [sender.py:send():380] send: metric
+2024-02-26 10:54:17,541 WARNING SenderThread:234877 [sender.py:send_metric():1331] Seen metric with glob (shouldn't happen)
+2024-02-26 10:54:17,541 DEBUG   SenderThread:234877 [sender.py:send():380] send: telemetry
+2024-02-26 10:54:17,542 DEBUG   SenderThread:234877 [sender.py:send():380] send: config
+2024-02-26 10:54:17,862 INFO    wandb-upload_0:234877 [upload_job.py:push():131] Uploaded file /tmp/tmp595jwj97wandb/pjl258oh-wandb-metadata.json
+2024-02-26 10:54:18,119 INFO    Thread-12 :234877 [dir_watcher.py:_on_file_created():271] file/dir created: save/wandb/run-20240226_105416-pp3os2a6/files/wandb-metadata.json
+2024-02-26 10:54:18,119 INFO    Thread-12 :234877 [dir_watcher.py:_on_file_created():271] file/dir created: save/wandb/run-20240226_105416-pp3os2a6/files/requirements.txt
+2024-02-26 10:54:18,119 INFO    Thread-12 :234877 [dir_watcher.py:_on_file_created():271] file/dir created: save/wandb/run-20240226_105416-pp3os2a6/files/output.log
+2024-02-26 10:54:20,117 INFO    Thread-12 :234877 [dir_watcher.py:_on_file_modified():288] file/dir modified: save/wandb/run-20240226_105416-pp3os2a6/files/output.log
+2024-02-26 10:54:21,940 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: status_report
+2024-02-26 10:54:26,941 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: status_report
+2024-02-26 10:54:31,942 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: status_report
+2024-02-26 10:54:32,336 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-26 10:54:32,336 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-26 10:54:32,337 DEBUG   SenderThread:234877 [sender.py:send_request():407] send_request: stop_status
+2024-02-26 10:54:37,530 DEBUG   HandlerThread:234877 [handler.py:handle_request():146] handle_request: status_report

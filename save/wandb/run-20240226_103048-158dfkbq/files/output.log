@@ -1,0 +1,47 @@
+dqn_new
+{
+	Env: TiagoSimpleEnv-v0
+	Batch size: 64
+	lr: 1e-4
+	seed: 42
+	FL Flower: True
+	Sample Clients: 1
+	Total Clients: 1
+	FL Rounds: 5
+	Iterations per FL Round: 1
+}
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Creating Multiple Prcesses
+[DEBUG/MainProcess] created semlock with handle 140406414114816
+[DEBUG/MainProcess] created semlock with handle 140406409609216
+[DEBUG/MainProcess] created semlock with handle 140406393888768
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7fc85c337740'
+[DEBUG/MainProcess] created semlock with handle 140406367592448
+[DEBUG/MainProcess] created semlock with handle 140406361145344
+[DEBUG/MainProcess] created semlock with handle 140406361141248
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7fc85c337980'
+[DEBUG/MainProcess] created semlock with handle 140406361137152
+[DEBUG/MainProcess] created semlock with handle 140406361133056
+[DEBUG/MainProcess] created semlock with handle 140406343401472
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7fc85c3378c0'
+[DEBUG/MainProcess] created semlock with handle 140406239002624
+[DEBUG/MainProcess] created semlock with handle 140406171652096
+[DEBUG/MainProcess] created semlock with handle 140406171648000
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7fc85c337b40'
+[DEBUG/MainProcess] created semlock with handle 140406171643904
+[DEBUG/MainProcess] created semlock with handle 140406106587136
+[DEBUG/MainProcess] created semlock with handle 140406106583040
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7fc85c337b00'
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7fc85c337dc0'
+[DEBUG/MainProcess] created semlock with handle 140406106578944
+[DEBUG/MainProcess] created semlock with handle 140406106574848
+[DEBUG/MainProcess] created semlock with handle 140406104788992
+[DEBUG/MainProcess] created semlock with handle 140406104784896
+[DEBUG/MainProcess] created semlock with handle 140405299486720
+[DEBUG/MainProcess] requesting creation of a shared 'Value' object

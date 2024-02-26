@@ -14,6 +14,7 @@ import os
 import rospy
 import rospkg
 from elsa_tiago_gym.utils import setup_env
+from elsa_tiago_gym.utils_parallel import set_sim_velocity,kill_simulations
 logger = mp.log_to_stderr()
 logger.setLevel(logging.DEBUG)
 
@@ -45,7 +46,7 @@ class PolicyUpdateProcess(mp.Process):
 
         # setup the eval environment
         setup_env(self.env)
-        rospy.init_node('parallelSimulationNode')
+        rospy.init_node('parallelSimulationNode',log_level=rospy.FATAL)
         self.env = gym.make(id=self.env,env_code=self.client_id,max_episode_steps=100)
 
         self.model.train()
@@ -69,6 +70,7 @@ class PolicyUpdateProcess(mp.Process):
         t = round(toc(),3)
         log_debug(f'Filling the {n} exp required {t}sec, giving {n/t} transition/sec',True)
         log_debug(f'---------------------------------------------------------------------------',True)
+        #kill_simulations()
 
         for iter in range(self.config.fl_parameters.iterations_per_fl_round):
             for i_step in range(self.config.train_steps):
@@ -193,8 +195,8 @@ class WorkerProcess(mp.Process):
         log_debug('Worker #{:} ready to get experiences!'.format(self.worker_id),self.screen)
 
         # get connected to one of the ros ports 
-        port = "http://localhost:1135" + str(self.worker_id) + '/'
-        setup_env(self.env,port)
+        ros_port = "http://localhost:1135" + str(self.worker_id) + '/'
+        setup_env(self.env,ros_port)
         rospy.init_node('parallelSimulationNode')
         self.env = gym.make(id=self.env,
                             env_code=self.client_id,
@@ -202,6 +204,8 @@ class WorkerProcess(mp.Process):
                             discrete = self.env_config['discrete'],
                             multimodal = self.env_config['multimodal']
                             )
+        gz_port = "http://localhost:1134" + str(self.worker_id) 
+        set_sim_velocity(gz_port,0.005)
         #self.model.eval()
         tot_step = 0
 
@@ -238,9 +242,6 @@ class WorkerProcess(mp.Process):
                     next_state = None
                 else:
                     next_state = preprocess(observation,self.model.multimodal,self.model.img_size,self.model.device)
-                    #next_state = torch.tensor(
-                    #    observation, dtype=torch.float32, device=self.model.device
-                    #).unsqueeze(0)
 
                 # Put the transition in the queue 
                 self.send_transition(state,action,next_state,reward)

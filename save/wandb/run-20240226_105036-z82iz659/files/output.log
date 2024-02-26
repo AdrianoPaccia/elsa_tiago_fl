@@ -1,0 +1,147 @@
+dqn_new
+{
+	Env: TiagoSimpleEnv-v0
+	Batch size: 64
+	lr: 1e-4
+	seed: 42
+	FL Flower: True
+	Sample Clients: 1
+	Total Clients: 1
+	FL Rounds: 5
+	Iterations per FL Round: 1
+}
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Creating Multiple Prcesses
+[DEBUG/MainProcess] created semlock with handle 140694953582592
+[DEBUG/MainProcess] created semlock with handle 140694949076992
+[DEBUG/MainProcess] created semlock with handle 140694933356544
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7f6995200180'
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7f69951fed00'
+[DEBUG/MainProcess] created semlock with handle 140694907060224
+[DEBUG/MainProcess] created semlock with handle 140694900613120
+[DEBUG/MainProcess] created semlock with handle 140694900609024
+[DEBUG/MainProcess] created semlock with handle 140694900604928
+[DEBUG/MainProcess] created semlock with handle 140694900600832
+[DEBUG/MainProcess] requesting creation of a shared 'Value' object
+[DEBUG/MainProcess] INCREF '7f69951cf820'
+Saving Memory of Client #0 to file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+[DEBUG/MainProcess] thread 'MainThread' does not own a connection
+[DEBUG/MainProcess] making connection to manager
+/home/adriano/Desktop/tiago_ws/src/elsa_tiago_fl/src/elsa_tiago/utils/communication_utils.py:12: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return tensor.storage().nbytes()
+[DEBUG/MainProcess] DECREF '7f69951fed00'
+[DEBUG/MainProcess] DECREF '7f6995200180'
+[DEBUG/MainProcess] DECREF '7f69951cf820'
+[DEBUG/MainProcess] thread 'MainThread' has no more proxies so closing conn
+[INFO/MainProcess] sending shutdown message to manager
+[DEBUG/MainProcess] created semlock with handle 140694953582592
+[DEBUG/MainProcess] created semlock with handle 140694949076992
+[DEBUG/MainProcess] created semlock with handle 140694933356544
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7ff6f89e8a00'
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7ff6f89e8840'
+[DEBUG/MainProcess] created semlock with handle 140694907060224
+[DEBUG/MainProcess] created semlock with handle 140694900613120
+[DEBUG/MainProcess] created semlock with handle 140694900609024
+[DEBUG/MainProcess] created semlock with handle 140694900604928
+Creating Multiple Prcesses
+Saving Memory of Client #0 to file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+Creating Multiple Prcesses
+[DEBUG/MainProcess] created semlock with handle 140694900600832
+[DEBUG/MainProcess] requesting creation of a shared 'Value' object
+[DEBUG/MainProcess] INCREF '7ff6f8bb7880'
+[DEBUG/MainProcess] thread 'MainThread' does not own a connection
+[DEBUG/MainProcess] making connection to manager
+[DEBUG/MainProcess] DECREF '7ff6f89e8840'
+[DEBUG/MainProcess] DECREF '7ff6f89e8a00'
+[DEBUG/MainProcess] DECREF '7ff6f8bb7880'
+[DEBUG/MainProcess] thread 'MainThread' has no more proxies so closing conn
+[INFO/MainProcess] sending shutdown message to manager
+[DEBUG/MainProcess] created semlock with handle 140694953582592
+[DEBUG/MainProcess] created semlock with handle 140694949076992
+[DEBUG/MainProcess] created semlock with handle 140694933356544
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7f72c2b48740'
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7f72c31a4080'
+[DEBUG/MainProcess] created semlock with handle 140694907060224
+[DEBUG/MainProcess] created semlock with handle 140694900613120
+[DEBUG/MainProcess] created semlock with handle 140694900609024
+[DEBUG/MainProcess] created semlock with handle 140694900604928
+[DEBUG/MainProcess] created semlock with handle 140694900600832
+[DEBUG/MainProcess] requesting creation of a shared 'Value' object
+[DEBUG/MainProcess] INCREF '7f72c2d13880'
+Saving Memory of Client #0 to file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+[DEBUG/MainProcess] thread 'MainThread' does not own a connection
+[DEBUG/MainProcess] making connection to manager
+[DEBUG/MainProcess] DECREF '7f72c31a4080'
+[DEBUG/MainProcess] DECREF '7f72c2b48740'
+[DEBUG/MainProcess] DECREF '7f72c2d13880'
+[DEBUG/MainProcess] thread 'MainThread' has no more proxies so closing conn
+[INFO/MainProcess] sending shutdown message to manager
+Creating Multiple Prcesses
+[DEBUG/MainProcess] created semlock with handle 140694953582592
+[DEBUG/MainProcess] created semlock with handle 140694949076992
+[DEBUG/MainProcess] created semlock with handle 140694933356544
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7f2f0de7b940'
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7f2f0de7ba80'
+[DEBUG/MainProcess] created semlock with handle 140694907060224
+[DEBUG/MainProcess] created semlock with handle 140694900613120
+[DEBUG/MainProcess] created semlock with handle 140694900609024
+[DEBUG/MainProcess] created semlock with handle 140694900604928
+[DEBUG/MainProcess] created semlock with handle 140694900600832
+[DEBUG/MainProcess] requesting creation of a shared 'Value' object
+[DEBUG/MainProcess] INCREF '7f2f0e043880'
+Saving Memory of Client #0 to file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+[DEBUG/MainProcess] thread 'MainThread' does not own a connection
+[DEBUG/MainProcess] making connection to manager
+[DEBUG/MainProcess] DECREF '7f2f0de7ba80'
+[DEBUG/MainProcess] DECREF '7f2f0de7b940'
+[DEBUG/MainProcess] DECREF '7f2f0e043880'
+[DEBUG/MainProcess] thread 'MainThread' has no more proxies so closing conn
+[INFO/MainProcess] sending shutdown message to manager
+[DEBUG/MainProcess] created semlock with handle 140694953582592
+[DEBUG/MainProcess] created semlock with handle 140694949076992
+[DEBUG/MainProcess] created semlock with handle 140694933356544
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7efde62a0440'
+[DEBUG/MainProcess] requesting creation of a shared 'RLock' object
+[DEBUG/MainProcess] INCREF '7efde629df80'
+[DEBUG/MainProcess] created semlock with handle 140694907060224
+[DEBUG/MainProcess] created semlock with handle 140694900613120
+[DEBUG/MainProcess] created semlock with handle 140694900609024
+[DEBUG/MainProcess] created semlock with handle 140694900604928
+[DEBUG/MainProcess] created semlock with handle 140694900600832
+[DEBUG/MainProcess] requesting creation of a shared 'Value' object
+[DEBUG/MainProcess] INCREF '7efde626f880'
+Creating Multiple Prcesses
+Saving Memory of Client #0 to file: temp/memory_client_0.pth
+Model parameters: 12046 - Trainable: 12046 (100.00%)
+Loading data for client #0 from file: temp/memory_client_0.pth
+[DEBUG/MainProcess] thread 'MainThread' does not own a connection
+[DEBUG/MainProcess] making connection to manager
+[DEBUG/MainProcess] DECREF '7efde629df80'
+[DEBUG/MainProcess] DECREF '7efde62a0440'
+[DEBUG/MainProcess] DECREF '7efde626f880'
+[DEBUG/MainProcess] thread 'MainThread' has no more proxies so closing conn

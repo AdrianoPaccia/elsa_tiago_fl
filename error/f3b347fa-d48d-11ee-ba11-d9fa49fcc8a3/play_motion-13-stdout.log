@@ -1,0 +1,6 @@
+[0m[ INFO] [1708941665.456362938]: Loading robot model 'tiago'...[0m
+[0m[ INFO] [1708941665.473047198]: No root/virtual joint specified in SRDF. Assuming fixed joint[0m
+[0m[ INFO] [1708941670.606863744, 1.166000000]: The set of running joint trajectory controllers has changed, updating it.[0m
+[0m[ INFO] [1708941671.703303202, 2.181000000]: Ready to take commands for planning group arm_torso.[0m
+[0m[ INFO] [1708941671.991046007, 2.444000000]: Ready to take commands for planning group arm.[0m
+[0m[ INFO] [1708941671.998032200, 2.450000000]: Controllers have changed, cancelling all active goals[0m

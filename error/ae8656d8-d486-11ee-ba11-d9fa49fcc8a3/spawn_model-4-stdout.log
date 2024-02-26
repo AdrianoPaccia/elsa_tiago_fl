@@ -1,0 +1,5 @@
+SpawnModel script started
+[INFO] [1708938543.203898, 0.000000]: Loading model XML from ros parameter
+[INFO] [1708938543.213463, 0.000000]: Waiting for service /gazebo/spawn_urdf_model
+[INFO] [1708938544.431843, 0.000000]: Calling service /gazebo/spawn_urdf_model
+[INFO] [1708938545.537971, 0.000000]: Spawn status: SpawnModel: Successfully spawned entity

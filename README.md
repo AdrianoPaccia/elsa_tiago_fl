@@ -35,7 +35,7 @@ Tested on Ubuntu 20.04 only.
 To train with FL, run:
     ```bash
     roscd elsa_tiago_fl
-    python3 src/elsa_tiago_fl/gym_fl_train.py -e [ENVIRONMENT] -m [MODEL] -n_workers [N. WORKERS]
+    python3 src/elsa_tiago/gym_fl_train.py -e [ENVIRONMENT] -m [MODEL] -n_workers [N. WORKERS]
     ```
 With:
 
@@ -47,6 +47,6 @@ To modify the training parameters check `configs/models/[MODEL].yaml`.
 
 For killing all parallel ROS-Gazebo simulations:
     ```bash
-    roscd gazebo_parallel
-    ./gazebo_parallel/src/simulations/kill_simulations.sh 
+    roscd elsa_tiago_gym
+    ./src/simulations/kill_simulations.sh 
     ```
