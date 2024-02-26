@@ -27,7 +27,7 @@ import rospkg
 from multiprocess_fl import FlowerClientMultiprocessing
 import time
 import subprocess
-from elsa_tiago_gym.utils_parallel import launch_simulations,kill_simulations
+from elsa_tiago_gym.utils_parallel import launch_simulations,kill_simulations,set_velocity
 
 
 def main() -> None:
@@ -36,7 +36,9 @@ def main() -> None:
     seed_everything(config.seed)
 
     #launch the simulation environments
-    launch_simulations(config.n_workers,speed=config.velocity,gui=config.gui)# gui=False)
+    launch_simulations(config.n_workers,speed=config.velocity,gui=config.gui)# gui=True)
+    time.sleep(10)
+    set_velocity(config.n_workers,speed=config.velocity)
     #kill_simulations()
 
 

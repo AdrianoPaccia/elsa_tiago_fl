@@ -60,7 +60,7 @@ class PolicyUpdateProcess(mp.Process):
             self.get_transitions()
             prefilling_capacity = round(len(self.replay_buffer.memory) / self.config.min_len_replay_buffer *100,0)
             perc_capacity = round(self.replay_buffer.get_capacity()*100,0)
-            if prefilling_capacity - old_prefilling_capacity >=1:
+            if prefilling_capacity %10 == 0 and not prefilling_capacity == old_prefilling_capacity:
                 log_debug(f'Prefilling at {prefilling_capacity}% (buffer at {perc_capacity}%)',True)
             time.sleep(1)
             old_prefilling_capacity = prefilling_capacity
@@ -197,7 +197,7 @@ class WorkerProcess(mp.Process):
         setup_env(self.env,port)
         rospy.init_node('parallelSimulationNode')
         self.env = gym.make(id=self.env,
-                            env_code=self.worker_id,
+                            env_code=self.client_id,
                             max_episode_steps=self.env_config['max_episode_steps'],
                             discrete = self.env_config['discrete'],
                             multimodal = self.env_config['multimodal']

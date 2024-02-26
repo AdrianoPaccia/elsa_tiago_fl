@@ -34,6 +34,7 @@ import rospkg
 import rospy
 from elsa_tiago_gym.utils import setup_env
 import subprocess
+from elsa_tiago_gym.utils_parallel import launch_simulations,kill_simulations,set_velocity
 
 
 os.system('rm -r /tmp/ray/')
@@ -120,19 +121,14 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
             'discrete':self.config.discrete_actions,
             'max_episode_steps':100
         }
-    
-        # Start all workers that collect experience
-        workers = [WorkerProcess(worker_id=i,
-                    model = copy.deepcopy(self.model), 
-                    replay_queue = replay_queues[i],
-                    shared_params = shared_params,
-                    lock = lock_SP,
-                    env = self.env,#gym.make(id=self.env,env_code=self.client_id,max_episode_steps=100),
-                    env_config = env_config,
-                    client_id = self.client_id,
-                    config = config,
-                    termination_event = termination_event
-                    ) for i in range(self.n_workers)]
+
+        #set the sim velocity
+
+        set_velocity(
+            n = config.n_workers,
+            speed = config.velocity
+        )
+
 
         # Start the policy updater process that simultaneusly trains the model
         updater_process = PolicyUpdateProcess(
@@ -150,6 +146,20 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                                            termination_event = termination_event
                                            )
         updater_process.start()
+
+        # Start all workers that collect experience
+        workers = [WorkerProcess(worker_id=i,
+                    model = copy.deepcopy(self.model), 
+                    replay_queue = replay_queues[i],
+                    shared_params = shared_params,
+                    lock = lock_SP,
+                    env = self.env,#gym.make(id=self.env,env_code=self.client_id,max_episode_steps=100),
+                    env_config = env_config,
+                    client_id = self.client_id,
+                    config = config,
+                    termination_event = termination_event
+                    ) for i in range(self.n_workers)]
+
         for worker in workers:
             worker.start()
 
@@ -210,7 +220,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         At the end, collects the merics and stores the model states. 
         """
         set_parameters_model(self.model, parameters)
-        setup_env(self.env)
+        setup_env(self.env, config.velocity)
         env = gym.make(self.env)
 
         avg_reward, std_reward, avg_episode_length, std_episode_length = fl_evaluate(
