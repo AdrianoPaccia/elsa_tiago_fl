@@ -1,3 +1,0 @@
-SpawnModel script started
-[INFO] [1708943386.375093, 0.000000]: Loading model XML from ros parameter
-[INFO] [1708943386.384763, 0.000000]: Waiting for service /gazebo/spawn_urdf_model
