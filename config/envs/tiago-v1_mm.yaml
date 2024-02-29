@@ -1,3 +1,5 @@
+# TiagoSimpleEnv with discrete actions and multimodal
+
 env_name: 'TiagoSimpleEnv-v0'
 input_dim: 39 #3+5*4+4*4
 action_dim: 7
@@ -10,8 +12,7 @@ executable_act: {
     5: [0,0,1,0], #3-pos
     6: [0,0,-1,0] #3-neg
 }
-task_path: '/home/adriano/Desktop/tiago_ws/src/tiago_gym/src/tiago_gym'
 multimodal: false
 discrete_actions: true
-#gui: false
+gui: false
 velocity: 0.007

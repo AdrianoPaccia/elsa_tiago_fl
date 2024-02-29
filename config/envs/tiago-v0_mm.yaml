@@ -1,0 +1,9 @@
+# TiagoSimpleEnv with continue actions and multimodal
+
+env_name: 'TiagoSimpleEnv-v0'
+input_dim: [[3, 96, 128],3]
+action_dim: 4
+multimodal: true
+discrete_actions: false
+gui: false
+velocity: 0.007

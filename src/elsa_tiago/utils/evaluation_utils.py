@@ -16,7 +16,7 @@ def fl_evaluate(model, env, config):
         done = False
         state= env.reset()
         while not done:
-            state = preprocess(state,model.multimodal,model.img_size,model.device)
+            state = preprocess(state,model.multimodal,model.device)
             with torch.no_grad():
                 #action,_ = model.select_action(state, training=True)
                 action = model.select_action(

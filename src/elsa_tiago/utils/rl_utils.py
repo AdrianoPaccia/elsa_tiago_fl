@@ -168,13 +168,13 @@ from PIL import Image
 from torchvision import transforms
 
 
-def preprocess(state, multimodal: bool=False, img_size:list=[None],device='cpu'):
+def preprocess(state, multimodal: bool=False,device='cpu'):
     if multimodal:
         img,g_pos = state
         # process the image
         img_tsr = torch.FloatTensor(copy.deepcopy(img))
         img_tsr = img_tsr.permute(2,0,1).unsqueeze(0)
-        img_tsr = torch.nn.functional.interpolate(img_tsr,size=img_size[1:], mode='bilinear')
+        img_tsr = torch.nn.functional.interpolate(img_tsr,(48,64), mode='bilinear')
         img_tsr = img_tsr.reshape(1,-1)
 
         #process the pos

@@ -47,6 +47,7 @@ class MLP(nn.Module):
         x = F.relu(self.layer1(x))
         return self.layer2(x)
     
+    
 class MLP_continue(nn.Module):
     def __init__(self, input_dim, action_dim,bounds) -> None:
         super(MLP_continue, self).__init__()

@@ -1,5 +1,9 @@
+# TiagoSimpleEnv with continue actions
+
 env_name: 'TiagoSimpleEnv-v0'
-input_dim: 12 #39 #3+5*4+4*4
+input_dim: 39 #39 #3+5*4+4*4
 action_dim: 4
-task_path: '/home/adriano/Desktop/tiago_ws/src/tiago_gym/src/tiago_gym'
 multimodal: false
+discrete_actions: false
+gui: false
+velocity: 0.007

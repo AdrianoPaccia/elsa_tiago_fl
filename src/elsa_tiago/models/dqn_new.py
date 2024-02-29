@@ -32,16 +32,12 @@ class DQN(BasicModel):
         if self.multimodal:
             self.policy_net = CNN(input_dim, action_dim).to(device)
             self.target_net = CNN(input_dim, action_dim).to(device)
-            self.img_size = input_dim[0]
         else:
             self.policy_net = MLP(input_dim, action_dim).to(device)
             self.target_net = MLP(input_dim, action_dim).to(device)
-            self.img_size = [None]
-
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.steps_done = 0.0
         self.executable_act = executable_act # dict storing the mapping from the action (int) to the executable action(vector)
-        
 
     def update_step(self) -> None:
         self.steps_done += 1.0

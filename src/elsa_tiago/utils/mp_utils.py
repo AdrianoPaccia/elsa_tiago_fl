@@ -63,7 +63,7 @@ class PolicyUpdateProcess(mp.Process):
             perc_capacity = round(self.replay_buffer.get_capacity()*100,0)
             if prefilling_capacity %10 == 0 and not prefilling_capacity == old_prefilling_capacity:
                 log_debug(f'Prefilling at {prefilling_capacity}% (buffer at {perc_capacity}%)',True)
-            time.sleep(1)
+            time.sleep(0.1)
             old_prefilling_capacity = prefilling_capacity
             
         n = self.config.min_len_replay_buffer
@@ -137,11 +137,20 @@ class PolicyUpdateProcess(mp.Process):
     def get_transitions(self):
         try:
             for queue in self.replay_queues:
-                experiences = []
-                if not queue.empty():
-                    experiences.extend(queue.rollout())
-            for exp in experiences:
-                self.replay_buffer.push(exp) 
+                n_trans = 0
+                #with self.lock:
+                while not queue.empty():
+                    transition = queue.get()
+                    self.replay_buffer.push(transition) 
+                    n_trans +=1
+                #log_debug(f'Got {n_trans} transitions from {queue.n} worker',True)
+                #experiences = []
+                #lens += queue.size()
+                #if not queue.empty():
+                    #log_debug(f'Queue #{queue.n} size = {}',True)
+                    #experiences.extend(queue.rollout())
+            #for exp in experiences:
+            #    self.replay_buffer.push(exp) 
 
         except Exception as e:
             logger.debug(f"Error getting shared params: {e}")
@@ -149,9 +158,10 @@ class PolicyUpdateProcess(mp.Process):
 
 
 class ExperienceQueue:
-    def __init__(self,queue,lock):
+    def __init__(self,queue,lock,n):
         self.queue = queue
         self.lock = lock
+        self.n = n
     def empty(self):
         return self.queue.empty()
     def rollout(self):
@@ -204,8 +214,8 @@ class WorkerProcess(mp.Process):
                             discrete = self.env_config['discrete'],
                             multimodal = self.env_config['multimodal']
                             )
-        gz_port = "http://localhost:1134" + str(self.worker_id) 
-        set_sim_velocity(gz_port,0.005)
+        #gz_port = "http://localhost:1134" + str(self.worker_id) 
+        #set_sim_velocity(gz_port,0.005)
         #self.model.eval()
         tot_step = 0
 
@@ -220,7 +230,7 @@ class WorkerProcess(mp.Process):
 
             # Explore the environment using the current policy
             observation = self.env.reset()
-            state = preprocess(observation,self.model.multimodal,self.model.img_size,self.model.device)
+            state = preprocess(observation,self.model.multimodal,self.model.device)
             i_step = 0
             done = False
             while not done and i_step < self.config.num_steps:
@@ -241,7 +251,7 @@ class WorkerProcess(mp.Process):
                 if terminated:
                     next_state = None
                 else:
-                    next_state = preprocess(observation,self.model.multimodal,self.model.img_size,self.model.device)
+                    next_state = preprocess(observation,self.model.multimodal,self.model.device)
 
                 # Put the transition in the queue 
                 self.send_transition(state,action,next_state,reward)

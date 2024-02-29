@@ -104,7 +104,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
         # Initialize the manager and shared variables
         manager = mp.Manager()
-        replay_queues = [ExperienceQueue(mp.Queue(maxsize=20),manager.RLock()) for _ in range(self.n_workers)]  
+        replay_queues = [ExperienceQueue(mp.Queue(maxsize=50),manager.RLock(),i) for i in range(self.n_workers)]  
         lock_SP = manager.RLock()
         termination_event = mp.Event()
 
@@ -162,6 +162,9 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
         for worker in workers:
             worker.start()
+
+        set_velocity(self.config.n_workers,0.007)
+        print(f'gz physics spedd at {0.007}')
 
         # Wait for all processes to finish
         updater_process.join()
