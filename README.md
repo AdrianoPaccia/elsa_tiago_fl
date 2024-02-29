@@ -31,9 +31,6 @@ Create a virtual environment or pyenv with `python==3.10.6`. Run:
      cd /home/user/tiago_public_ws;pip install -r src/elsa_tiago_fl/requirements.txt
     ``` 
 
-$ 
-```
-
 # Train
 To train with FL, run:
     ```bash
