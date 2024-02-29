@@ -4,12 +4,12 @@ import gym
 import pickle
 import copy
 from models.model import BasicModel
-from elsa_tiago.utils.rl_utils import Transition,preprocess
+from elsa_tiago_fl.utils.rl_utils import Transition,preprocess
 import logging
 import torch
 from tqdm import tqdm
-from elsa_tiago.utils.evaluation_utils import fl_evaluate, Evaluator
-from elsa_tiago.utils.utils import tic,toc
+from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate, Evaluator
+from elsa_tiago_fl.utils.utils import tic,toc
 import os
 import rospy
 import rospkg

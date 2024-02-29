@@ -1,8 +1,8 @@
-from elsa_tiago.utils.utils import Singleton
+from elsa_tiago_fl.utils.utils import Singleton
 import numpy as np
 import torch
 from tqdm import tqdm
-from elsa_tiago.utils.rl_utils import preprocess
+from elsa_tiago_fl.utils.rl_utils import preprocess
 
 
 def fl_evaluate(model, env, config):

@@ -11,13 +11,13 @@ from flwr.common import NDArrays, Scalar
 from gym import Env
 from models.model import BasicModel
 from elsa_tiago_gym.utils import setup_env
-from elsa_tiago.utils.build_utils import build_model, build_optimizer
-from elsa_tiago.utils.checkpoint import save_model
-from elsa_tiago.utils.evaluation_utils import fl_evaluate, Evaluator
-from elsa_tiago.utils.logger import Logger
-from elsa_tiago.utils.rl_utils import BasicReplayBuffer,TrajectoryHolder
-from elsa_tiago.utils.utils import parse_args, load_config, seed_everything, delete_files_in_folder
-from elsa_tiago.utils.utils_parallel import (
+from elsa_tiago_fl.utils.build_utils import build_model, build_optimizer
+from elsa_tiago_fl.utils.checkpoint import save_model
+from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate, Evaluator
+from elsa_tiago_fl.utils.logger import Logger
+from elsa_tiago_fl.utils.rl_utils import BasicReplayBuffer,TrajectoryHolder
+from elsa_tiago_fl.utils.utils import parse_args, load_config, seed_everything, delete_files_in_folder
+from elsa_tiago_fl.utils.utils_parallel import (
     set_parameters_model,
     get_parameters_from_model,
     weighted_average,
