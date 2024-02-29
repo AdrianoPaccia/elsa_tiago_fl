@@ -24,22 +24,21 @@ Tested on Ubuntu 20.04 only.
      cd /home/user/tiago_public_ws/src
      git clone https://github.com/AdrianoPaccia/elsa_tiago_fl.git
      cd /home/user/tiago_public_ws;catkin_make;source devel/setup.bash
-    ``` 
+    ```
+    
 # Setup
-Create a virtual environment or pyenv with `python==3.10.6`. Run:
-    ``` bash
-     cd /home/user/tiago_public_ws;pip install -r src/elsa_tiago_fl/requirements.txt
-    ``` 
-
-$ 
-```
+Create a virtual environment or pyenv with `python==3.10.6`. 
+Run:
+``` bash
+ cd /home/user/tiago_public_ws;pip install -r src/elsa_tiago_fl/requirements.txt
+``` 
 
 # Train
 To train with FL, run:
-    ```bash
-    roscd elsa_tiago_fl
-    python3 src/elsa_tiago/gym_fl_train.py -e [ENVIRONMENT] -m [MODEL] -n_workers [N. WORKERS]
-    ```
+```bash
+roscd elsa_tiago_fl
+python3 src/elsa_tiago/gym_fl_train.py -e [ENVIRONMENT] -m [MODEL] -n_workers [N. WORKERS]
+```
 With:
 
 - `MODEL={dqn_new}`
