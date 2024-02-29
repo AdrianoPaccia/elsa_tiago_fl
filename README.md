@@ -35,10 +35,10 @@ Run:
 
 # Train
 To train with FL, run:
-    ```bash
-    roscd elsa_tiago_fl
-    python3 src/elsa_tiago/gym_fl_train.py -e [ENVIRONMENT] -m [MODEL] -n_workers [N. WORKERS]
-    ```
+```bash
+roscd elsa_tiago_fl
+python3 src/elsa_tiago/gym_fl_train.py -e [ENVIRONMENT] -m [MODEL] -n_workers [N. WORKERS]
+```
 With:
 
 - `MODEL={dqn_new}`
