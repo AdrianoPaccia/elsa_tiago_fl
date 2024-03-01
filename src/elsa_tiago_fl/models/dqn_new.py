@@ -19,10 +19,6 @@ from elsa_tiago_fl.utils.logger import Logger
 from elsa_tiago_fl.utils.rl_utils import Transition, BasicReplayBuffer,transition_from_batch
 
 
-w_and_b = False
-
-
-
 class DQN(BasicModel):
     def __init__(
         self, input_dim: int, action_dim: int, device, config: Namespace,executable_act, multimodal=False,
