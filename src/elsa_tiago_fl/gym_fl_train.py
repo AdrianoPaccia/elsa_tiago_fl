@@ -28,7 +28,7 @@ from multiprocess_fl import FlowerClientMultiprocessing
 import time
 import subprocess
 from elsa_tiago_gym.utils_parallel import launch_simulations,kill_simulations,set_velocity
-
+import wandb
 
 def main() -> None:
     args = parse_args()
@@ -130,7 +130,6 @@ if __name__ == "__main__":
     # login to wandb
     wandb.login()
 
-    # to clean up stmporary wandb files
     main()
 
     #kill the simulations on exit
