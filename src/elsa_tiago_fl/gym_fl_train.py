@@ -127,6 +127,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    # login to wandb
+    wandb.login()
+
     # to clean up stmporary wandb files
     main()
 

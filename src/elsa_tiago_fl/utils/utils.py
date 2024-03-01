@@ -140,6 +140,7 @@ def load_config(args):
     model,env,n_workers = args.model, args.env,args.n_workers
     # Get the path to the parameters.yaml file
     package_name = "elsa_tiago_fl"  # Replace with your actual package name
+
     pkg_path = rospkg.RosPack().get_path(package_name)
     envs_folder_path = os.path.join(pkg_path,'config/envs')
     models_folder_path = os.path.join(pkg_path,'config/models')
