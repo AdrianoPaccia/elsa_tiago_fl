@@ -1,0 +1,26 @@
+# TiagoSimpleEnv with discrete actions
+
+env_name: 'TiagoSimpleEnv-v0'
+input_dim: 43 
+action_dim: 8
+executable_act: {
+    0: [ 0, 0, 0, 0, 0, 0, 0, 1 ], #grasping
+    1: [ 1, 0, 0, 0, 0, 0, 0, 0], # joint1-pos
+    2: [-1, 0, 0, 0, 0, 0, 0, 0], #joint1-neg
+    3: [ 0, 1, 0, 0, 0, 0, 0, 0], #joint2-pos
+    4: [ 0,-1, 0, 0, 0, 0, 0, 0], #joint2-neg
+    5: [ 0, 0, 1, 0, 0, 0, 0, 0], #joint3-pos
+    6: [ 0, 0,-1, 0, 0, 0, 0, 0], #joint3-neg
+    7: [ 0, 0, 0, 1, 0, 0, 0, 0], #joint4-pos
+    8: [ 0, 0, 0,-1, 0, 0, 0, 0], #joint4-neg
+    9: [ 0, 0, 0, 0, 1, 0, 0, 0], #joint5-pos
+    10: [ 0, 0, 0, 0,-1, 0, 0, 0], #joint5-neg
+    11: [ 0, 0, 0, 0, 0, 1, 0, 0], #joint6-pos
+    12: [ 0, 0, 0, 0, 0,-1, 0, 0], #joint6-neg
+    13: [ 0, 0, 0, 0, 0, 0, 1, 0], #joint7-neg
+    14: [ 0, 0, 0, 0, 0, 0,-1, 0] #joint7-neg
+}
+multimodal: false
+discrete_actions: true
+gui: false
+velocity: 0.007

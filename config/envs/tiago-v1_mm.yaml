@@ -2,7 +2,7 @@
 
 env_name: 'TiagoSimpleEnv-v0'
 input_dim: 39 #3+5*4+4*4
-action_dim: 7
+action_dim: 4
 executable_act: {
     0: [0,0,0,1], #grasping
     1: [1,0,0,0], #1-pos

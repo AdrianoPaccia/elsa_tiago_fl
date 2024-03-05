@@ -206,6 +206,7 @@ class WorkerProcess(mp.Process):
 
         # get connected to one of the ros ports 
         ros_port = "http://localhost:1135" + str(self.worker_id) + '/'
+        gz_port = "http://localhost:1134" + str(self.worker_id) 
         setup_env(self.env,ros_port)
         rospy.init_node('parallelSimulationNode')
         self.env = gym.make(id=self.env,
@@ -214,9 +215,8 @@ class WorkerProcess(mp.Process):
                             discrete = self.env_config['discrete'],
                             multimodal = self.env_config['multimodal']
                             )
-        #gz_port = "http://localhost:1134" + str(self.worker_id) 
-        #set_sim_velocity(gz_port,0.005)
-        #self.model.eval()
+        #out = set_v(gz_port,0.005)
+        set_sim_velocity(gz_port,0.005)
         tot_step = 0
 
         while not self.termination_event.is_set():# and not rospy.is_shutdown():

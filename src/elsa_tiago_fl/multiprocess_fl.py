@@ -163,8 +163,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         for worker in workers:
             worker.start()
 
-        set_velocity(self.config.n_workers,0.007)
-        print(f'gz physics spedd at {0.007}')
+        #set_velocity(self.config.n_workers,0.007)
 
         # Wait for all processes to finish
         updater_process.join()
