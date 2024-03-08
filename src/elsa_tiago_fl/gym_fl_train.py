@@ -36,7 +36,7 @@ def main() -> None:
     seed_everything(config.seed)
 
     #launch the simulation environments
-    launch_simulations(config.n_workers,speed=config.velocity, gui=False)#config.gui)
+    launch_simulations(config.n_workers,speed=config.velocity, gui=True)#config.gui)
     #time.sleep(10)
     #set_velocity(config.n_workers,speed=config.velocity)
     #kill_simulations()

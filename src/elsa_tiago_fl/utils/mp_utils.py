@@ -24,7 +24,6 @@ class PolicyUpdateProcess(mp.Process):
     This is the process that every 10sec updates the model wieights getting
         the experience from the replay buffer 
     """
-    #def __init__(self, model, lock, logger, optimizer, shared_params, batch_queue, config, env, client_id, termination_event, screen=False):
     def __init__(self, model, lock, logger, optimizer, shared_params, replay_buffer, replay_queues, config, env, client_id, termination_event, screen=False):
         super(PolicyUpdateProcess, self).__init__()
         self.model = model
@@ -47,30 +46,33 @@ class PolicyUpdateProcess(mp.Process):
         # setup the eval environment
         setup_env(self.env)
         rospy.init_node('parallelSimulationNode',log_level=rospy.FATAL)
-        self.env = gym.make(id=self.env,env_code=self.client_id,max_episode_steps=100)
+        self.env = gym.make(id=self.env,
+                        env_code=self.client_id,
+                        speed = 0.005,
+                        max_episode_steps=self.config.max_episode_steps,
+                        multimodal = self.config.multimodal
+                        )
 
         self.model.train()
         pbar = tqdm(total=self.config.train_steps)
 
         # prefilling of the buffer at first
-        log_debug(f'Prefilling replay buffer ...',self.screen)
-        tic()
-        perc_capacity = 0
-        old_prefilling_capacity = 0
-        while len(self.replay_buffer.memory) < self.config.min_len_replay_buffer:
-            self.get_transitions()
-            prefilling_capacity = round(len(self.replay_buffer.memory) / self.config.min_len_replay_buffer *100,0)
-            perc_capacity = round(self.replay_buffer.get_capacity()*100,0)
-            if prefilling_capacity %10 == 0 and not prefilling_capacity == old_prefilling_capacity:
-                log_debug(f'Prefilling at {prefilling_capacity}% (buffer at {perc_capacity}%)',True)
-            time.sleep(0.1)
-            old_prefilling_capacity = prefilling_capacity
-            
+        log_debug(f'Prefilling replay buffer ...',True)
         n = self.config.min_len_replay_buffer
+        tic()
+        #perc_capacity = 0
+        #old_prefilling_capacity = 0
+        while len(self.replay_buffer.memory) < n:
+            self.get_transitions()
+            #prefilling_capacity = round(len(self.replay_buffer.memory) /n *100,0)
+            #perc_capacity = round(self.replay_buffer.get_capacity()*100,0)
+            #if prefilling_capacity %10 == 0 and not prefilling_capacity == old_prefilling_capacity:
+            #    log_debug(f'Prefilling at {prefilling_capacity}% (buffer at {perc_capacity}%)',True)
+            #time.sleep(0.1)
+            #old_prefilling_capacity = prefilling_capacity
+        
         t = round(toc(),3)
         log_debug(f'Filling the {n} exp required {t}sec, giving {n/t} transition/sec',True)
-        log_debug(f'---------------------------------------------------------------------------',True)
-        #kill_simulations()
 
         for iter in range(self.config.fl_parameters.iterations_per_fl_round):
             for i_step in range(self.config.train_steps):
@@ -81,7 +83,7 @@ class PolicyUpdateProcess(mp.Process):
                 batch = self.get_batch()
 
                 # make 1 training iteration and update the shared weigths
-                loss = self.model.training_iter(batch)
+                loss = self.model.training_step(batch)
                 self.send_shared_params(self.model.state_dict())
 
                 pbar.update()
@@ -138,19 +140,10 @@ class PolicyUpdateProcess(mp.Process):
         try:
             for queue in self.replay_queues:
                 n_trans = 0
-                #with self.lock:
                 while not queue.empty():
                     transition = queue.get()
                     self.replay_buffer.push(transition) 
                     n_trans +=1
-                #log_debug(f'Got {n_trans} transitions from {queue.n} worker',True)
-                #experiences = []
-                #lens += queue.size()
-                #if not queue.empty():
-                    #log_debug(f'Queue #{queue.n} size = {}',True)
-                    #experiences.extend(queue.rollout())
-            #for exp in experiences:
-            #    self.replay_buffer.push(exp) 
 
         except Exception as e:
             logger.debug(f"Error getting shared params: {e}")
@@ -205,21 +198,22 @@ class WorkerProcess(mp.Process):
         log_debug('Worker #{:} ready to get experiences!'.format(self.worker_id),self.screen)
 
         # get connected to one of the ros ports 
-        ros_port = "http://localhost:1135" + str(self.worker_id) + '/'
-        gz_port = "http://localhost:1134" + str(self.worker_id) 
-        setup_env(self.env,ros_port)
+        ros_uri = "http://localhost:1135" + str(self.worker_id) + '/'
+        gz_uri = "http://localhost:1134" + str(self.worker_id) 
+        setup_env(self.env,ros_uri,gz_uri)
+
+
+        #launch the env
         rospy.init_node('parallelSimulationNode')
         self.env = gym.make(id=self.env,
                             env_code=self.client_id,
-                            max_episode_steps=self.env_config['max_episode_steps'],
-                            discrete = self.env_config['discrete'],
-                            multimodal = self.env_config['multimodal']
+                            speed = 0.005,
+                            max_episode_steps=self.config.max_episode_steps,
+                            multimodal = self.config.multimodal
                             )
-        #out = set_v(gz_port,0.005)
-        set_sim_velocity(gz_port,0.005)
-        tot_step = 0
+        tot_step =0
 
-        while not self.termination_event.is_set():# and not rospy.is_shutdown():
+        while not self.termination_event.is_set() and not rospy.is_shutdown():
             # get the new params of the model
             state_dict = get_shared_params(self.shared_params,self.lock)
             if state_dict is not None:
@@ -240,36 +234,35 @@ class WorkerProcess(mp.Process):
                         training=True,
                         action_space=self.env.action_space,
                     )
-                if self.env_config['discrete']:
-                    observation, reward, terminated, _= self.env.step(self.model.executable_act[action.item()]) 
+                if self.config.discrete_actions:
+                    act = self.model.executable_act[action]
                 else:
-                    observation, reward, terminated, _= self.env.step(action.item())    
+                    act = action.numpy()
 
-                reward = torch.tensor([reward], device=self.model.device)
+                observation, reward, terminated, _= self.env.step(act) 
+
                 done = terminated #or truncated
 
-                if terminated:
-                    next_state = None
-                else:
-                    next_state = preprocess(observation,self.model.multimodal,self.model.device)
+                next_state = preprocess(observation,self.model.multimodal,self.model.device)
+                action_tsr = action.to(torch.float32).unsqueeze(0)
+                reward_tsr = torch.tensor([reward], device=self.model.device)
+                done_tsr = torch.tensor([done], dtype=float,device=self.model.device)
 
                 # Put the transition in the queue 
-                self.send_transition(state,action,next_state,reward)
+                self.send_transition(state,action_tsr,next_state,reward_tsr,done_tsr)
  
                 state = next_state
                 i_step += 1
                 tot_step +=1
 
-    def send_transition(self,state,action,next_state,reward):
+    def send_transition(self,state,action,next_state,reward,done):
         try:
             state_clone = state.clone()
             action_clone = action.clone()
-            if not next_state == None:
-                next_state_clone = next_state.clone()
-            else:
-                next_state_clone = None
+            next_state_clone = next_state.clone()
             reward_clone = reward.clone()
-            transition = Transition(state_clone, action_clone, next_state_clone,reward_clone )
+            done_clone = done.clone()
+            transition = Transition(state_clone, action_clone, next_state_clone,reward_clone,done_clone)
             transition.to_cpu()
             self.replay_queue.put(transition)
 
@@ -278,7 +271,6 @@ class WorkerProcess(mp.Process):
         except Exception as e:
             logger.Error(f"Error getting shared params: {e}")
             return None
-
 
         
 def get_shared_params(shared_params,lock):

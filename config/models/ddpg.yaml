@@ -1,20 +1,23 @@
 save_dir: save/
 device: cuda
 seed: 42
-model_name: 'dqn_new'
+model_name: 'ddpg'
+discrete_actions: false
 
-# Cartpole
 training_parameters:
   lr: 1e-4
   batch_size: 64
+  hidden1: 64
+  hidden2: 128  
   num_steps: 500
   train_steps: 1000
-  gamma: 0.90
+  gamma: 0.90 #discount
   tau: 1.0
-  update_target_net: 100
+  policy_coef: 0.5
+  value_coef: 1.0
   eps_start: 1.0
   eps_end: 0.05
-  eps_decay: 10000
+  eps_decay: 10000 #depsilon
   num_eval_episodes: 2
   training_step_evaluate: 100
   replay_buffer_size: 2000

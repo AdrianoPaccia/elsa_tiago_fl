@@ -135,8 +135,6 @@ def load_config(args):
     
     #model = rospy.get_param('/tiago_trainer/model')
     #env = rospy.get_param('/tiago_trainer/env')
-
-
     model,env,n_workers = args.model, args.env,args.n_workers
     # Get the path to the parameters.yaml file
     package_name = "elsa_tiago_fl"  # Replace with your actual package name

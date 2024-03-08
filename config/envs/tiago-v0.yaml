@@ -1,9 +1,12 @@
-# TiagoSimpleEnv with continue actions
+# TiagoSimpleEnv:
+# - continue cartesian space actions
+# - NO multimodal obs
+# - actions as cartesian pos increments
 
 env_name: 'TiagoSimpleEnv-v0'
-input_dim: 39 #39 #3+5*4+4*4
+input_dim: 39 
 action_dim: 4
 multimodal: false
-discrete_actions: false
 gui: false
 velocity: 0.007
+max_episode_steps: 100

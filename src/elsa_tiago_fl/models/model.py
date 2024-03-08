@@ -12,13 +12,14 @@ import torch.nn.functional as F
 
 class BasicModel(nn.Module):
     def __init__(
-        self, input_dim, action_dim, device: str, config: Namespace
+        self, input_dim, action_dim, device: str, config: Namespace, multimodal: bool
     ) -> None:
         super(BasicModel, self).__init__()
         self.input_dim = input_dim
         self.action_dim = action_dim
         self.device = device
         self.config = config
+        self.multimodal = multimodal
 
     def select_action(
         self, state: torch.Tensor, training: bool, **kwargs

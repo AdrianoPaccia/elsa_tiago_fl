@@ -1,18 +1,12 @@
-# TiagoSimpleEnv with discrete actions
+# TiagoSimpleEnv:
+# - joint space actions
+# - NO multimodal obs
+# - actions as joint increments
 
 env_name: 'TiagoSimpleEnv-v0'
-input_dim: 39 #3+5*4+4*4
-action_dim: 7
-executable_act: {
-    0: [0,0,0,1], #grasping
-    1: [1,0,0,0], #1-pos
-    2: [-1,0,0,0], #1-neg
-    3: [0,1,0,0], #2-pos
-    4: [0,-1,0,0], #2-neg
-    5: [0,0,1,0], #3-pos
-    6: [0,0,-1,0] #3-neg
-}
+input_dim: 43 
+action_dim: 8
 multimodal: false
-discrete_actions: true
 gui: false
 velocity: 0.007
+max_episode_steps: 100

@@ -14,11 +14,10 @@ def fl_evaluate(model, env, config):
     for _ in tqdm(range(config.num_eval_episodes)):
         episode_reward, episode_length = 0.0, 0
         done = False
-        state= env.reset()
+        observation= env.reset()
         while not done:
-            state = preprocess(state,model.multimodal,model.device)
+            state = preprocess(observation,model.multimodal,model.device)
             with torch.no_grad():
-                #action,_ = model.select_action(state, training=True)
                 action = model.select_action(
                         state,
                         config=config,
@@ -27,11 +26,11 @@ def fl_evaluate(model, env, config):
                     )
 
             if config.discrete_actions:
-                state, reward, terminated, _= env.step(model.executable_act[action]) 
+                    act = model.executable_act[action]
             else:
-                state, reward, terminated, _= env.step(action.item())    
+                act = action.numpy()
+            observation, reward, terminated, _= env.step(act) 
 
-            #state, reward, terminated, _ = env.step(action)
             episode_reward += reward
             done = terminated #or truncated
             episode_length += 1
@@ -45,6 +44,9 @@ def fl_evaluate(model, env, config):
     )
 
     return avg_reward, std_reward, avg_len_episode, std_len_episode
+
+
+
 
 
 class Evaluator(metaclass=Singleton):

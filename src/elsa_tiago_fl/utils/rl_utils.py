@@ -5,15 +5,14 @@ import matplotlib.pyplot as plt
 import copy
 import numpy as np
 
-#Transition = namedtuple("Transition", ("state", "action", "next_state", "reward"))
-#batch = Transition(*zip(*batch))
 
 class Transition:
-    def __init__(self, state, action, next_state, reward) -> None:
+    def __init__(self, state, action, next_state, reward, done) -> None:
         self.state = state
         self.action = action
         self.next_state = next_state
         self.reward = reward
+        self.done = done
         self.name = 'transition'
 
     def to(self, device='cuda'):
@@ -25,6 +24,9 @@ class Transition:
             self.next_state = self.next_state.to(device)
         if self.reward is not None:
             self.reward = self.reward.to(device)
+        if self.done is not None:
+            self.done = self.reward.to(device)
+            
 
     def to_cpu(self):
         if self.state is not None and self.state.device.type == 'cuda':
@@ -35,9 +37,11 @@ class Transition:
             self.next_state = self.next_state.cpu()
         if self.reward is not None and self.reward.device.type == 'cuda':
             self.reward = self.reward.cpu()
+        if self.done is not None and self.done.device.type == 'cuda':
+            self.done = self.reward.cpu()
 
     def in_cuda(self):
-        attributes = [self.state,self.action,self.next_state,self.reward]
+        attributes = [self.state,self.action,self.next_state,self.reward,self.done]
         for att in attributes:
             if torch.is_tensor and not att.is_cuda:
                 return False
@@ -52,12 +56,14 @@ def transition_from_batch(batch):
     a = []
     ns = []
     r = []
+    d = []
     for t in batch:
         s.append(t.state)
         a.append(t.action)
         ns.append(t.next_state)
         r.append(t.reward)
-    return Transition(s,a,ns,r)
+        d.append(t.done)
+    return Transition(s,a,ns,r,d)
 
 
 class BasicReplayBuffer(object):
@@ -71,9 +77,6 @@ class BasicReplayBuffer(object):
     def get_capacity(self):
         return len(self.memory)/self.capacity
 
-    #def push(self, *args) -> None:
-    #    """Save a transition"""
-    #    self.memory.append(Transition(*args))
     def push(self,transition:Transition):
         self.memory.append(transition)
 
@@ -127,22 +130,7 @@ class TrajectoryBuffer(object):
     def sample(self, batch_size: int):
         return random.sample(self.memory, batch_size)
 
-'''
-def calculate_returns(rewards, discount_factor, normalize=False, device="cpu"):
-    returns = []
-    R = 0
-    normalize = False
-    for r in reversed(rewards):
-        R = r + R * discount_factor
-        returns.insert(0, R)
 
-    returns = torch.tensor(returns).to(device)
-
-    if normalize:
-        returns = (returns - returns.mean()) / (returns.std()+ 1e-8)
-
-    return returns
-'''
 def calculate_returns(rewards,discount_factor,normalize=False, device="cpu"):
         returns = []
         discounted_sum = 0
@@ -172,22 +160,23 @@ def preprocess(state, multimodal: bool=False,device='cpu'):
     if multimodal:
         img,g_pos = state
         # process the image
+        #img_tsr = torch.torch(copy.deepcopy(img),dtype=float)
         img_tsr = torch.FloatTensor(copy.deepcopy(img))
+
         img_tsr = img_tsr.permute(2,0,1).unsqueeze(0)
         img_tsr = torch.nn.functional.interpolate(img_tsr,(48,64), mode='bilinear')
         img_tsr = img_tsr.reshape(1,-1)
 
         #process the pos
+        #pos_tsr = torch.tensor(g_pos,dtype=float).unsqueeze(0)
         pos_tsr = torch.FloatTensor(g_pos).unsqueeze(0)
-
         state_tsr = torch.cat((img_tsr,pos_tsr),dim=1)
     else:
         state_flat = []
         for s in state:
             state_flat.extend(s.flatten())
-        #state = np.concatenate(state_flat)
+        #state_tsr = torch.tensor(state_flat,dtype=float).unsqueeze(0)
         state_tsr = torch.FloatTensor(state_flat).unsqueeze(0)
-        #state_tsr = torch.cat([torch.FloatTensor(item).reshape(-1) for item in state]).unsqueeze(0)
 
     return state_tsr.to(device)
 

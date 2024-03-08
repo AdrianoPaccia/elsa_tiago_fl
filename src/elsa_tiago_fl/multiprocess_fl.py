@@ -118,7 +118,6 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         env_config = {
             'env_name':self.env,
             'multimodal':self.config.multimodal,
-            'discrete':self.config.discrete_actions,
             'max_episode_steps':100
         }
 
@@ -162,8 +161,6 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
         for worker in workers:
             worker.start()
-
-        #set_velocity(self.config.n_workers,0.007)
 
         # Wait for all processes to finish
         updater_process.join()
