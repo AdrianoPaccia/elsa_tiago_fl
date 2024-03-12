@@ -15,8 +15,12 @@ import rospy
 import rospkg
 from elsa_tiago_gym.utils import setup_env
 from elsa_tiago_gym.utils_parallel import set_sim_velocity,kill_simulations
-logger = mp.log_to_stderr()
-logger.setLevel(logging.DEBUG)
+
+DEBUGGING = True
+
+if DEBUGGING:
+    logger = mp.log_to_stderr()
+    logger.setLevel(logging.DEBUG)
 
 
 class PolicyUpdateProcess(mp.Process):
@@ -24,7 +28,7 @@ class PolicyUpdateProcess(mp.Process):
     This is the process that every 10sec updates the model wieights getting
         the experience from the replay buffer 
     """
-    def __init__(self, model, lock, logger, optimizer, shared_params, replay_buffer, replay_queues, config, env, client_id, termination_event, screen=False):
+    def __init__(self, model, lock, logger, optimizer, shared_params, replay_buffer, replay_queues, config, env, client_id, termination_event, screen=True):
         super(PolicyUpdateProcess, self).__init__()
         self.model = model
         self.shared_params = shared_params
@@ -41,7 +45,7 @@ class PolicyUpdateProcess(mp.Process):
         self.client_id = client_id
 
     def run(self):
-        log_debug('Policy updater ready to update polices!',self.screen)
+        log_debug('ready to update polices!',self.screen)
 
         # setup the eval environment
         setup_env(self.env)
@@ -54,27 +58,22 @@ class PolicyUpdateProcess(mp.Process):
                         )
 
         self.model.train()
-        pbar = tqdm(total=self.config.train_steps)
 
         # prefilling of the buffer at first
-        log_debug(f'Prefilling replay buffer ...',True)
-        n = self.config.min_len_replay_buffer
+        log_debug(f'prefilling replay buffer ...',self.screen)
         tic()
-        #perc_capacity = 0
-        #old_prefilling_capacity = 0
-        while len(self.replay_buffer.memory) < n:
-            self.get_transitions()
-            #prefilling_capacity = round(len(self.replay_buffer.memory) /n *100,0)
-            #perc_capacity = round(self.replay_buffer.get_capacity()*100,0)
-            #if prefilling_capacity %10 == 0 and not prefilling_capacity == old_prefilling_capacity:
-            #    log_debug(f'Prefilling at {prefilling_capacity}% (buffer at {perc_capacity}%)',True)
-            #time.sleep(0.1)
-            #old_prefilling_capacity = prefilling_capacity
+
+        with tqdm(total=len(self.replay_buffer.memory), desc="Filling Replay Buffer") as pbar:
+            while pbar.n < pbar.total:
+                n = self.get_transitions()
+                pbar.update(n)
+            pbar.close()
         
         t = round(toc(),3)
-        log_debug(f'Filling the {n} exp required {t}sec, giving {n/t} transition/sec',True)
-
+        log_debug(f'filling the {len(self.replay_buffer.memory)} exp required {t}sec, giving {len(self.replay_buffer.memory)/t} transition/sec',self.screen)
+        
         for iter in range(self.config.fl_parameters.iterations_per_fl_round):
+            pbar = tqdm(total=self.config.train_steps)
             for i_step in range(self.config.train_steps):
                 #tic()
 
@@ -106,7 +105,7 @@ class PolicyUpdateProcess(mp.Process):
 
             # log the episode loss
             self.model.log_recap('episode',self.logger)
-            log_debug(f"END replay buffer - Capacity at {round(self.replay_buffer.get_capacity()*100,0)}%",True)
+            log_debug(f"END replay buffer - Capacity at {round(self.replay_buffer.get_capacity()*100,0)}%",self.screen)
 
         #log the avg round loss
         self.model.log_recap('round',self.logger)
@@ -138,12 +137,13 @@ class PolicyUpdateProcess(mp.Process):
 
     def get_transitions(self):
         try:
+            n_trans = 0
             for queue in self.replay_queues:
-                n_trans = 0
                 while not queue.empty():
                     transition = queue.get()
                     self.replay_buffer.push(transition) 
                     n_trans +=1
+            return n_trans
 
         except Exception as e:
             logger.debug(f"Error getting shared params: {e}")
@@ -195,7 +195,7 @@ class WorkerProcess(mp.Process):
 
 
     def run(self):
-        log_debug('Worker #{:} ready to get experiences!'.format(self.worker_id),self.screen)
+        log_debug('ready to get experiences!',self.screen)
 
         # get connected to one of the ros ports 
         ros_uri = "http://localhost:1135" + str(self.worker_id) + '/'
@@ -204,7 +204,7 @@ class WorkerProcess(mp.Process):
 
 
         #launch the env
-        rospy.init_node('parallelSimulationNode')
+        rospy.init_node('parallelSimulationNode',log_level=rospy.FATAL)
         self.env = gym.make(id=self.env,
                             env_code=self.client_id,
                             speed = 0.005,
@@ -219,7 +219,7 @@ class WorkerProcess(mp.Process):
             if state_dict is not None:
                 self.model.load_state_dict(state_dict)
             else:
-                log_debug('Worker {:} could NOT load new parameters'.format(self.worker_id),self.screen)
+                log_debug('could NOT load new parameters',self.screen)
             self.model.eval()
 
             # Explore the environment using the current policy
@@ -266,7 +266,7 @@ class WorkerProcess(mp.Process):
             transition.to_cpu()
             self.replay_queue.put(transition)
 
-            log_debug('Worker #{:} sent a transition - queue size = {:}!'.format(self.worker_id,self.replay_queue.size()),self.screen)
+            log_debug('sent a transition - queue size = {:}!'.format(self.replay_queue.size()),self.screen)
 
         except Exception as e:
             logger.Error(f"Error getting shared params: {e}")
@@ -282,6 +282,6 @@ def get_shared_params(shared_params,lock):
         logger.Error(f"Error getting shared params: {e}")
         return None
 
-def log_debug(what,screen):
-    if screen:
-        logger.debug(what)
+def log_debug(msg:str,screen:bool):
+    if DEBUGGING and screen:
+        logger.debug(msg)

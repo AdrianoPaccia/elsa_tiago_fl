@@ -103,7 +103,7 @@ class DQN(BasicModel):
 
         state_action_values = self.policy_net(state_batch).gather(1, action_batch)
         next_state_values = self.target_net(next_state_batch).max(1)[0]
-        expected_state_action_values = reward_batch + terminal_batch @ (next_state_values * self.config.gamma)  
+        expected_state_action_values = reward_batch + (torch.ones(terminal_batch.shape) - terminal_batch) @ (next_state_values * self.config.gamma)  
 
         criterion = nn.SmoothL1Loss() # Huber loss
         loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))

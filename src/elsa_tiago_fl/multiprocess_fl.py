@@ -146,6 +146,9 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                                            )
         updater_process.start()
 
+
+
+
         # Start all workers that collect experience
         workers = [WorkerProcess(worker_id=i,
                     model = copy.deepcopy(self.model), 

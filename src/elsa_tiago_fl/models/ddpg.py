@@ -63,7 +63,6 @@ class DDPG(BasicModel):
             mu=0,
             sigma=0.2
         )
-        self.v_loss = nn.MSELoss()
         self.steps_done = 0
 
 
@@ -88,7 +87,7 @@ class DDPG(BasicModel):
                 #add noise to the continuos part
                 noise = self.noise_distribution.sample()
 
-                noisy_continuos_action = continuos_action.cpu() + torch.tensor(noise)
+                noisy_continuos_action = torch.clip(continuos_action.cpu() + torch.tensor(noise),-1,1)
 
                 # Stochastically sample boolean action during training, with probability eps
                 eps = self.eps_exponential_decay()
@@ -145,13 +144,14 @@ class DDPG(BasicModel):
         # Compute the Q_target
         opt_target_action_batch = self.actor_target(next_state_batch) # (b,act)
         next_q_values = self.critic_target([next_state_batch,opt_target_action_batch]) # (b,1)
-        target_q_batch = reward_batch + self.config.gamma * terminal_batch * next_q_values
+        target_q_batch = reward_batch + self.config.gamma * (torch.ones(terminal_batch.shape).cuda() - terminal_batch) * next_q_values
         target_q_batch = target_q_batch.flatten()
         # Compute the Q
         q_batch = self.critic([state_batch, action_batch]).flatten()
 
         # Loss as MSE of Q_target and Q
-        value_loss = self.v_loss(q_batch, target_q_batch)
+        criterion = nn.MSELoss()
+        value_loss = criterion(q_batch, target_q_batch)
    
         return policy_loss, value_loss
 
