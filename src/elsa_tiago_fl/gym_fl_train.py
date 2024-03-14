@@ -10,7 +10,6 @@ import numpy as np
 from flwr.common import NDArrays, Scalar
 from gym import Env
 from models.model import BasicModel
-from elsa_tiago_gym.utils import setup_env
 from elsa_tiago_fl.utils.build_utils import build_model, build_optimizer
 from elsa_tiago_fl.utils.checkpoint import save_model
 from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate, Evaluator

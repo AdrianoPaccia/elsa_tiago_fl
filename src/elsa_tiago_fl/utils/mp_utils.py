@@ -13,7 +13,7 @@ from elsa_tiago_fl.utils.utils import tic,toc
 import os
 import rospy
 import rospkg
-from elsa_tiago_gym.utils import setup_env
+from elsa_tiago_gym.utils_ros_gym import start_env
 from elsa_tiago_gym.utils_parallel import set_sim_velocity,kill_simulations
 
 DEBUGGING = True
@@ -48,14 +48,12 @@ class PolicyUpdateProcess(mp.Process):
         log_debug('ready to update polices!',self.screen)
 
         # setup the eval environment
-        setup_env(self.env)
-        rospy.init_node('parallelSimulationNode',log_level=rospy.FATAL)
-        self.env = gym.make(id=self.env,
-                        env_code=self.client_id,
-                        speed = 0.005,
-                        max_episode_steps=self.config.max_episode_steps,
-                        multimodal = self.config.multimodal
-                        )
+        env = start_env(env=self.env,
+                speed = 0.005,
+                client_id = self.client_id,
+                max_episode_steps = self.config.max_episode_steps,
+                multimodal = self.config.multimodal
+        )
 
         self.model.train()
 
@@ -63,7 +61,7 @@ class PolicyUpdateProcess(mp.Process):
         log_debug(f'prefilling replay buffer ...',self.screen)
         tic()
 
-        with tqdm(total=len(self.replay_buffer.memory), desc="Filling Replay Buffer") as pbar:
+        with tqdm(total=self.config.min_len_replay_buffer, desc="Filling Replay Buffer") as pbar:
             while pbar.n < pbar.total:
                 n = self.get_transitions()
                 pbar.update(n)
@@ -94,7 +92,7 @@ class PolicyUpdateProcess(mp.Process):
                         std_reward,
                         avg_episode_length,
                         std_episode_length,
-                    ) = fl_evaluate(self.model, self.env, self.config)
+                    ) = fl_evaluate(self.model, env, self.config)
                     log_dict = {
                         "Avg Reward (during training) ": avg_reward,
                         "Std Reward (during training) ": std_reward,
@@ -132,7 +130,7 @@ class PolicyUpdateProcess(mp.Process):
                 b.to(self.model.device)
             return batch
         except Exception as e:
-            logger.debug(f"Error getting shared params: {e}")
+            logger.debug(f"Error getting batches: {e}")
             return None
 
     def get_transitions(self):
@@ -146,7 +144,7 @@ class PolicyUpdateProcess(mp.Process):
             return n_trans
 
         except Exception as e:
-            logger.debug(f"Error getting shared params: {e}")
+            logger.debug(f"Error getting transitions: {e}")
             return None
 
 
@@ -197,20 +195,17 @@ class WorkerProcess(mp.Process):
     def run(self):
         log_debug('ready to get experiences!',self.screen)
 
+
+
         # get connected to one of the ros ports 
-        ros_uri = "http://localhost:1135" + str(self.worker_id) + '/'
-        gz_uri = "http://localhost:1134" + str(self.worker_id) 
-        setup_env(self.env,ros_uri,gz_uri)
-
-
-        #launch the env
-        rospy.init_node('parallelSimulationNode',log_level=rospy.FATAL)
-        self.env = gym.make(id=self.env,
-                            env_code=self.client_id,
-                            speed = 0.005,
-                            max_episode_steps=self.config.max_episode_steps,
-                            multimodal = self.config.multimodal
-                            )
+        self.env = start_env(env=self.env,
+                speed = 0.005,
+                client_id = self.client_id,
+                max_episode_steps = self.config.max_episode_steps,
+                multimodal = self.config.multimodal,
+                ros_uri = "http://localhost:1135" + str(self.worker_id) + '/',
+                gz_uri = "http://localhost:1134" + str(self.worker_id) 
+        )
         tot_step =0
 
         while not self.termination_event.is_set() and not rospy.is_shutdown():

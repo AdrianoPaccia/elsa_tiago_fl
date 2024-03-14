@@ -32,7 +32,6 @@ import logging
 #for setup ros env
 import rospkg
 import rospy
-from elsa_tiago_gym.utils import setup_env
 import subprocess
 from elsa_tiago_gym.utils_parallel import launch_simulations,kill_simulations,set_velocity
 
@@ -222,8 +221,12 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         At the end, collects the merics and stores the model states. 
         """
         set_parameters_model(self.model, parameters)
-        setup_env(self.env, config.velocity)
-        env = gym.make(self.env)
+        env = start_env(env=self.env,
+                speed = 0.005,
+                client_id = self.client_id,
+                max_episode_steps = self.config.max_episode_steps,
+                multimodal = self.config.multimodal
+        )
 
         avg_reward, std_reward, avg_episode_length, std_episode_length = fl_evaluate(
             self.model, env, config

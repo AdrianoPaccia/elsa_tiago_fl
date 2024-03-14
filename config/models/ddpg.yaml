@@ -6,7 +6,7 @@ discrete_actions: false
 
 training_parameters:
   lr: 1e-4
-  batch_size: 64
+  batch_size: 2 #64
   hidden1: 64
   hidden2: 128  
   num_steps: 500
@@ -19,9 +19,9 @@ training_parameters:
   eps_end: 0.05
   eps_decay: 10000 #depsilon
   num_eval_episodes: 2
-  training_step_evaluate: 100
+  training_step_evaluate: 1000000000
   replay_buffer_size: 2000
-  min_len_replay_buffer: 1000
+  min_len_replay_buffer: 10
 
 fl_parameters:
   sample_clients: 1
