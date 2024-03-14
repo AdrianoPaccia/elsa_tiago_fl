@@ -10,7 +10,7 @@ training_parameters:
   hidden1: 64
   hidden2: 128  
   num_steps: 500
-  train_steps: 10 #00
+  train_steps: 20
   gamma: 0.90 #discount
   tau: 1.0
   policy_coef: 0.5
@@ -19,12 +19,12 @@ training_parameters:
   eps_end: 0.05
   eps_decay: 10000 #depsilon
   num_eval_episodes: 2
-  training_step_evaluate: 1000000000
+  training_step_evaluate: 10
   replay_buffer_size: 2000
   min_len_replay_buffer: 10
 
 fl_parameters:
-  sample_clients: 1
-  total_clients: 1
+  sample_clients: 2
+  total_clients: 2
   num_rounds: 5
   iterations_per_fl_round: 1

@@ -221,6 +221,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         This method calls the evaluating routine of the model.
         At the end, collects the merics and stores the model states. 
         """
+        '''
         set_parameters_model(self.model, parameters)
         env = start_env(env=self.env,
                 speed = 0.005,
@@ -256,5 +257,14 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                 "avg_episode_length": float(avg_episode_length),
                 "std_episode_length": float(std_episode_length),
             },
+        )'''
+        return (
+            float(0),
+            config.num_eval_episodes,
+            {
+                "avg_reward": float(0),
+                "std_reward": float(0),
+                "avg_episode_length": float(0),
+                "std_episode_length": float(0),
+            },
         )
-    
