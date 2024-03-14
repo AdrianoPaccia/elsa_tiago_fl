@@ -34,6 +34,7 @@ import rospkg
 import rospy
 import subprocess
 from elsa_tiago_gym.utils_parallel import launch_simulations,kill_simulations,set_velocity
+from elsa_tiago_gym.utils_ros_gym import start_env
 
 
 os.system('rm -r /tmp/ray/')
