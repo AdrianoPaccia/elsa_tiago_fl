@@ -10,7 +10,7 @@ training_parameters:
   hidden1: 64
   hidden2: 128  
   num_steps: 500
-  train_steps: 100000
+  train_steps: 2000
   gamma: 0.90 #discount
   tau: 1.0
   policy_coef: 0.5
@@ -27,4 +27,4 @@ fl_parameters:
   sample_clients: 1
   total_clients: 1
   num_rounds: 5
-  iterations_per_fl_round: 1
+  iterations_per_fl_round: 5

@@ -41,8 +41,8 @@ def main() -> None:
     launch_simulations(config.n_workers,speed=config.velocity, gui=False)#config.gui)
 
     # Delete previous memory files
-    pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")
-    delete_files_in_folder(os.path.join(pkg_path,"src/elsa_tiago_fl/temp"))
+    #pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")
+    #delete_files_in_folder(os.path.join(pkg_path,"src/elsa_tiago_fl/temp"))
 
     # Set `MASTER_ADDR` and `MASTER_PORT` environment variables
     os.environ["MASTER_ADDR"] = "localhost"
@@ -96,8 +96,6 @@ def main() -> None:
             r_buffer = None
 
         """Get the environment"""
-        #env = gym.make(config.env_name)
-
         fl_client = FlowerClientMultiprocessing(
             client_id=client_id,
             model=model,

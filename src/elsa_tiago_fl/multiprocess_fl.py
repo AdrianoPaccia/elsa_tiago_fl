@@ -67,8 +67,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         self.env = env
 
         self.model = model
-        self.replay_buffer = replay_buffer #replay_buffer
-
+        self.replay_buffer = replay_buffer 
         self.optimizer = optimizer
         self.evaluator = evaluator
         self.logger = logger
@@ -86,12 +85,17 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                 f"Loading data for client #{int(client_id)} from file: {self.client_local_filename}"
             )
             client_data = torch.load(self.client_local_filename)
+
+            # Load the replay buffer
             if self.replay_buffer is not None:
-                self.model.steps_done = client_data["model_steps_done"]
                 self.replay_buffer.memory = deque(
                     client_data["replay_buffer"], maxlen=self.replay_buffer.capacity
                 )
-            #self.optimizer.load_state_dict(client_data["optimizer_state_dict"])
+            # Load the model data (steps_done, state_dict)
+            self.model.steps_done = client_data["model_steps_done"]
+
+            # Load the optimizer state_dict
+            self.optimizer.load_state_dict(client_data["optimizer_state_dict"])
         
 
 
@@ -102,40 +106,27 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         This method calls the training routine of the model.
         At the end saves the memory related to the optimizer and the experience
         """
-        # Setup the model for training
-        parameters, frozen_parameters = self.model.setup_fl_training(self.optimizer)
+
+        # set the model paramaters 
+        self.set_parameters(parameters)
+
+        # Setup the model for training and retreinve the initial parameters
+        init_parameters, init_frozen_parameters = self.model.setup_fl_training(self.optimizer)
 
         #setup logs managers
         set_logs_level()
-        
-        
 
+        ## Multiprocessing:
+        print(f'Creating Multiple Prcesses (1 policy updater and {self.n_workers} workers)')
+    
         # Initialize the manager and shared variables
         manager = mp.Manager()
         replay_queues = [ExperienceQueue(mp.Queue(maxsize=50),manager.RLock(),i) for i in range(self.n_workers)]  
         lock_SP = manager.RLock()
         termination_event = mp.Event()
-
         init_state_dict = copy.deepcopy(self.model.state_dict())
-
         initial_params_bytes = pickle.dumps(self.model.state_dict())
         shared_params = manager.Value('c', initial_params_bytes)
-
-        print('Creating Multiple Prcesses')
-
-        env_config = {
-            'env_name':self.env,
-            'multimodal':self.config.multimodal,
-            'max_episode_steps':100
-        }
-
-        #set the sim velocity
-
-        set_velocity(
-            n = config.n_workers,
-            speed = config.velocity
-        )
-
 
         # Start the policy updater process that simultaneusly trains the model
         updater_process = PolicyUpdateProcess(
@@ -150,12 +141,10 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                                            config = self.config,
                                            env = self.env,#gym.make(id=self.env,env_code=self.client_id,max_episode_steps=100),
                                            client_id = self.client_id,
-                                           termination_event = termination_event
+                                           termination_event = termination_event,
+                                           screen=True
                                            )
         updater_process.start()
-
-
-
 
         # Start all workers that collect experience
         workers = [WorkerProcess(worker_id=i,
@@ -164,12 +153,10 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                     shared_params = shared_params,
                     lock = lock_SP,
                     env = self.env,#gym.make(id=self.env,env_code=self.client_id,max_episode_steps=100),
-                    env_config = env_config,
                     client_id = self.client_id,
                     config = config,
                     termination_event = termination_event
                     ) for i in range(self.n_workers)]
-
         for worker in workers:
             worker.start()
 
@@ -180,20 +167,28 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
         upd_parameters = get_shared_params(shared_params,lock_SP)
 
+        # close all queues and other shared memory
+        for queue in replay_queues:
+            queue.shutdown()
+        manager.shutdown()
         
+
+
         ## After all the iterations:
-        # Get model update
+        # Get model updates on the parameters
         agg_update = [
-            w - w_0 for w, w_0 in zip(list(upd_parameters.values()), parameters)
+            w - w_0 for w, w_0 in zip(list(upd_parameters.values()), init_parameters)
         ] 
-        # Send weights of NON-Frozen layers.
+
+        # Send weights of NON-Frozen layers
         upd_weights = [
             torch.add(agg_upd, w_0).cpu()
             for agg_upd, w_0, is_frozen in zip(
-                agg_update, copy.deepcopy(parameters), frozen_parameters
+                agg_update, copy.deepcopy(init_parameters), init_frozen_parameters
             )
             if not is_frozen
-        ]  
+        ] 
+
         # Store only communicated weights (sent parameters).
         log_communication(
             federated_round=config.current_round,
@@ -206,6 +201,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         print(
             f"Saving Memory of Client #{int(self.client_id)} to file: {self.client_local_filename}"
         )
+
         if self.replay_buffer is not None:
             torch.save(
                 {
@@ -224,16 +220,20 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
             )
         return upd_weights, 1, {}
     
+
     def evaluate(self, parameters, config: Namespace):
         """
         This method calls the evaluating routine of the model.
         At the end, collects the merics and stores the model states. 
         """
-        set_parameters_model(self.model, parameters)
+
+        self.set_parameters(parameters)
 
         #setup logs managers
         set_logs_level()
 
+
+        ## Multiprocessing:
         # Initialize the manager and shared variables
         manager = mp.Manager()
         results_list = ResultsList(manager.list(),manager.RLock())
@@ -250,20 +250,20 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
         for worker in workers:
             worker.start()
-
+        
+        # Monitor the state of evaluation
         tot_iter = self.config.num_eval_episodes * self.n_workers
-
         with tqdm(total=tot_iter, desc=f"Evaluation") as pbar:
             while pbar.n < pbar.total:
                 n = results_list.size() - tot_iter
                 pbar.updat(n)
 
-        
         for worker in workers:
             worker.join()
 
         avg_reward, std_reward, avg_episode_length, std_episode_length = results_list.get_score()
-        
+        manager.shutdown()
+
         is_updated = self.evaluator.update_global_metrics(
             avg_reward, config.current_round
         )
@@ -289,4 +289,11 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                 "std_episode_length": float(std_episode_length),
             },
         )
+
+
+    def set_parameters(self, parameters):
+        set_parameters_model(self.model, parameters)
+
+    def get_parameters(self, config):
+        get_parameters_from_model(self.model)
 

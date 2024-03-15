@@ -62,7 +62,11 @@ class PolicyUpdateProcess(mp.Process):
 
         while not ready:
             for queue in self.replay_queues:
-                ready*= (queue.size()>0)
+                len_i = queue.size()
+                log_debug(f'Queue #{queue.n} len = {len_i} - {ready}',self.screen)
+                if (len_i>0):
+                    ready = True
+
 
         tic()
         with tqdm(total=self.config.min_len_replay_buffer, desc="Filling Replay Buffer") as pbar:
@@ -163,13 +167,18 @@ class ExperienceQueue:
             return self.queue.get()
     def size(self):
         return self.queue.qsize()
+    def shutdown(self):
+        while not self.queue.empty():
+            self.queue.get()
+        self.queue.close()
+
 
         
 class WorkerProcess(mp.Process):
     """
     This process collects the experience from the environment using the latest model parameters
     """
-    def __init__(self, worker_id, model: BasicModel, replay_queue, shared_params, lock, env,env_config, client_id,config, termination_event,screen=False):
+    def __init__(self, worker_id, model: BasicModel, replay_queue, shared_params, lock, env, client_id,config, termination_event,screen=False):
         super(WorkerProcess, self).__init__()
         self.worker_id = worker_id
         self.model = model
@@ -181,7 +190,6 @@ class WorkerProcess(mp.Process):
         self.termination_event = termination_event
         self.lock = lock
         self.screen =screen
-        self.env_config = env_config
 
 
     def run(self):
