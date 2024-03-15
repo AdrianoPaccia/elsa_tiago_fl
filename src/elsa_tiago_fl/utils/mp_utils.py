@@ -246,7 +246,7 @@ class WorkerProcess(mp.Process):
                 # Put the transition in the queue 
                 self.send_transition(state,action_tsr,next_state,reward_tsr,done_tsr)
  
-                state = next_state
+                state = next_stateresults_list
                 i_step += 1
                 tot_step +=1
 
@@ -266,6 +266,90 @@ class WorkerProcess(mp.Process):
         except Exception as e:
             logger.Error(f"Error getting shared params: {e}")
             return None
+
+
+class ResultsList():
+    def __init__(self,array,lock):
+        self.array = array
+        self.lock = lock
+
+    def store(self,score,length):
+        with self.lock:
+            self.array.append((score,length))
+
+    def get_score(self):
+        total_reward = []
+        total_len_episode = []
+        with self.lock:
+            results=self.array
+        for item in results:
+            score, length = item
+        total_reward.append(reward)
+        total_len_episode.append(len_episode)
+
+        avg_reward, std_reward = np.average(total_reward), np.std(total_reward)
+        avg_len_episode, std_len_episode = np.average(total_len_episode), np.std(
+            total_len_episode
+        )
+        return avg_reward, std_reward, avg_len_episode, std_len_episode
+
+
+class EvaluationProcess(mp.Process):
+    """
+    This process collects the experience from the environment using the latest model parameters
+    """
+    def __init__(self, model: BasicModel, target_iter:int, shared_results:ResultsList, env:str, client_id, worker_id, config, screen=False):
+        super(WorkerProcess, self).__init__()
+        self.model = model
+        self.env = env
+        self.worker_id = worker_id
+        self.target_iter = target_iter
+        self.client_id = client_id
+        self.shared_results = shared_results
+        self.config = config
+        self.screen =screen
+
+    def run(self):
+        log_debug(f'Ready to get experiences for {self.target_iter}!',self.screen)
+        # get connected to one of the ros ports 
+        self.env = start_env(env=self.env,
+                speed = 0.005,
+                client_id = self.client_id,
+                max_episode_steps = self.config.max_episode_steps,
+                multimodal = self.config.multimodal,
+                ros_uri = "http://localhost:1135" + str(self.worker_id) + '/',
+                gz_uri = "http://localhost:1134" + str(self.worker_id) 
+        )
+        
+        self.model.eval()
+
+        for i in self.target_iter:
+            episode_reward, episode_length = 0.0, 0
+            observation = self.env.reset()
+            done = False
+            while not done:
+                state = preprocess(observation,self.model.multimodal,self.model.device)
+                action = self.model.select_action(
+                        state,
+                        config=self.config,
+                        training=False,
+                        action_space=self.env.action_space,
+                    )
+                if self.config.discrete_actions:
+                    act = self.model.executable_act[action]
+                else:
+                    act = action.numpy()
+
+                observation, reward, terminated, _= self.env.step(act) 
+
+                episode_reward += reward
+                done = terminated #or truncated
+                episode_length += 1
+
+            #store the result in shared memory
+            with lock:
+                self.shared_results.store(episode_reward,episode_length)
+
 
         
 def get_shared_params(shared_params,lock):

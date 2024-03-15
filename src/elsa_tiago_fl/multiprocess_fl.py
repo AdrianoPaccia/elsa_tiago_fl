@@ -25,7 +25,7 @@ from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
 from tqdm import tqdm
 from elsa_tiago_fl.utils.communication_utils import log_communication
 import pickle
-from elsa_tiago_fl.utils.mp_utils import WorkerProcess,PolicyUpdateProcess,get_shared_params,ExperienceQueue
+from elsa_tiago_fl.utils.mp_utils import WorkerProcess,PolicyUpdateProcess,get_shared_params,ExperienceQueue,EvaluationProcess,ResultsList
 import sys
 import logging
 
@@ -221,18 +221,31 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         This method calls the evaluating routine of the model.
         At the end, collects the merics and stores the model states. 
         """
-        '''
         set_parameters_model(self.model, parameters)
-        env = start_env(env=self.env,
-                speed = 0.005,
-                client_id = self.client_id,
-                max_episode_steps = self.config.max_episode_steps,
-                multimodal = self.config.multimodal
-        )
 
-        avg_reward, std_reward, avg_episode_length, std_episode_length = fl_evaluate(
-            self.model, env, config
-        )
+        # Initialize the manager and shared variables
+        manager = mp.Manager()
+        results_list = ResultsList(manager.List(maxsize=50),manager.RLock())
+
+        # Start all workers that collect experience
+        workers = [EvaluationProcess(
+            model = copy.deepcopy(self.model), 
+            target_iter = config.num_eval_episodes,
+            shared_results = results_list,
+            env = self.env,
+            client_id = self.client_id,
+            worker_id = i,
+            config = config,
+        )  for for i in range(self.n_workers)]
+
+        for worker in workers:
+            worker.start()
+
+        for worker in workers:
+            worker.join()
+
+        avg_reward, std_reward, avg_episode_length, std_episode_length = results_list.get_score()
+        
         is_updated = self.evaluator.update_global_metrics(
             avg_reward, config.current_round
         )
@@ -256,15 +269,5 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                 "std_reward": float(std_reward),
                 "avg_episode_length": float(avg_episode_length),
                 "std_episode_length": float(std_episode_length),
-            },
-        )'''
-        return (
-            float(0),
-            config.num_eval_episodes,
-            {
-                "avg_reward": float(0),
-                "std_reward": float(0),
-                "avg_episode_length": float(0),
-                "std_episode_length": float(0),
             },
         )
