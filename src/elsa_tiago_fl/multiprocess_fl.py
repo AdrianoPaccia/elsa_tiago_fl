@@ -24,11 +24,12 @@ import numpy as np
 from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
 from tqdm import tqdm
 from elsa_tiago_fl.utils.communication_utils import log_communication
+
+
+from elsa_tiago_fl.utils.mp_logging import set_logs_level
 import pickle
 from elsa_tiago_fl.utils.mp_utils import WorkerProcess,PolicyUpdateProcess,get_shared_params,ExperienceQueue,EvaluationProcess,ResultsList
 import sys
-import logging
-
 #for setup ros env
 import rospkg
 import rospy
@@ -40,6 +41,8 @@ from elsa_tiago_gym.utils_ros_gym import start_env
 os.system('rm -r /tmp/ray/')
 mp.set_start_method('spawn')
 
+#setup logs managers
+set_logs_level()
 
 '''
 For cleaning the /tmp from previous runs files:  rm -r /tmp/ray/
@@ -59,11 +62,12 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         replay_buffer: Optional[BasicReplayBuffer] = None,
     ) -> None:
 
+
         self.n_workers = n_workers
         self.env = env
 
         self.model = model
-        self.replay_buffer = BasicReplayBuffer(1000) #replay_buffer
+        self.replay_buffer = replay_buffer #replay_buffer
 
         self.optimizer = optimizer
         self.evaluator = evaluator
@@ -98,9 +102,13 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         This method calls the training routine of the model.
         At the end saves the memory related to the optimizer and the experience
         """
-
         # Setup the model for training
         parameters, frozen_parameters = self.model.setup_fl_training(self.optimizer)
+
+        #setup logs managers
+        set_logs_level()
+        
+        
 
         # Initialize the manager and shared variables
         manager = mp.Manager()
@@ -223,24 +231,34 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         """
         set_parameters_model(self.model, parameters)
 
+        #setup logs managers
+        set_logs_level()
+
         # Initialize the manager and shared variables
         manager = mp.Manager()
-        results_list = ResultsList(manager.List(maxsize=50),manager.RLock())
+        results_list = ResultsList(manager.list(),manager.RLock())
 
         # Start all workers that collect experience
         workers = [EvaluationProcess(
             model = copy.deepcopy(self.model), 
-            target_iter = config.num_eval_episodes,
             shared_results = results_list,
             env = self.env,
             client_id = self.client_id,
             worker_id = i,
             config = config,
-        )  for for i in range(self.n_workers)]
+        )  for i in range(self.n_workers)]
 
         for worker in workers:
             worker.start()
 
+        tot_iter = self.config.num_eval_episodes * self.n_workers
+
+        with tqdm(total=tot_iter, desc=f"Evaluation") as pbar:
+            while pbar.n < pbar.total:
+                n = results_list.size() - tot_iter
+                pbar.updat(n)
+
+        
         for worker in workers:
             worker.join()
 
@@ -271,3 +289,4 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                 "std_episode_length": float(std_episode_length),
             },
         )
+

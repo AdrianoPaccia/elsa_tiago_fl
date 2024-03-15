@@ -81,3 +81,5 @@ def _save_row_to_csv(row: list, path: str):
             f.write("\n")
     else:
         raise ValueError("No path provided and thus communication will not be logged.")
+
+

@@ -124,3 +124,5 @@ class Logger(metaclass=Singleton):
                 )
 
         print(str_msg)
+
+    

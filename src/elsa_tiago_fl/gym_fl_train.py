@@ -29,14 +29,16 @@ import subprocess
 from elsa_tiago_gym.utils_parallel import launch_simulations,kill_simulations,set_velocity
 import wandb
 
+
+
+
 def main() -> None:
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
 
     #launch the simulation environments
-    launch_simulations(config.n_workers,speed=config.velocity, gui=True)#config.gui)
-
+    launch_simulations(config.n_workers,speed=config.velocity, gui=False)#config.gui)
 
     # Delete previous memory files
     pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")

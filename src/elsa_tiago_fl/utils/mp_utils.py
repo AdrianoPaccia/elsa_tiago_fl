@@ -16,11 +16,9 @@ import rospkg
 from elsa_tiago_gym.utils_ros_gym import start_env
 from elsa_tiago_gym.utils_parallel import set_sim_velocity,kill_simulations
 
-DEBUGGING = True
+DEBUGGING = False
+#setup logs managers
 
-if DEBUGGING:
-    logger = mp.log_to_stderr()
-    logger.setLevel(logging.DEBUG)
 
 
 class PolicyUpdateProcess(mp.Process):
@@ -30,6 +28,8 @@ class PolicyUpdateProcess(mp.Process):
     """
     def __init__(self, model, lock, logger, optimizer, shared_params, replay_buffer, replay_queues, config, env, client_id, termination_event, screen=True):
         super(PolicyUpdateProcess, self).__init__()
+        mp.log_to_stderr(logging.ERROR)
+
         self.model = model
         self.shared_params = shared_params
         self.lock = lock
@@ -58,59 +58,50 @@ class PolicyUpdateProcess(mp.Process):
         self.model.train()
 
         # prefilling of the buffer at first
-        log_debug(f'prefilling replay buffer ...',self.screen)
-        tic()
+        ready = False
 
+        while not ready:
+            for queue in self.replay_queues:
+                ready*= (queue.size()>0)
+
+        tic()
         with tqdm(total=self.config.min_len_replay_buffer, desc="Filling Replay Buffer") as pbar:
             while pbar.n < pbar.total:
                 n = self.get_transitions()
                 pbar.update(n)
-            pbar.close()
         
         t = round(toc(),3)
         log_debug(f'filling the {len(self.replay_buffer.memory)} exp required {t}sec, giving {len(self.replay_buffer.memory)/t} transition/sec',self.screen)
         
-        for iter in range(self.config.fl_parameters.iterations_per_fl_round):
-            pbar = tqdm(total=self.config.train_steps)
-            for i_step in range(self.config.train_steps):
-                #tic()
+        for train_iter in range(self.config.fl_parameters.iterations_per_fl_round):
+            with tqdm(total=self.config.train_steps, desc=f"Training iteration {train_iter} client #{self.client_id}") as pbar:
+                while pbar.n < pbar.total:
+                    # get available trasitions
+                    self.get_transitions()
+                    batch = self.get_batch()
 
-                # get available trasitions
-                self.get_transitions()
-                batch = self.get_batch()
+                    # make 1 training iteration and update the shared weigths
+                    loss = self.model.training_step(batch)
+                    self.send_shared_params(self.model.state_dict())
 
-                # make 1 training iteration and update the shared weigths
-                loss = self.model.training_step(batch)
-                self.send_shared_params(self.model.state_dict())
-
-                pbar.update()
-                #when is time, do the evaluation 
-                if i_step % self.config.training_step_evaluate == 0:
-                    logger.debug("Evaluating....")
-                    (
-                        avg_reward,
-                        std_reward,
-                        avg_episode_length,
-                        std_episode_length,
-                    ) = fl_evaluate(self.model, env, self.config)
-                    log_dict = {
-                        "Avg Reward (during training) ": avg_reward,
-                        "Std Reward (during training) ": std_reward,
-                    }
-                    self.logger.logger.log(log_dict)
-
-                #log_debug(f"Training step {i_step}-{iter} - Loss = {loss} - time = {round(toc(),3)}s",True)
+                    pbar.update()
 
             # log the episode loss
             self.model.log_recap('episode',self.logger)
-            log_debug(f"END replay buffer - Capacity at {round(self.replay_buffer.get_capacity()*100,0)}%",self.screen)
+            log_debug(f"END fl_round - Capacity at {round(self.replay_buffer.get_capacity()*100,0)}%",self.screen)
 
+            #evaluate the fl_round
+            (avg_reward,std_reward,avg_episode_length,std_episode_length,) = fl_evaluate(self.model, env, self.config)
+            log_dict = {
+                "Avg Reward (during training) ": avg_reward,
+                "Std Reward (during training) ": std_reward,
+            }
+            self.logger.logger.log(log_dict)
+            
         #log the avg round loss
         self.model.log_recap('round',self.logger)
-
-        pbar.close()
-
         self.termination_event.set()
+
 
     def send_shared_params(self,state_dict):
         try:
@@ -119,8 +110,9 @@ class PolicyUpdateProcess(mp.Process):
             with self.lock:
                 self.shared_params.value = new_params_bytes
         except Exception as e:
-            logger.debug(f"Error getting shared params: {e}")
+            logging.error(f"Error sending shared params: {e}")
             return None
+
         
     def get_batch(self):
         try:
@@ -130,7 +122,7 @@ class PolicyUpdateProcess(mp.Process):
                 b.to(self.model.device)
             return batch
         except Exception as e:
-            logger.debug(f"Error getting batches: {e}")
+            logging.error(f"Error getting batches: {e}")
             return None
 
     def get_transitions(self):
@@ -144,7 +136,7 @@ class PolicyUpdateProcess(mp.Process):
             return n_trans
 
         except Exception as e:
-            logger.debug(f"Error getting transitions: {e}")
+            logging.error(f"Error getting transitions: {e}")
             return None
 
 
@@ -246,7 +238,7 @@ class WorkerProcess(mp.Process):
                 # Put the transition in the queue 
                 self.send_transition(state,action_tsr,next_state,reward_tsr,done_tsr)
  
-                state = next_stateresults_list
+                state = next_state
                 i_step += 1
                 tot_step +=1
 
@@ -264,7 +256,7 @@ class WorkerProcess(mp.Process):
             log_debug('sent a transition - queue size = {:}!'.format(self.replay_queue.size()),self.screen)
 
         except Exception as e:
-            logger.Error(f"Error getting shared params: {e}")
+            logging.error(f"Error getting shared params: {e}")
             return None
 
 
@@ -283,7 +275,7 @@ class ResultsList():
         with self.lock:
             results=self.array
         for item in results:
-            score, length = item
+            reward, len_episode = item
         total_reward.append(reward)
         total_len_episode.append(len_episode)
 
@@ -293,24 +285,26 @@ class ResultsList():
         )
         return avg_reward, std_reward, avg_len_episode, std_len_episode
 
+    def size(self):
+        return len(self.array)
+
 
 class EvaluationProcess(mp.Process):
     """
     This process collects the experience from the environment using the latest model parameters
     """
-    def __init__(self, model: BasicModel, target_iter:int, shared_results:ResultsList, env:str, client_id, worker_id, config, screen=False):
-        super(WorkerProcess, self).__init__()
+    def __init__(self, model: BasicModel, shared_results:ResultsList, env:str, client_id, worker_id, config, screen=False):
+        super(EvaluationProcess, self).__init__()
         self.model = model
         self.env = env
         self.worker_id = worker_id
-        self.target_iter = target_iter
         self.client_id = client_id
         self.shared_results = shared_results
         self.config = config
         self.screen =screen
 
     def run(self):
-        log_debug(f'Ready to get experiences for {self.target_iter}!',self.screen)
+        log_debug(f'Evaluator #{self.worker_id} ready!',self.screen)
         # get connected to one of the ros ports 
         self.env = start_env(env=self.env,
                 speed = 0.005,
@@ -323,10 +317,11 @@ class EvaluationProcess(mp.Process):
         
         self.model.eval()
 
-        for i in self.target_iter:
+        for i in range(self.config.num_eval_episodes):
             episode_reward, episode_length = 0.0, 0
             observation = self.env.reset()
             done = False
+            
             while not done:
                 state = preprocess(observation,self.model.multimodal,self.model.device)
                 action = self.model.select_action(
@@ -347,8 +342,7 @@ class EvaluationProcess(mp.Process):
                 episode_length += 1
 
             #store the result in shared memory
-            with lock:
-                self.shared_results.store(episode_reward,episode_length)
+            self.shared_results.store(episode_reward,episode_length)
 
 
         
@@ -358,9 +352,9 @@ def get_shared_params(shared_params,lock):
             params = pickle.loads(shared_params.value)
         return params
     except Exception as e:
-        logger.Error(f"Error getting shared params: {e}")
+        logging.error(f"Error getting shared params: {e}")
         return None
 
 def log_debug(msg:str,screen:bool):
     if DEBUGGING and screen:
-        logger.debug(msg)
+        logging.debug(msg)
