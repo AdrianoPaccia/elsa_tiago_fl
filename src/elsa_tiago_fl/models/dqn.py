@@ -37,6 +37,9 @@ class DQN(BasicModel):
         else:
             self.policy_net = MLP(input_dim, action_dim).to(device)
             self.target_net = MLP(input_dim, action_dim).to(device)
+            
+        # list the parameters for the optimizer        
+        self.optimization_params = self.policy_net.parameters()
 
         #update the target network
         hard_update(self.target_net,self.policy_net)
@@ -176,3 +179,8 @@ class DQN(BasicModel):
             }
         logger.logger.log(log_dict)
         return log_dict
+
+    
+    def get_executable_action(self, act):
+        return self.executable_act[act]
+        

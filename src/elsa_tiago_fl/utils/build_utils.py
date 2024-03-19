@@ -41,7 +41,10 @@ def build_model(config):
 
 def build_optimizer(model, config):
     optimizer_class = getattr(torch.optim, "Adam")
-    return optimizer_class(model.parameters(), lr=float(config.lr))
+    parameters = model.optimization_params
+    return optimizer_class(parameters, lr = float(config.lr))
+        
+#    return optimizer_class(model.parameters(), lr=float(config.lr))
 
 def check_types(config):
     if not(type(config.input_dim)==list or type(config.input_dim)==int):

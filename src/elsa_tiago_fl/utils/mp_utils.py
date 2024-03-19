@@ -194,9 +194,6 @@ class WorkerProcess(mp.Process):
 
     def run(self):
         log_debug('ready to get experiences!',self.screen)
-
-
-
         # get connected to one of the ros ports 
         self.env = start_env(env=self.env,
                 speed = 0.005,
@@ -215,7 +212,8 @@ class WorkerProcess(mp.Process):
                 self.model.load_state_dict(state_dict)
             else:
                 log_debug('could NOT load new parameters',self.screen)
-            self.model.eval()
+            
+            self.model.train()
 
             # Explore the environment using the current policy
             observation = self.env.reset()
@@ -229,10 +227,12 @@ class WorkerProcess(mp.Process):
                         training=True,
                         action_space=self.env.action_space,
                     )
-                if self.config.discrete_actions:
-                    act = self.model.executable_act[action]
-                else:
-                    act = action.numpy()
+                
+                act = self.model.get_executable_action(action)
+                #if self.config.discrete_actions:
+                #    act = self.model.executable_act[action]
+                #else:
+                #    act = action.numpy()
 
                 observation, reward, terminated, _= self.env.step(act) 
 
@@ -338,10 +338,13 @@ class EvaluationProcess(mp.Process):
                         training=False,
                         action_space=self.env.action_space,
                     )
-                if self.config.discrete_actions:
-                    act = self.model.executable_act[action]
-                else:
-                    act = action.numpy()
+                
+                act = self.model.get_executable_action(action)
+
+                #if self.config.discrete_actions:
+                #    act = self.model.executable_act[action]
+                #else:
+                #    act = action.numpy()
 
                 observation, reward, terminated, _= self.env.step(act) 
 

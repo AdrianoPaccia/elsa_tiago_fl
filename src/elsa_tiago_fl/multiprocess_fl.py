@@ -88,13 +88,16 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
             # Load the replay buffer
             if self.replay_buffer is not None:
+                print(f" - loading replay buffer ({len(client_data['replay_buffer'])} samples)")
                 self.replay_buffer.memory = deque(
-                    client_data["replay_buffer"], maxlen=self.replay_buffer.capacity
+                    client_data['replay_buffer'], maxlen=self.replay_buffer.capacity
                 )
             # Load the model data (steps_done, state_dict)
+            print(f" - loading steps done ({client_data['model_steps_done']})")
             self.model.steps_done = client_data["model_steps_done"]
 
             # Load the optimizer state_dict
+            print(f" - loading optimizer parameters")
             self.optimizer.load_state_dict(client_data["optimizer_state_dict"])
         
 

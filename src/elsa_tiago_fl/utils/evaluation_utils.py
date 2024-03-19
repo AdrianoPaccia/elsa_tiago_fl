@@ -25,10 +25,8 @@ def fl_evaluate(model, env, config):
                         action_space=env.action_space,
                     )
 
-            if config.discrete_actions:
-                    act = model.executable_act[action]
-            else:
-                act = action.numpy()
+            act = model.get_executable_action(action)
+
             observation, reward, terminated, _= env.step(act) 
 
             episode_reward += reward

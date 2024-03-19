@@ -25,10 +25,9 @@ class Actor(nn.Module):
 
     def forward(self, x):
         out = self.relu(self.fc1(x))
-
         out = self.relu(self.fc2(out))
         out_continuos = self.tanh(self.fc_continuos(out))
-        out_bool = (self.sigmoid(self.fc_bool(out)) > 0.5).float()
+        out_bool = self.sigmoid(self.fc_bool(out))
         out = torch.cat([out_continuos,out_bool],axis=-1)
         return out
         

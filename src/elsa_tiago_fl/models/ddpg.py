@@ -51,6 +51,9 @@ class DDPG(BasicModel):
 
             self.critic = Critic(input_dim, action_dim, **net_cfg)
             self.critic_target = Critic(input_dim, action_dim, **net_cfg)
+
+        # list the parameters for the optimizer        
+        self.optimization_params = list(self.actor.parameters()) + list(self.critic.parameters())
         
         #update the target network
         hard_update(self.actor_target,self.actor)
@@ -87,7 +90,7 @@ class DDPG(BasicModel):
                 #add noise to the continuos part
                 noise = self.noise_distribution.sample()
 
-                noisy_continuos_action = torch.clip(continuos_action.cpu() + torch.tensor(noise),-1,1)
+                noisy_continuos_action = torch.clip(continuos_action.cpu() + torch.tensor(noise),-1.,1.)
 
                 # Stochastically sample boolean action during training, with probability eps
                 eps = self.eps_exponential_decay()
@@ -124,9 +127,10 @@ class DDPG(BasicModel):
         self.episode_loss[0]+= comb_loss.item()
         self.episode_loss[1]+= policy_loss.item()
         self.episode_loss[2]+= value_loss.item()
-        self.total_training_steps += 1
+        self.steps_done += 1
 
         return comb_loss.item()
+        
     
     def compute_loss(self, batch: Transition) -> torch.TensorType:
         # Get the batches
@@ -138,7 +142,7 @@ class DDPG(BasicModel):
 
         ## Actor loss
         opt_action_batch = self.actor(state_batch)
-        policy_loss = -self.critic([state_batch,opt_action_batch]).mean()
+        policy_loss = -self.critic_target([state_batch,opt_action_batch]).mean()
 
         ## Critic loss
         # Compute the Q_target
@@ -148,6 +152,9 @@ class DDPG(BasicModel):
         target_q_batch = target_q_batch.flatten()
         # Compute the Q
         q_batch = self.critic([state_batch, action_batch]).flatten()
+
+        logging.debug('q_batch: ',q_batch.shape)
+        logging.debug('target_q_batch: ',target_q_batch.shape)
 
         # Loss as MSE of Q_target and Q
         criterion = nn.MSELoss()
@@ -178,7 +185,6 @@ class DDPG(BasicModel):
         self.optimizer = optimizer
         self.episode_loss = [0.0,0.0,0.0]
         self.total_loss = 0.0
-        self.total_training_steps = 0
 
         self.train()
         return parameters, frozen_parameters
@@ -194,11 +200,12 @@ class DDPG(BasicModel):
                 "Episode policy loss": self.episode_loss[1],
                 "Episode value loss": self.episode_loss[2],
                 "lr": self.optimizer.param_groups[0]["lr"],
+                "epsilon": self.eps_exponential_decay(),
             }
             self.episode_loss = [0.0,0.0,0.0]
         else:
             log_dict = {
-            "Train/FL Round loss": self.total_loss / (self.total_training_steps + 1),
+            "Train/FL Round loss": self.total_loss / (self.steps_done + 1),
             "fl_round": logger.current_epoch,
             }
         logger.logger.log(log_dict)
@@ -206,3 +213,15 @@ class DDPG(BasicModel):
 
     def eps_exponential_decay(self):
         return self.config.eps_end + (self.config.eps_start - self.config.eps_end) * math.exp(-1.0 * self.steps_done / self.config.eps_decay)
+
+    def loss_coef_exponential_decay(self,):
+        return self.config.eps_end + (self.config.eps_start - self.config.eps_end) * math.exp(-1.0 * self.steps_done / self.config.eps_decay)
+
+
+    
+    def get_executable_action(self, act):
+        logging.debug('action original: ',act)
+        action = copy.deepcopy(act.numpy())
+        action[-1] = action[-1]>0.5
+        logging.debug('action to execute: ',action)
+        return action
