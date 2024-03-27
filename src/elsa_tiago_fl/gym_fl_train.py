@@ -124,7 +124,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     # login to wandb
-    #wandb.login()
+    wandb_api_key = os.environ.get("WANDB_API_KEY")
+    wandb.login(key=wandb_api_key)
 
     main()
 
