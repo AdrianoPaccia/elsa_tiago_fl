@@ -4,9 +4,8 @@
 # - actions as joint increments
 
 env_name: 'TiagoSimpleEnv-v0'
-input_dim: 43 
+input_dim: 28 #43 
 action_dim: 8
 multimodal: false
-gui: false
 velocity: 0.005
-max_episode_steps: 100
+max_episode_steps: 100 # 500

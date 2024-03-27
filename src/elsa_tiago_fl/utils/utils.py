@@ -51,14 +51,11 @@ def parse_args():
     parser.add_argument(
         "-gui",
         "--gui",
-        type=bool,
-        default=False,
+        type=str_to_bool,
         help="Get all the environment visible on the screen.",
     )
     # Overwrite config parameters
-    parser.add_argument(
-        "-steps", "--num-steps", type=int, help="Number of training steps"
-    )
+    parser.add_argument("-steps", "--num-steps", type=int, help="Number of training steps")
     parser.add_argument("-bs", "--batch-size", type=int, help="DataLoader batch size.")
     parser.add_argument("--seed", type=int, help="Seed to allow reproducibility.")
     parser.add_argument("--save-dir", type=str, help="Seed to allow reproducibility.")
@@ -230,3 +227,6 @@ def toc(message=None):
     #print(message, time_elapsed)
     tic.t = time()
     return time_elapsed
+
+def str_to_bool(s):
+    return s.lower() in ['true', 'yes', '1']

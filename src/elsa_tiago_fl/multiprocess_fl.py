@@ -110,6 +110,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         At the end saves the memory related to the optimizer and the experience
         """
 
+
         # set the model paramaters 
         self.set_parameters(parameters)
 
@@ -131,6 +132,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         initial_params_bytes = pickle.dumps(self.model.state_dict())
         shared_params = manager.Value('c', initial_params_bytes)
 
+
         # Start the policy updater process that simultaneusly trains the model
         updater_process = PolicyUpdateProcess(
                                            model = self.model,
@@ -140,12 +142,12 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                                            optimizer = self.optimizer,
                                            replay_buffer = self.replay_buffer,
                                            replay_queues = replay_queues,
-                                           #batch_queue = batch_queue,
+                                           local_file_name = self.client_local_filename,
                                            config = self.config,
-                                           env = self.env,#gym.make(id=self.env,env_code=self.client_id,max_episode_steps=100),
+                                           env = self.env,
                                            client_id = self.client_id,
                                            termination_event = termination_event,
-                                           screen=True
+                                           screen=False
                                            )
         updater_process.start()
 
@@ -155,24 +157,33 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                     replay_queue = replay_queues[i],
                     shared_params = shared_params,
                     lock = lock_SP,
-                    env = self.env,#gym.make(id=self.env,env_code=self.client_id,max_episode_steps=100),
+                    env = self.env,
                     client_id = self.client_id,
                     config = config,
                     termination_event = termination_event
                     ) for i in range(self.n_workers)]
+
         for worker in workers:
             worker.start()
 
         # Wait for all processes to finish
-        updater_process.join()
         for worker in workers:
             worker.join()
+        updater_process.join()
+
+
+        processes = [updater_process, *workers]
+        print('Wait until all processes close')
+        while any(p.is_alive() for p in processes):
+            print("At least one process is still alive")
+            time.sleep(1)        
 
         upd_parameters = get_shared_params(shared_params,lock_SP)
 
+
         # close all queues and other shared memory
-        for queue in replay_queues:
-            queue.shutdown()
+        #for queue in replay_queues:
+        #    queue.shutdown()
         manager.shutdown()
         
 
@@ -205,23 +216,9 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
             f"Saving Memory of Client #{int(self.client_id)} to file: {self.client_local_filename}"
         )
 
-        if self.replay_buffer is not None:
-            torch.save(
-                {
-                    "optimizer_state_dict": self.optimizer.state_dict(),
-                    "model_steps_done": self.model.steps_done,
-                    "replay_buffer": [n_tuple for n_tuple in self.replay_buffer.memory],
-                },
-                self.client_local_filename,
-            )
-        else:
-            torch.save(
-                {
-                    "optimizer_state_dict": self.optimizer.state_dict(),
-                },
-                self.client_local_filename,
-            )
+
         return upd_weights, 1, {}
+
     
 
     def evaluate(self, parameters, config: Namespace):
@@ -229,19 +226,22 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         This method calls the evaluating routine of the model.
         At the end, collects the merics and stores the model states. 
         """
+        print('Starting the evaluation')
 
         self.set_parameters(parameters)
 
         #setup logs managers
         set_logs_level()
 
-
         ## Multiprocessing:
         # Initialize the manager and shared variables
         manager = mp.Manager()
+        results_list = manager.list([0, 0, 0]) 
+        
+        # Multiple evaulation process
+        '''
         results_list = ResultsList(manager.list(),manager.RLock())
 
-        # Start all workers that collect experience
         workers = [EvaluationProcess(
             model = copy.deepcopy(self.model), 
             shared_results = results_list,
@@ -249,23 +249,35 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
             client_id = self.client_id,
             worker_id = i,
             config = config,
-        )  for i in range(self.n_workers)]
+        )  for i in range(1)]
 
         for worker in workers:
             worker.start()
         
-        # Monitor the state of evaluation
-        tot_iter = self.config.num_eval_episodes * self.n_workers
         with tqdm(total=tot_iter, desc=f"Evaluation") as pbar:
             while pbar.n < pbar.total:
-                n = results_list.size() - tot_iter
-                pbar.updat(n)
+                n = results_list.size() - pbar.n
+                pbar.update(n)
+                time.sleep(10)
 
         for worker in workers:
-            worker.join()
+            worker.join()'''
+
+        evaluation_process = EvaluationProcess(
+            model = copy.deepcopy(self.model), 
+            shared_results = results_list,
+            env = self.env,
+            client_id = self.client_id,
+            worker_id = i,
+            config = config,
+        )
+
+        evaluation_process.start()
+        evaluation_process.join()
 
         avg_reward, std_reward, avg_episode_length, std_episode_length = results_list.get_score()
         manager.shutdown()
+
 
         is_updated = self.evaluator.update_global_metrics(
             avg_reward, config.current_round

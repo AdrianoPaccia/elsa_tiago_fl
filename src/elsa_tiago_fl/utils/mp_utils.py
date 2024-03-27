@@ -4,7 +4,7 @@ import gym
 import pickle
 import copy
 from models.model import BasicModel
-from elsa_tiago_fl.utils.rl_utils import Transition,preprocess
+from elsa_tiago_fl.utils.rl_utils import Transition,preprocess, get_custom_reward
 import logging
 import torch
 from tqdm import tqdm
@@ -15,9 +15,14 @@ import rospy
 import rospkg
 from elsa_tiago_gym.utils_ros_gym import start_env
 from elsa_tiago_gym.utils_parallel import set_sim_velocity,kill_simulations
-
-DEBUGGING = False
+from elsa_tiago_fl.utils.mp_logging import set_logs_level
+import numpy as np
+DEBUGGING = True
 #setup logs managers
+#set_logs_level()
+if DEBUGGING:
+    logging.basicConfig(level=logging.DEBUG)
+    logger_debug = mp.get_logger()
 
 
 
@@ -26,7 +31,7 @@ class PolicyUpdateProcess(mp.Process):
     This is the process that every 10sec updates the model wieights getting
         the experience from the replay buffer 
     """
-    def __init__(self, model, lock, logger, optimizer, shared_params, replay_buffer, replay_queues, config, env, client_id, termination_event, screen=True):
+    def __init__(self, model, lock, logger, optimizer, shared_params, replay_buffer, local_file_name, replay_queues, config, env, client_id, termination_event, screen=False):
         super(PolicyUpdateProcess, self).__init__()
         mp.log_to_stderr(logging.ERROR)
 
@@ -43,10 +48,11 @@ class PolicyUpdateProcess(mp.Process):
         self.screen = screen
         self.optimizer = optimizer
         self.client_id = client_id
+        self.local_file_name = local_file_name
+        
 
     def run(self):
         log_debug('ready to update polices!',self.screen)
-
         # setup the eval environment
         env = start_env(env=self.env,
                 speed = 0.005,
@@ -57,23 +63,21 @@ class PolicyUpdateProcess(mp.Process):
 
         self.model.train()
 
-        # prefilling of the buffer at first
+        # wait to for the workers to start publishing
         ready = False
-
         while not ready:
             for queue in self.replay_queues:
-                len_i = queue.size()
-                log_debug(f'Queue #{queue.n} len = {len_i} - {ready}',self.screen)
-                if (len_i>0):
+                if (queue.size()>0):
                     ready = True
 
-
+        # prefilling of the buffer at first
         tic()
-        with tqdm(total=self.config.min_len_replay_buffer, desc="Filling Replay Buffer") as pbar:
+        with tqdm(total=self.config.min_len_replay_buffer, 
+            initial = np.clip(len(self.replay_buffer.memory),0,self.config.min_len_replay_buffer),
+            desc="Filling Replay Buffer") as pbar:
             while pbar.n < pbar.total:
                 n = self.get_transitions()
                 pbar.update(n)
-        
         t = round(toc(),3)
         log_debug(f'filling the {len(self.replay_buffer.memory)} exp required {t}sec, giving {len(self.replay_buffer.memory)/t} transition/sec',self.screen)
         
@@ -101,10 +105,28 @@ class PolicyUpdateProcess(mp.Process):
                 "Std Reward (during training) ": std_reward,
             }
             self.logger.logger.log(log_dict)
+
+            #save weigths
+            save_dir = os.path.join(self.config.save_dir, 'weigths', 'client'+str(self.client_id))
+            os.makedirs(save_dir, exist_ok=True)
+
+            save_name = os.path.join(save_dir,
+                self.config.model_name + '_' + self.config.env_name  
+                )
+            if self.config.multimodal:
+                save_name = save_name + '_multimodal'
+            else:
+                save_name = save_name + '_input' + str(self.config.input_dim)
+            save_name = save_name + '_'+ str(int(avg_reward)) + '.pth'
+            torch.save(self.model.state_dict(), save_name)
+            log_debug(f'Model Saved in: {save_name} ',self.screen)
+
             
         #log the avg round loss
         self.model.log_recap('round',self.logger)
-        self.termination_event.set()
+        #self.termination_event.set()
+
+        self.end_process()
 
 
     def send_shared_params(self,state_dict):
@@ -121,7 +143,7 @@ class PolicyUpdateProcess(mp.Process):
     def get_batch(self):
         try:
             #batch = self.batch_queue.get()
-            batch = self.replay_buffer.sample(self.config.batch_size)
+            batch = copy.deepcopy(self.replay_buffer.sample(self.config.batch_size))
             for b in batch:
                 b.to(self.model.device)
             return batch
@@ -142,6 +164,29 @@ class PolicyUpdateProcess(mp.Process):
         except Exception as e:
             logging.error(f"Error getting transitions: {e}")
             return None
+
+    def end_process(self):
+        """
+        save the replays and send the termination event
+        """
+        self.termination_event.set()
+        if self.replay_buffer is not None:
+            torch.save(
+                {
+                    "optimizer_state_dict": self.optimizer.state_dict(),
+                    "model_steps_done": self.model.steps_done,
+                    "replay_buffer":  self.replay_buffer.memory,#[n_tuple for n_tuple in self.replay_buffer.memory],
+                },
+                self.local_file_name,
+            )
+        else:
+            torch.save(
+                {
+                    "optimizer_state_dict": optimizer.state_dict(),
+                },
+                self.local_file_name,
+            )
+
 
 
 class ExperienceQueue:
@@ -167,10 +212,10 @@ class ExperienceQueue:
             return self.queue.get()
     def size(self):
         return self.queue.qsize()
-    def shutdown(self):
-        while not self.queue.empty():
-            self.queue.get()
-        self.queue.close()
+    #def shutdown(self):
+    #    while not self.queue.empty():
+    #        self.queue.get()
+    #    self.queue.close()
 
 
         
@@ -205,7 +250,9 @@ class WorkerProcess(mp.Process):
         )
         tot_step =0
 
+
         while not self.termination_event.is_set() and not rospy.is_shutdown():
+
             # get the new params of the model
             state_dict = get_shared_params(self.shared_params,self.lock)
             if state_dict is not None:
@@ -235,6 +282,9 @@ class WorkerProcess(mp.Process):
                 #    act = action.numpy()
 
                 observation, reward, terminated, _= self.env.step(act) 
+                custom_reward = float(get_custom_reward(self.env, -0.5, -0.5))
+                #log_debug(f'custom_reward = {custom_reward}',True)
+                reward += custom_reward
 
                 done = terminated #or truncated
 
@@ -249,6 +299,11 @@ class WorkerProcess(mp.Process):
                 state = next_state
                 i_step += 1
                 tot_step +=1
+                if self.termination_event.is_set():
+                    break
+
+
+
 
     def send_transition(self,state,action,next_state,reward,done):
         try:
@@ -319,13 +374,13 @@ class EvaluationProcess(mp.Process):
                 client_id = self.client_id,
                 max_episode_steps = self.config.max_episode_steps,
                 multimodal = self.config.multimodal,
-                ros_uri = "http://localhost:1135" + str(self.worker_id) + '/',
-                gz_uri = "http://localhost:1134" + str(self.worker_id) 
+                #ros_uri = "http://localhost:1135" + str(self.worker_id) + '/',
+                #gz_uri = "http://localhost:1134" + str(self.worker_id) 
         )
         
         self.model.eval()
 
-        for i in range(self.config.num_eval_episodes):
+        '''for i in range(self.config.num_eval_episodes):
             episode_reward, episode_length = 0.0, 0
             observation = self.env.reset()
             done = False
@@ -353,7 +408,14 @@ class EvaluationProcess(mp.Process):
                 episode_length += 1
 
             #store the result in shared memory
-            self.shared_results.store(episode_reward,episode_length)
+            self.shared_results.store(episode_reward,episode_length)'''
+
+        eval_result = fl_evaluate(self.model, env, self.config)
+        self.shared_results.value = list(eval_result)
+
+
+
+
 
 
         
@@ -368,4 +430,4 @@ def get_shared_params(shared_params,lock):
 
 def log_debug(msg:str,screen:bool):
     if DEBUGGING and screen:
-        logging.debug(msg)
+        logger_debug.debug(msg)

@@ -7,6 +7,5 @@ env_name: 'TiagoSimpleEnv-v0'
 input_dim: [[3, 48, 64],3]
 action_dim: 4
 multimodal: true
-gui: false
 velocity: 0.007
 max_episode_steps: 100
