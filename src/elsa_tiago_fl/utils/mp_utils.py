@@ -276,6 +276,7 @@ class WorkerProcess(mp.Process):
                     )
                 
                 act = self.model.get_executable_action(action)
+
                 #if self.config.discrete_actions:
                 #    act = self.model.executable_act[action]
                 #else:
@@ -356,59 +357,26 @@ class EvaluationProcess(mp.Process):
     """
     This process collects the experience from the environment using the latest model parameters
     """
-    def __init__(self, model: BasicModel, shared_results:ResultsList, env:str, client_id, worker_id, config, screen=False):
+    def __init__(self, model: BasicModel, shared_results:ResultsList, env:str, client_id, config, screen=False):
         super(EvaluationProcess, self).__init__()
         self.model = model
         self.env = env
-        self.worker_id = worker_id
         self.client_id = client_id
         self.shared_results = shared_results
         self.config = config
         self.screen =screen
 
     def run(self):
-        log_debug(f'Evaluator #{self.worker_id} ready!',self.screen)
+        log_debug(f'Evaluator is ready!',self.screen)
         # get connected to one of the ros ports 
-        self.env = start_env(env=self.env,
+        env = start_env(env=self.env,
                 speed = 0.005,
-                client_id = self.client_id,
+                client_id =None ,
                 max_episode_steps = self.config.max_episode_steps,
                 multimodal = self.config.multimodal,
-                #ros_uri = "http://localhost:1135" + str(self.worker_id) + '/',
-                #gz_uri = "http://localhost:1134" + str(self.worker_id) 
         )
         
         self.model.eval()
-
-        '''for i in range(self.config.num_eval_episodes):
-            episode_reward, episode_length = 0.0, 0
-            observation = self.env.reset()
-            done = False
-            
-            while not done:
-                state = preprocess(observation,self.model.multimodal,self.model.device)
-                action = self.model.select_action(
-                        state,
-                        config=self.config,
-                        training=False,
-                        action_space=self.env.action_space,
-                    )
-                
-                act = self.model.get_executable_action(action)
-
-                #if self.config.discrete_actions:
-                #    act = self.model.executable_act[action]
-                #else:
-                #    act = action.numpy()
-
-                observation, reward, terminated, _= self.env.step(act) 
-
-                episode_reward += reward
-                done = terminated #or truncated
-                episode_length += 1
-
-            #store the result in shared memory
-            self.shared_results.store(episode_reward,episode_length)'''
 
         eval_result = fl_evaluate(self.model, env, self.config)
         self.shared_results.value = list(eval_result)

@@ -25,7 +25,7 @@ def get_model_with_highest_score(config):
     model = build_model(config)
 
     # Construct the pattern to match saved model files
-    pattern = os.path.join(config.save_dir, 'weigths',
+    pattern = os.path.join(config.save_dir, 'weigths','client'+str(config.client_id),
                            f"{config.model_name}_{config.env_name}")
     if config.multimodal:
         pattern += '_multimodal'
@@ -37,37 +37,36 @@ def get_model_with_highest_score(config):
     # List all matching model files
     model_files = glob.glob(pattern)
 
-    # Extract scores from file names
-    scores = [float(os.path.basename(file).split('_')[-1].split('.pth')[0]) for file in model_files]
+    try:
+        # Extract scores from file names
+        scores = [float(os.path.basename(file).split('_')[-1].split('.pth')[0]) for file in model_files]
 
-    # Find the index of the file with the highest score
-    highest_score_idx = scores.index(max(scores))
+        # Find the index of the file with the highest score
+        highest_score_idx = scores.index(max(scores))
 
-    # Load model parameters from the file with the highest score
-    highest_score_model_file = model_files[highest_score_idx]
-    model.load_state_dict(torch.load(highest_score_model_file))
+        # Load model parameters from the file with the highest score
+        highest_score_model_file = model_files[highest_score_idx]
+        model.load_state_dict(torch.load(highest_score_model_file))
+        print(f'Loaded the model parameters: {highest_score_model_file}')
+        return model
 
-    print(f'Loaded the model parameters: {highest_score_model_file}')
+    except Exception as e:
+        raise RuntimeError("No model parameters available!")
 
-    return model
-
-def main(client_id):
-    args = parse_args()
-    config = load_config(args)
-    seed_everything(config.seed)
-    launch_master_simulation(speed=config.velocity, gui=config.gui)
-
-    while not is_roscore_running():
-        print('waiting for the core')
-        time.sleep(1)
+def main(config):
 
     #build the model with the highest score
     model = get_model_with_highest_score(config)
 
+
+    #while not is_roscore_running():
+    #    print('waiting for the core')
+    #    time.sleep(1)
+
     #get the env
     env = start_env(env=config.env_name,
-                speed =config.velocity,
-                client_id = client_id,
+                speed = config.velocity,
+                client_id = config.client_id,
                 max_episode_steps = 100, #config.max_episode_steps,
                 multimodal = config.multimodal
     )
@@ -79,7 +78,17 @@ def main(client_id):
 
 
 if __name__ == "__main__":
-    main(0)
+    args = parse_args()
+    config = load_config(args)
+    seed_everything(config.seed)
+    config.velocity = 0.0025
+
+    launch_master_simulation(speed=config.velocity, gui=config.gui)
+
+    config.client_id = input('Input the number of the client to test (inv for a random one): ')
+    if config.client_id=='':
+        config.client_id =None
+    main(config)
     kill_simulations()
 
 

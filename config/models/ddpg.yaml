@@ -15,16 +15,21 @@ training_parameters:
   tau: 0.9
   policy_coef: 0.5
   value_coef: 0.5
+
+  # for exploration 
   eps_start: 1.0
   eps_end: 0.05
-  eps_decay: 10000 #depsilon
-  num_eval_episodes: 1
+  eps_decay: 50000 #10000 #depsilon
+  theta: 0.05
+  sigma: 1.0
+
+  num_eval_episodes: 10
   training_step_evaluate: 500
   replay_buffer_size: 5000
-  min_len_replay_buffer: 2000
+  min_len_replay_buffer: 200 #0
 
 fl_parameters:
   sample_clients: 1
   total_clients: 1
-  num_rounds: 5 #10
-  iterations_per_fl_round: 20
+  num_rounds: 1 #5 #10
+  iterations_per_fl_round: 1 #20

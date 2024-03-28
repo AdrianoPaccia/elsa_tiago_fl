@@ -226,7 +226,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         This method calls the evaluating routine of the model.
         At the end, collects the merics and stores the model states. 
         """
-        print('Starting the evaluation')
+        print('Starting the evaluation of the entire Fl_model')
 
         self.set_parameters(parameters)
 
@@ -267,8 +267,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
             model = copy.deepcopy(self.model), 
             shared_results = results_list,
             env = self.env,
-            client_id = self.client_id,
-            worker_id = i,
+            client_id = None,   #choses randomly each iteration which environment to choose
             config = config,
         )
 

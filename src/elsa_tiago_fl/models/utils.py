@@ -11,7 +11,7 @@ def soft_update(target, source, tau):
         )
 
 class OrnsteinUhlenbeckProcess:
-    def __init__(self, size, theta=0.2, mu=0, sigma=0.3):
+    def __init__(self, size, theta=0.05, mu=0, sigma=1.0):
         self.size = size
         self.theta = theta
         self.mu = mu

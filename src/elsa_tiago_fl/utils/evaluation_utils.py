@@ -66,6 +66,10 @@ def evaluate(model, env, config, num_episodes):
                     )
 
             act = model.get_executable_action(action)
+            if episode_length%3 ==0:
+                act[-1] = True
+            else:
+                act[-1] = False
 
             observation, reward, terminated, _= env.step(act) 
 
