@@ -8,4 +8,5 @@ input_dim: 28 #43
 action_dim: 8
 multimodal: false
 gz_speed: 0.005
+random_init: True
 max_episode_steps: 500

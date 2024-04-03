@@ -8,4 +8,5 @@ input_dim: [[3, 48, 64],3]
 action_dim: 8
 multimodal: false
 velocity: 0.007
+random_init: True
 max_episode_steps: 100

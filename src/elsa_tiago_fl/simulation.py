@@ -109,9 +109,11 @@ def main(config):
     env = start_env(env=config.env_name,
                 speed = config.gz_speed,
                 client_id = config.client_id,
-                max_episode_steps = 100, #config.max_episode_steps,
-                multimodal = config.multimodal
+                max_episode_steps = config.max_episode_steps,
+                multimodal = config.multimodal,
+                random_init = config.random_init
     )
+    print(f'episode steps = {env.max_episode_steps}')
     avg_reward, std_reward, avg_episode_length, std_episode_length = evaluate(model, env, config, 10)
     
     print(f"Evaluation Reward: {avg_reward} +- {std_reward}")
