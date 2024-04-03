@@ -40,6 +40,8 @@ def main() -> None:
     #launch the simulation environments
     launch_simulations(config.n_workers,speed=config.velocity, gui=config.gui)
 
+    config.speed = None#0.005
+
     # Delete previous memory files
     #pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")
     #delete_files_in_folder(os.path.join(pkg_path,"src/elsa_tiago_fl/temp"))
