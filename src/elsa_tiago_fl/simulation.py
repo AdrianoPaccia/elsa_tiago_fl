@@ -81,7 +81,7 @@ if __name__ == "__main__":
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
-    config.velocity = 0.0025
+    config.velocity = 0.005
 
     launch_master_simulation(speed=config.velocity, gui=config.gui)
 

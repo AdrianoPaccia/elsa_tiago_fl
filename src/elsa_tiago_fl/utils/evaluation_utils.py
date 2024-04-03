@@ -3,6 +3,8 @@ import numpy as np
 import torch
 from tqdm import tqdm
 from elsa_tiago_fl.utils.rl_utils import preprocess
+import time
+import random
 
 
 def fl_evaluate(model, env, config):
@@ -52,9 +54,10 @@ def evaluate(model, env, config, num_episodes):
     model.eval()
 
     for _ in tqdm(range(num_episodes)):
-        episode_reward, episode_length = 0.0, 0
+        episode_reward, episode_length = 0.0, 1
         done = False
         observation= env.reset()
+        act = [0]*8
         while not done:
             state = preprocess(observation,model.multimodal,model.device)
             with torch.no_grad():
@@ -65,11 +68,14 @@ def evaluate(model, env, config, num_episodes):
                         action_space=env.action_space,
                     )
 
-            act = model.get_executable_action(action)
-            if episode_length%3 ==0:
-                act[-1] = True
+            #act = model.get_executable_action(action)
+            act = [random.uniform(-1., 1.) for _ in range(7)]
+
+            #act = [0.0*(-1 if episode_length%2==0 else 1)]*8
+            if random.random() > 0.5:
+                act.append(True)
             else:
-                act[-1] = False
+                act.append(False)
 
             observation, reward, terminated, _= env.step(act) 
 
