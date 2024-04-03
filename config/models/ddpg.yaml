@@ -20,8 +20,11 @@ training_parameters:
   eps_start: 1.0
   eps_end: 0.05
   eps_decay: 50000 #10000 #depsilon
-  theta: 0.05
-  sigma: 1.0
+  oup_theta: 0.05
+  oup_mu: 0
+  oup_sigma: 1.0
+  oup_decay: 50000
+  
 
   num_eval_episodes: 10
   training_step_evaluate: 500

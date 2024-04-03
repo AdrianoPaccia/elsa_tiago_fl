@@ -55,7 +55,7 @@ class PolicyUpdateProcess(mp.Process):
         log_debug('ready to update polices!',self.screen)
         # setup the eval environment
         env = start_env(env=self.env,
-                speed = self.config.speed,
+                speed = self.config.gz_speed,
                 client_id = self.client_id,
                 max_episode_steps = self.config.max_episode_steps,
                 multimodal = self.config.multimodal
@@ -241,7 +241,7 @@ class WorkerProcess(mp.Process):
         log_debug('ready to get experiences!',self.screen)
         # get connected to one of the ros ports 
         self.env = start_env(env=self.env,
-                speed = self.config.speed,
+                speed = self.config.gz_speed,
                 client_id = self.client_id,
                 max_episode_steps = self.config.max_episode_steps,
                 multimodal = self.config.multimodal,
@@ -370,7 +370,7 @@ class EvaluationProcess(mp.Process):
         log_debug(f'Evaluator is ready!',self.screen)
         # get connected to one of the ros ports 
         env = start_env(env=self.env,
-                speed = self.config.speed,
+                speed = self.config.gz_speed,
                 client_id =None ,
                 max_episode_steps = self.config.max_episode_steps,
                 multimodal = self.config.multimodal,

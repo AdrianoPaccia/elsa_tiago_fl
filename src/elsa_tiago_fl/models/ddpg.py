@@ -62,9 +62,10 @@ class DDPG(BasicModel):
         #Get the noise distribution
         self.noise_distribution = OrnsteinUhlenbeckProcess(
             size = self.actor.continuos_action_dim,
-            theta=0.15,
-            mu=0,
-            sigma=0.2
+            theta=config.oup_theta,
+            mu=config.oup_mu,
+            sigma=config.oup_sigma,
+            decay = config.oup_decay
         )
         self.steps_done = 0
 
@@ -88,7 +89,7 @@ class DDPG(BasicModel):
                 continuos_action,bool_action = torch.split(opt_action,self.actor.continuos_action_dim,dim=-1)
 
                 #add noise to the continuos part
-                noise = self.noise_distribution.sample()
+                noise = self.noise_distribution.sample(self.steps_done)
 
                 noisy_continuos_action = torch.clip(continuos_action.cpu() + torch.tensor(noise),-1.,1.)
 

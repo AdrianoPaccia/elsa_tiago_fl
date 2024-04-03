@@ -200,11 +200,10 @@ def unprocess(state, state_dim):
 
 def get_custom_reward(env, c1 ,c2):
     """
-    REAWRD SHAPING: get one of the cubes are get a reward as a linear combination of the distance between:
+    REWARD SHAPING: get one of the cubes are get a reward as a linear combination of the distance between:
         - gripper and cube 
         - cube and respective cylinder
     """
-
     
     gipper_pos = np.array(env.stored_arm_pose[:3])# position of the EE 
 
@@ -214,16 +213,19 @@ def get_custom_reward(env, c1 ,c2):
     for i, n in enumerate(env.model_state.cubes_in_cylinders()):
         if n != 1:
             i_COI = i
+    try:
+        cube_COI_state = list(cubes.values())[i_COI]
         
-    cube_COI_state = list(cubes.values())[i_COI]
-    
-    cube_pos = np.array(cube_COI_state.position)
-    cube_code = cube_COI_state.type_code
-    cylinder_pos = np.array(env.model_state.cylinder_of_type(cube_code).position)
+        cube_pos = np.array(cube_COI_state.position)
+        cube_code = cube_COI_state.type_code
+        cylinder_pos = np.array(env.model_state.cylinder_of_type(cube_code).position)
 
 
-    # compute the reward as the linar combination of the distance of the gripper from the cube 
-    # and the distance of the cube from the cylinder
-    reward = c1 * np.linalg.norm(cube_pos - cylinder_pos) + c2 * np.linalg.norm(gipper_pos - cylinder_pos)
+        # compute the reward as the linar combination of the distance of the gripper from the cube 
+        # and the distance of the cube from the cylinder
+        reward = c1 * np.linalg.norm(cube_pos - cylinder_pos) + c2 * np.linalg.norm(gipper_pos - cylinder_pos)
+    except:
+        reward = 0
+
     return reward
 

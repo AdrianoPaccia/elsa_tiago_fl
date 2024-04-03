@@ -1,11 +1,11 @@
 # TiagoSimpleEnv:
 # - joint space actions
 # - NO multimodal obs
-# - actions as joint increments
+# - actions as joint velocities
 
 env_name: 'TiagoSimpleEnv-v0'
 input_dim: 28 #43 
 action_dim: 8
 multimodal: false
-velocity: 0.005
-max_episode_steps: 100 # 500
+gz_speed: 0.005
+max_episode_steps: 500

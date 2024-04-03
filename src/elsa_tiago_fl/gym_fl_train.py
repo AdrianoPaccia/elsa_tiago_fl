@@ -38,9 +38,7 @@ def main() -> None:
     seed_everything(config.seed)
 
     #launch the simulation environments
-    launch_simulations(config.n_workers,speed=config.velocity, gui=config.gui)
-
-    config.speed = None#0.005
+    launch_simulations(config.n_workers, gui=config.gui)
 
     # Delete previous memory files
     #pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")

@@ -121,7 +121,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         set_logs_level()
 
         ## Multiprocessing:
-        print(f'Creating Multiple Prcesses (1 policy updater and {self.n_workers} workers)')
+        print(f'(FIT) Creating Multiple Processes (1 policy updater and {self.n_workers} workers)')
     
         # Initialize the manager and shared variables
         manager = mp.Manager()
