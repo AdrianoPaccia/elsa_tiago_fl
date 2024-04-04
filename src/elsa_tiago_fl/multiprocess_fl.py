@@ -236,7 +236,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         ## Multiprocessing:
         # Initialize the manager and shared variables
         manager = mp.Manager()
-        results_list = manager.list([0, 0, 0]) 
+        results_list = manager.list([0, 0, 0,0]) 
         
         # Multiple evaulation process
         '''
@@ -274,7 +274,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         evaluation_process.start()
         evaluation_process.join()
 
-        avg_reward, std_reward, avg_episode_length, std_episode_length = results_list.get_score()
+        avg_reward, std_reward, avg_episode_length, std_episode_length = list(results_list)
         manager.shutdown()
 
 

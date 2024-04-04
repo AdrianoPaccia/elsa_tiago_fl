@@ -28,10 +28,10 @@ training_parameters:
   num_eval_episodes: 1
   training_step_evaluate: 500
   replay_buffer_size: 50000
-  min_len_replay_buffer: 5000
+  min_len_replay_buffer: 100 #5000
 
 fl_parameters:
   sample_clients: 1
   total_clients: 1
   num_rounds: 2
-  iterations_per_fl_round: 3 #20
+  iterations_per_fl_round: 1 #3 #20
