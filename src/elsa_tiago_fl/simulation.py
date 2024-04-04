@@ -79,6 +79,8 @@ def evaluate(model, env, config, num_episodes):
                     )
 
             act = model.get_executable_action(action)
+            if episode_length%5 ==0:
+                act[-1]=True
 
             observation, reward, terminated, _= env.step(act) 
 
@@ -126,7 +128,7 @@ if __name__ == "__main__":
     config = load_config(args)
     seed_everything(config.seed)
     launch_master_simulation(gui=config.gui)
-
+    config.gz_speed = 0.005
     config.client_id = input('Input the number of the client to test (inv for a random one): ')
     if config.client_id=='':
         config.client_id =None

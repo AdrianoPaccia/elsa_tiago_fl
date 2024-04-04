@@ -25,14 +25,13 @@ training_parameters:
   oup_sigma: 1.0
   oup_decay: 50000
   
-
-  num_eval_episodes: 10
+  num_eval_episodes: 1
   training_step_evaluate: 500
-  replay_buffer_size: 5000
-  min_len_replay_buffer: 200 #0
+  replay_buffer_size: 50000
+  min_len_replay_buffer: 5000
 
 fl_parameters:
   sample_clients: 1
   total_clients: 1
-  num_rounds: 1 #5 #10
-  iterations_per_fl_round: 1 #20
+  num_rounds: 2
+  iterations_per_fl_round: 3 #20
