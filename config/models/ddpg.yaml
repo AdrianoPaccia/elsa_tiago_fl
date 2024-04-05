@@ -18,17 +18,17 @@ training_parameters:
 
   # for exploration 
   eps_start: 1.0
-  eps_end: 0.05
-  eps_decay: 50000 #10000 #depsilon
-  oup_theta: 0.05
+  eps_end: 0.01
+  eps_decay: 200000 #10000 #depsilon
+  oup_theta: 0.01
   oup_mu: 0
   oup_sigma: 1.0
-  oup_decay: 50000
+  oup_decay: 200000
   
   num_eval_episodes: 1
   training_step_evaluate: 500
   replay_buffer_size: 50000
-  min_len_replay_buffer: 100
+  min_len_replay_buffer: 5000
 
 fl_parameters:
   sample_clients: 1
