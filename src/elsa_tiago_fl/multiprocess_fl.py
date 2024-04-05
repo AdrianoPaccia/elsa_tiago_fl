@@ -97,8 +97,8 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
             self.model.steps_done = client_data["model_steps_done"]
 
             # Load the optimizer state_dict
-            print(f" - loading optimizer parameters")
-            self.optimizer.load_state_dict(client_data["optimizer_state_dict"])
+            #print(f" - loading optimizer parameters")
+            #self.optimizer.load_state_dict(client_data["optimizer_state_dict"])
         
 
 

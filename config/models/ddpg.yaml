@@ -7,10 +7,10 @@ discrete_actions: false
 training_parameters:
   lr: 1e-4
   batch_size: 64
-  hidden1: 64
+  hidden1: 128
   hidden2: 128  
   num_steps: 500
-  train_steps: 100
+  train_steps: 1000
   gamma: 0.90 #discount
   tau: 0.9
   policy_coef: 0.5
@@ -28,10 +28,10 @@ training_parameters:
   num_eval_episodes: 1
   training_step_evaluate: 500
   replay_buffer_size: 50000
-  min_len_replay_buffer: 5000
+  min_len_replay_buffer: 100
 
 fl_parameters:
   sample_clients: 1
   total_clients: 1
-  num_rounds: 2
-  iterations_per_fl_round: 20
+  num_rounds: 1
+  iterations_per_fl_round: 1000
