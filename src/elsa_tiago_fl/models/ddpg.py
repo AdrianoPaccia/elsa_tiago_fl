@@ -21,14 +21,17 @@ from elsa_tiago_fl.utils.communication_utils import log_communication
 from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
 from elsa_tiago_fl.utils.logger import Logger
 from elsa_tiago_fl.utils.rl_utils import Transition, BasicReplayBuffer,transition_from_batch
-
+from elsa_tiago_fl.utils.build_utils import build_optimizer
 from collections import namedtuple
 import logging
 import multiprocessing as mp
 
-logger = mp.log_to_stderr()
-logger.setLevel(logging.DEBUG)
-
+DEBUGGING = True
+#setup logs managers
+#set_logs_level()
+if DEBUGGING:
+    logging.basicConfig(level=logging.DEBUG)
+    logger_debug = mp.get_logger()
 
 EpisodeLoss = namedtuple('EpisodeLoss',['training_loss','policy_loss','value_loss'])
 
@@ -54,7 +57,7 @@ class DDPG(BasicModel):
 
         # list the parameters for the optimizer        
         self.optimization_params = list(self.actor.parameters()) + list(self.critic.parameters())
-        
+
         #update the target network
         hard_update(self.actor_target,self.actor)
         hard_update(self.critic_target,self.critic)
@@ -114,23 +117,37 @@ class DDPG(BasicModel):
         #convert a batch of transitions in a transition-batch
         batch = transition_from_batch(batch)
 
-        self.optimizer.zero_grad()
         policy_loss, value_loss = self.compute_loss(batch)
-        comb_loss = policy_loss * self.config.policy_coef + value_loss * self.config.value_coef
-        comb_loss.backward()
+
+        # Optimize actor
+        self.optimizer.zero_grad()
+        policy_loss.backward()
         self.optimizer.step()
 
-        # Target update
-        soft_update(self.actor_target, self.actor, self.config.tau)
-        soft_update(self.critic_target, self.critic, self.config.tau)
+        #optimize critic
+        self.optimizer.zero_grad()
+        value_loss.backward()
+        self.optimizer.step()
 
-        self.total_loss += comb_loss.item()
-        self.episode_loss[0]+= comb_loss.item()
+        
+        '''self.optimizer.zero_grad()
+        comb_loss = policy_loss + value_loss 
+        comb_loss.backward()
+        self.optimizer.step()'''
+
+        # Target update
+        soft_update(self.actor,self.actor_target , self.config.tau)
+        soft_update(self.critic, self.critic_target, self.config.tau)
+
+        tot_loss = (policy_loss + value_loss).item()
+
+        self.total_loss += tot_loss
+        self.episode_loss[0]+= tot_loss
         self.episode_loss[1]+= policy_loss.item()
         self.episode_loss[2]+= value_loss.item()
         self.steps_done += 1
 
-        return comb_loss.item()
+        return tot_loss
         
     
     def compute_loss(self, batch: Transition) -> torch.TensorType:
@@ -141,26 +158,27 @@ class DDPG(BasicModel):
         next_state_batch = torch.cat(batch.next_state) #(b,st)
         terminal_batch = torch.cat(batch.done).unsqueeze(-1) #(b,1)
 
+
+        with torch.no_grad():
+            opt_target_action_batch = self.actor_target(next_state_batch) # (b,act)
+            next_q_values = self.critic_target([next_state_batch,opt_target_action_batch]) # (b,1)
+            target_q_batch = reward_batch + self.config.gamma * (torch.ones(terminal_batch.shape).cuda() - terminal_batch) * next_q_values
+            target_q_batch = target_q_batch.flatten()
+
+
+
         ## Actor loss
         opt_action_batch = self.actor(state_batch)
         policy_loss = -self.critic_target([state_batch,opt_action_batch]).mean()
 
         ## Critic loss
-        # Compute the Q_target
-        opt_target_action_batch = self.actor_target(next_state_batch) # (b,act)
-        next_q_values = self.critic_target([next_state_batch,opt_target_action_batch]) # (b,1)
-        target_q_batch = reward_batch + self.config.gamma * (torch.ones(terminal_batch.shape).cuda() - terminal_batch) * next_q_values
-        target_q_batch = target_q_batch.flatten()
-        # Compute the Q
         q_batch = self.critic([state_batch, action_batch]).flatten()
-
-        logging.debug('q_batch: ',q_batch.shape)
-        logging.debug('target_q_batch: ',target_q_batch.shape)
-
-        # Loss as MSE of Q_target and Q
         criterion = nn.MSELoss()
         value_loss = criterion(q_batch, target_q_batch.detach())
-   
+
+
+        log_debug(f'q_batch: {q_batch.mean()}',True)
+        log_debug(f'target_q_batch: {target_q_batch.mean()}',True)
         return policy_loss, value_loss
 
 
@@ -226,3 +244,8 @@ class DDPG(BasicModel):
         action[-1] = action[-1]>0.5
         logging.debug('action to execute: ',action)
         return action
+
+
+def log_debug(msg:str,screen:bool):
+    if DEBUGGING and screen:
+        logger_debug.debug(msg)
