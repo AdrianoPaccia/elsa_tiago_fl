@@ -159,7 +159,7 @@ class DDPG(BasicModel):
 
         # Loss as MSE of Q_target and Q
         criterion = nn.MSELoss()
-        value_loss = criterion(q_batch, target_q_batch)
+        value_loss = criterion(q_batch, target_q_batch.detach())
    
         return policy_loss, value_loss
 
