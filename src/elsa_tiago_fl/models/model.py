@@ -3,10 +3,11 @@ from typing import Optional, List, Union
 import torch
 import torch.nn as nn
 import gym
-
+import copy
 from elsa_tiago_fl.utils.logger import Logger
 from elsa_tiago_fl.utils.rl_utils import BasicReplayBuffer
 import torch.nn.functional as F
+from collections import OrderedDict
 
 
 
@@ -36,6 +37,35 @@ class BasicModel(nn.Module):
         replay_buffer: Optional[BasicReplayBuffer] = None,
     ) -> Union[torch.Tensor, List[torch.Tensor]]:   # type: ignore
         NotImplemented
+
+    
+    def setup_fl_training(self,optimizer):
+        """
+        Setup the model for the Federated Learning training steps
+        """
+        self.train()
+        param_keys = list(self.state_dict().keys())
+        parameters = copy.deepcopy(list(self.state_dict().values()))
+        keyed_parameters = {n: p.requires_grad for n, p in self.named_parameters()}
+        frozen_parameters = [
+            not keyed_parameters[n] if n in keyed_parameters else False
+            for n, p in self.state_dict().items()
+        ]
+        # Set model weights to state of beginning of federated round
+        state_dict = OrderedDict({k: v for k, v in zip(param_keys, parameters)})
+        self.load_state_dict(state_dict, strict=True)
+        self.optimizer = optimizer
+        self.episode_loss = [0.0,0.0,0.0]
+        self.total_loss = 0.0
+
+        self.train()
+        return parameters, frozen_parameters
+
+
+
+
+
+
 
 
 class MLP(nn.Module):

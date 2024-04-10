@@ -41,7 +41,7 @@ def build_model(config):
 
 def build_optimizer(model, config):
     optimizer_class = getattr(torch.optim, "Adam")
-    parameters = model.optimization_params
+    parameters = model.optimizer_params
     return optimizer_class(parameters, lr = float(config.lr))
         
 #    return optimizer_class(model.parameters(), lr=float(config.lr))

@@ -17,6 +17,12 @@ from elsa_tiago_gym.utils_ros_gym import start_env
 from elsa_tiago_gym.utils_parallel import set_sim_velocity,kill_simulations
 from elsa_tiago_fl.utils.mp_logging import set_logs_level
 import numpy as np
+from elsa_tiago_fl.utils.rl_utils import transition_from_batch
+
+
+
+
+
 DEBUGGING = True
 #setup logs managers
 #set_logs_level()
@@ -87,6 +93,8 @@ class PolicyUpdateProcess(mp.Process):
                     # get available trasitions
                     self.get_transitions()
                     batch = self.get_batch()
+                    #convert a batch of transitions in a transition-batch
+                    batch = transition_from_batch(batch)
 
                     # make 1 training iteration and update the shared weigths
                     loss = self.model.training_step(batch)

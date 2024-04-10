@@ -62,14 +62,14 @@ def evaluate(model, env, config, num_episodes):
     total_reward = []
     total_len_episode = []
 
-    model.eval()
+    ###model.eval()
 
     for _ in tqdm(range(num_episodes)):
         episode_reward, episode_length = 0.0, 1
         done = False
         observation= env.reset()
         while not done:
-            state = preprocess(observation,model.multimodal,model.device)
+            """state = preprocess(observation,model.multimodal,model.device)
             with torch.no_grad():
                 action = model.select_action(
                         state,
@@ -79,7 +79,8 @@ def evaluate(model, env, config, num_episodes):
                     )
 
             act = model.get_executable_action(action)
-
+            """
+            act = [random.uniform(-1,1) for _ in range(4)]
             observation, reward, terminated, _= env.step(act) 
 
             episode_reward += reward
@@ -103,8 +104,8 @@ def evaluate(model, env, config, num_episodes):
 def main(config):
 
     #build the model with the highest score
-    model = get_model_with_highest_score(config)
-
+    ####model = get_model_with_highest_score(config)
+    config.client_id = 0
     #get the env
     env = start_env(env=config.env_name,
                 speed = config.gz_speed,
@@ -114,6 +115,7 @@ def main(config):
                 random_init = config.random_init
     )
     print(f'episode steps = {env.max_episode_steps}')
+    model = 'DIO'
     avg_reward, std_reward, avg_episode_length, std_episode_length = evaluate(model, env, config, 10)
     
     print(f"Evaluation Reward: {avg_reward} +- {std_reward}")
@@ -126,10 +128,10 @@ if __name__ == "__main__":
     config = load_config(args)
     seed_everything(config.seed)
     launch_master_simulation(gui=config.gui)
-    config.gz_speed = 0.005
-    config.client_id = input('Input the number of the client to test (inv for a random one): ')
-    if config.client_id=='':
-        config.client_id =None
+    config.gz_speed =  None #0.005
+    ###config.client_id = input('Input the number of the client to test (inv for a random one): ')
+    ###if config.client_id=='':
+    ###    config.client_id =None
     main(config)
     kill_simulations()
 

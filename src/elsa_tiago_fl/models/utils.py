@@ -33,3 +33,7 @@ class OrnsteinUhlenbeckProcess:
         dx = theta * (mu - self.state) + sigma * np.random.randn(self.size)
         self.state += dx
         return self.state
+
+def log_debug(msg:str,screen:bool):
+    if DEBUGGING and screen:
+        logger_debug.debug(msg)
