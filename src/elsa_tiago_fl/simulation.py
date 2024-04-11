@@ -1,6 +1,6 @@
 from models.model import BasicModel
 from elsa_tiago_fl.utils.build_utils import build_model
-from elsa_tiago_fl.utils.utils_parallel import set_parameters_model
+from elsa_tiago_fl.utils.utils_parallel import set_parameters_model, get_model_with_highest_score
 import pandas as pd
 from elsa_tiago_gym.utils_ros_gym import start_env
 from elsa_tiago_fl.utils.rl_utils import preprocess, get_custom_reward
@@ -24,37 +24,7 @@ def is_roscore_running():
         return False
 
 
-def get_model_with_highest_score(config):
-    model = build_model(config)
 
-    # Construct the pattern to match saved model files
-    pattern = os.path.join(config.save_dir, 'weigths','client'+str(config.client_id),
-                           f"{config.model_name}_{config.env_name}")
-    if config.multimodal:
-        pattern += '_multimodal'
-    else:
-        pattern += f'_input{config.input_dim}'
-    
-    pattern += '_*.pth'
-
-    # List all matching model files
-    model_files = glob.glob(pattern)
-
-    try:
-        # Extract scores from file names
-        scores = [float(os.path.basename(file).split('_')[-1].split('.pth')[0]) for file in model_files]
-
-        # Find the index of the file with the highest score
-        highest_score_idx = scores.index(max(scores))
-
-        # Load model parameters from the file with the highest score
-        highest_score_model_file = model_files[highest_score_idx]
-        model.load_state_dict(torch.load(highest_score_model_file))
-        print(f'Loaded the model parameters: {highest_score_model_file}')
-        return model
-
-    except Exception as e:
-        raise RuntimeError("No model parameters available!")
 
 
 
@@ -62,14 +32,14 @@ def evaluate(model, env, config, num_episodes):
     total_reward = []
     total_len_episode = []
 
-    ###model.eval()
+    model.eval()
 
     for _ in tqdm(range(num_episodes)):
         episode_reward, episode_length = 0.0, 1
         done = False
         observation= env.reset()
         while not done:
-            """state = preprocess(observation,model.multimodal,model.device)
+            state = preprocess(observation,model.multimodal,model.device)
             with torch.no_grad():
                 action = model.select_action(
                         state,
@@ -79,8 +49,6 @@ def evaluate(model, env, config, num_episodes):
                     )
 
             act = model.get_executable_action(action)
-            """
-            act = [random.uniform(-1,1) for _ in range(4)]
             observation, reward, terminated, _= env.step(act) 
 
             episode_reward += reward
@@ -104,8 +72,8 @@ def evaluate(model, env, config, num_episodes):
 def main(config):
 
     #build the model with the highest score
-    ####model = get_model_with_highest_score(config)
-    config.client_id = 0
+    model =  build_model(config)
+    model = get_model_with_highest_score(model,config)
     #get the env
     env = start_env(env=config.env_name,
                 speed = config.gz_speed,
@@ -115,7 +83,6 @@ def main(config):
                 random_init = config.random_init
     )
     print(f'episode steps = {env.max_episode_steps}')
-    model = 'DIO'
     avg_reward, std_reward, avg_episode_length, std_episode_length = evaluate(model, env, config, 10)
     
     print(f"Evaluation Reward: {avg_reward} +- {std_reward}")
@@ -127,11 +94,12 @@ if __name__ == "__main__":
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
-    launch_master_simulation(gui=config.gui)
-    config.gz_speed =  None #0.005
-    ###config.client_id = input('Input the number of the client to test (inv for a random one): ')
-    ###if config.client_id=='':
-    ###    config.client_id =None
+    #launch_master_simulation(gui=config.gui)
+    #config.gz_speed =  None #0.005
+    #config.client_id = input('Input the number of the client to test (inv for a random one): ')
+    #if config.client_id=='':
+    #    config.client_id =None
+    config.client_id =None
     main(config)
     kill_simulations()
 

@@ -15,6 +15,8 @@ from elsa_tiago_fl.utils.utils_parallel import (
     set_parameters_model,
     get_parameters_from_model,
     weighted_average,
+    get_model_with_highest_score, 
+    save_weigths,
 )
 from gym.envs.registration import register
 from elsa_tiago_fl.utils.logger import Logger
@@ -279,6 +281,9 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
         avg_reward, std_reward, avg_episode_length, std_episode_length = list(results_list)
         manager.shutdown()
+
+        where = save_weigths(self.model,avg_reward,self.config, 'client'+str(self.config.client_id))
+        log_debug(f'Model Saved in: {where} ',self.screen)
 
 
         is_updated = self.evaluator.update_global_metrics(

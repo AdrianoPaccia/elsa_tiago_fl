@@ -2,7 +2,7 @@ from elsa_tiago_fl.utils.utils import Singleton
 import numpy as np
 import torch
 from tqdm import tqdm
-from elsa_tiago_fl.utils.rl_utils import preprocess
+from elsa_tiago_fl.utils.rl_utils import preprocess, get_custom_reward
 import time
 import random
 
@@ -30,6 +30,8 @@ def fl_evaluate(model, env, config):
             act = model.get_executable_action(action)
 
             observation, reward, terminated, _= env.step(act) 
+            custom_reward = float(get_custom_reward(env, -0.5, -0.5))
+            reward += custom_reward
 
             episode_reward += reward
             done = terminated #or truncated

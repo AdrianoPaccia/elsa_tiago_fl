@@ -20,6 +20,7 @@ from elsa_tiago_fl.utils.utils_parallel import (
     set_parameters_model,
     get_parameters_from_model,
     weighted_average,
+    get_model_with_highest_score,
 )
 import sys
 import rospkg
@@ -38,7 +39,7 @@ def main() -> None:
     seed_everything(config.seed)
 
     #launch the simulation environments
-    launch_simulations(config.n_workers, gui=config.gui)
+    #launch_simulations(config.n_workers, gui=config.gui)
 
     # Delete previous memory files
     #pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")
@@ -49,7 +50,8 @@ def main() -> None:
     os.environ["MASTER_PORT"] = "9957"
 
     # Create model
-    model = build_model(config)
+    model = get_model_with_highest_score( build_model(config),config,True)
+
     params = get_parameters_from_model(model)
 
     def get_config_fn():

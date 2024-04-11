@@ -18,6 +18,8 @@ from elsa_tiago_gym.utils_parallel import set_sim_velocity,kill_simulations
 from elsa_tiago_fl.utils.mp_logging import set_logs_level
 import numpy as np
 from elsa_tiago_fl.utils.rl_utils import transition_from_batch
+from elsa_tiago_fl.utils.utils_parallel import save_weigths
+
 
 DEBUGGING = True
 #setup logs managers
@@ -113,19 +115,9 @@ class PolicyUpdateProcess(mp.Process):
             self.logger.logger.log(log_dict)
 
             #save weigths
-            save_dir = os.path.join(self.config.save_dir, 'weigths', 'client'+str(self.client_id))
-            os.makedirs(save_dir, exist_ok=True)
+            where = save_weigths(self.model,avg_reward,self.config, 'client'+str(self.config.client_id))
+            log_debug(f'Model Saved in: {where} ',self.screen)
 
-            save_name = os.path.join(save_dir,
-                self.config.model_name + '_' + self.config.env_name  
-                )
-            if self.config.multimodal:
-                save_name = save_name + '_multimodal'
-            else:
-                save_name = save_name + '_input' + str(self.config.input_dim)
-            save_name = save_name + '_'+ str(int(avg_reward)) + '.pth'
-            torch.save(self.model.state_dict(), save_name)
-            log_debug(f'Model Saved in: {save_name} ',self.screen)
 
             
         #log the avg round loss
