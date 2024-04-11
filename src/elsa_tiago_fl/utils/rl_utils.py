@@ -4,6 +4,7 @@ from collections import namedtuple, deque
 import matplotlib.pyplot as plt
 import copy
 import numpy as np
+import time
 
 
 class Transition:
@@ -228,4 +229,75 @@ def get_custom_reward(env, c1 ,c2):
         reward = 0
 
     return reward
+
+
+def cheat_action(env):
+
+    #get the pos of the gripper
+    gipper_pos = np.array(env.stored_arm_pose[:3])# position of the EE 
+
+    #get the scene items
+    cubes = env.model_state.cubes
+    cylinders = env.model_state.cylinders
+
+    #get the Cube Of Interest (the first which is not in the rigth box)
+    i_COI = None
+    for i, n in enumerate(env.model_state.cubes_in_cylinders()):
+        if n != 1:
+            i_COI = i
+    if i_COI is None:
+        return [0,0,0,0]
+
+    cube_COI = list(cubes.values())[i_COI]
+    cub_COI_id = cube_COI.id
+    cylinder_COI = env.model_state.cylinder_of_type(cube_COI.type_code)
+
+    if env.grasped_item == cub_COI_id:
+        dist = np.subtract(gipper_pos[:2],cylinder_COI.position[:2])
+        is_ontop = np.linalg.norm(dist) < 0.05
+        if is_ontop:
+            #leave the cubettto
+            action = [random.random(),
+                    random.random(),
+                    random.random(),
+                    random.random()]
+            #print(f"leave the cubettto = {action}")
+            return action
+
+        else:
+            #print(f'{cub_COI_id}: go to that position')
+            # go to that position
+            proj_pose = cylinder_COI.position
+            proj_pose[-1] = 0.8
+            action = random_pos_controller(np.array(cube_COI.position), np.array(proj_pose),mod = 1.0)
+            #print(f"go to cylinder = {action}")
+            return action
+
+    else:
+        grasp_item_id,_ = env.get_grasping_obj()
+
+        if grasp_item_id == cub_COI_id:
+            # grasp it (is feasible)
+            action = [random.random(),
+                    random.random(),
+                    random.random(),
+                    random.random()]
+            #print(f'grasp cube - {action}')
+            return action
+        else:
+            # go towards the object
+            action = random_pos_controller(np.array(gipper_pos), np.array(cube_COI.position))
+            #print(f'go towards the object - {action}')
+            return action
+
+
+
+def random_pos_controller(pos,t_pos, mod =1.0):
+    # genereate an action that drives the gripper towards the target location with a random magnitude
+    dist = pos - t_pos
+    dist_norm = np.array(dist)/abs(max(dist))    #np.clip(dist,-1,1)#dist / np.sum(dist)
+    act = [-mod*x for x in dist_norm]
+    act.append(random.random() * (-1))
+    return np.clip(act,-1.0,1.0).tolist()
+
 

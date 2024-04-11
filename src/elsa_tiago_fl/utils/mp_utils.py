@@ -19,10 +19,6 @@ from elsa_tiago_fl.utils.mp_logging import set_logs_level
 import numpy as np
 from elsa_tiago_fl.utils.rl_utils import transition_from_batch
 
-
-
-
-
 DEBUGGING = True
 #setup logs managers
 #set_logs_level()
@@ -37,12 +33,13 @@ class PolicyUpdateProcess(mp.Process):
     This is the process that every 10sec updates the model wieights getting
         the experience from the replay buffer 
     """
-    def __init__(self, model, lock, logger, optimizer, shared_params, replay_buffer, local_file_name, replay_queues, config, env, client_id, termination_event, screen=False):
+    def __init__(self, model, lock, logger, optimizer, shared_params, train_steps, replay_buffer, local_file_name, replay_queues, config, env, client_id, termination_event, screen=False):
         super(PolicyUpdateProcess, self).__init__()
         mp.log_to_stderr(logging.ERROR)
 
         self.model = model
         self.shared_params = shared_params
+        self.training_steps = train_steps
         self.lock = lock
         self.logger = logger
         self.replay_buffer = replay_buffer
@@ -99,6 +96,7 @@ class PolicyUpdateProcess(mp.Process):
                     # make 1 training iteration and update the shared weigths
                     loss = self.model.training_step(batch)
                     self.send_shared_params(self.model.state_dict())
+                    self.training_steps.value = self.model.steps_done
 
                     pbar.update()
 
@@ -231,7 +229,7 @@ class WorkerProcess(mp.Process):
     """
     This process collects the experience from the environment using the latest model parameters
     """
-    def __init__(self, worker_id, model: BasicModel, replay_queue, shared_params, lock, env, client_id,config, termination_event,screen=False):
+    def __init__(self, worker_id, model: BasicModel, replay_queue, shared_params, train_steps, lock, env, client_id, config, termination_event,screen=False):
         super(WorkerProcess, self).__init__()
         self.worker_id = worker_id
         self.model = model
@@ -240,6 +238,7 @@ class WorkerProcess(mp.Process):
         self.env = env
         self.client_id = client_id
         self.config = config
+        self.train_steps = train_steps
         self.termination_event = termination_event
         self.lock = lock
         self.screen =screen
@@ -276,23 +275,19 @@ class WorkerProcess(mp.Process):
             i_step = 0
             done = False
             while not done and i_step < self.config.num_steps:
+                self.model.steps_done = self.train_steps.value
                 action = self.model.select_action(
                         state,
                         config=self.config,
                         training=True,
                         action_space=self.env.action_space,
+                        env=self.env
                     )
                 
                 act = self.model.get_executable_action(action)
 
-                #if self.config.discrete_actions:
-                #    act = self.model.executable_act[action]
-                #else:
-                #    act = action.numpy()
-
                 observation, reward, terminated, _= self.env.step(act) 
                 custom_reward = float(get_custom_reward(self.env, -0.5, -0.5))
-                #log_debug(f'custom_reward = {custom_reward}',True)
                 reward += custom_reward
 
                 done = terminated #or truncated
@@ -310,7 +305,6 @@ class WorkerProcess(mp.Process):
                 tot_step +=1
                 if self.termination_event.is_set():
                     break
-
 
 
 
@@ -407,3 +401,4 @@ def get_shared_params(shared_params,lock):
 def log_debug(msg:str,screen:bool):
     if DEBUGGING and screen:
         logger_debug.debug(msg)
+        print(msg)

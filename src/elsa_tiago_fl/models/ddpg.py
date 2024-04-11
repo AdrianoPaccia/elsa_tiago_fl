@@ -20,7 +20,7 @@ from models.utils import hard_update,soft_update,OrnsteinUhlenbeckProcess, log_d
 from elsa_tiago_fl.utils.communication_utils import log_communication
 from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
 from elsa_tiago_fl.utils.logger import Logger
-from elsa_tiago_fl.utils.rl_utils import Transition, BasicReplayBuffer,transition_from_batch
+from elsa_tiago_fl.utils.rl_utils import Transition, BasicReplayBuffer,transition_from_batch, cheat_action
 from elsa_tiago_fl.utils.build_utils import build_optimizer
 import logging
 import multiprocessing as mp
@@ -78,14 +78,24 @@ class DDPG(BasicModel):
         training: bool = False,
         config: Optional[Namespace] = None,
         action_space: Optional[Space] = None,
+        env=None,
     ) -> Union[torch.Tensor, List[torch.Tensor]]:  
         with torch.no_grad():
             opt_action = self.actor(state).reshape(-1).float()
             if training: 
                 if random.random() < self.eps_linear_decay(): #explore
-                    action_norm = np.random.uniform(low=self.action_bounds[0], high=self.action_bounds[1], size=opt_action.shape)
-                    action = torch.from_numpy(action_norm).squeeze()
-                    return action
+                    if random.random() < 0.5:
+                        action_norm = np.random.uniform(low=self.action_bounds[0], high=self.action_bounds[1], size=opt_action.shape)
+                        action = torch.from_numpy(action_norm).squeeze()
+                        return action
+                    else:
+                        try:
+                            action = torch.tensor(cheat_action(env))
+                        except:
+                            action_norm = np.random.uniform(low=self.action_bounds[0], high=self.action_bounds[1], size=opt_action.shape)
+                            action = torch.from_numpy(action_norm).squeeze()
+                        return action
+
                 else: #exploit
                     action = opt_action.cpu().squeeze()
                     return action

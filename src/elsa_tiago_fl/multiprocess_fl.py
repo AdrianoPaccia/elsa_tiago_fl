@@ -131,12 +131,14 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         init_state_dict = copy.deepcopy(self.model.state_dict())
         initial_params_bytes = pickle.dumps(self.model.state_dict())
         shared_params = manager.Value('c', initial_params_bytes)
+        train_steps = manager.Value('i', 0)
 
 
         # Start the policy updater process that simultaneusly trains the model
         updater_process = PolicyUpdateProcess(
                                            model = self.model,
                                            shared_params = shared_params,
+                                           train_steps = train_steps,
                                            lock = lock_SP,
                                            logger=self.logger,
                                            optimizer = self.optimizer,
@@ -156,6 +158,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                     model = copy.deepcopy(self.model), 
                     replay_queue = replay_queues[i],
                     shared_params = shared_params,
+                    train_steps =train_steps,
                     lock = lock_SP,
                     env = self.env,
                     client_id = self.client_id,

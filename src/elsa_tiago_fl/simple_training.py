@@ -3,7 +3,7 @@ from elsa_tiago_fl.utils.build_utils import build_model,build_optimizer
 from elsa_tiago_fl.utils.utils_parallel import set_parameters_model
 import pandas as pd
 from elsa_tiago_gym.utils_ros_gym import start_env
-from elsa_tiago_fl.utils.rl_utils import preprocess, get_custom_reward
+from elsa_tiago_fl.utils.rl_utils import preprocess, get_custom_reward, cheat_action
 from elsa_tiago_fl.utils.utils import parse_args, load_config, seed_everything, delete_files_in_folder
 from elsa_tiago_gym.utils_parallel import launch_master_simulation,kill_simulations
 import os
@@ -46,13 +46,19 @@ def train(model, env, replay_buffer, config):
             done = False
             steps = 0
             while (not done) and (steps < config.num_steps) and (pbar.n < pbar.total):
-                action = model.select_action(state,training=True)
-                act =model.get_executable_action(action)
+                #action = model.select_action(state,training=True)
+
+                #act =model.get_executable_action(action)
+                action = cheat_action(env)
+                act = action
                 next_state, reward, done, info = env.step(act)
+                custom_reward = float(get_custom_reward(env, -0.5, -0.5))
+                #log_debug(f'custom_reward = {custom_reward}',True)
+                reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)
                 transition = Transition(
                     state,
-                    torch.tensor(action.clone().detach(), dtype=torch.float32),
+                    torch.tensor(action, dtype=torch.float32),
                     next_state,
                     torch.tensor(reward, dtype=torch.float32),
                     torch.tensor(done, dtype=torch.float32)
@@ -67,33 +73,38 @@ def train(model, env, replay_buffer, config):
     total_len_episode = []
 
     # Training loop
-    with tqdm(total=config.iterations_per_fl_round, desc=f'training episodes') as pbar:
-        for episode in range(config.iterations_per_fl_round):
+    with tqdm(total=1000, desc=f'training episodes') as pbar:
+        for episode in range(1000):
             observation = env.reset()
             state = preprocess(observation,model.multimodal,model.device)
             i_step = 0
             done = False
             while not done and i_step < config.num_steps:
-                action = model.select_action(
-                        state,
-                        config=config,
-                        training=True,
-                        action_space=env.action_space,
-                    )
-            
-                act = model.get_executable_action(action)
+                action = cheat_action(env)
+                act = action
+                #print('cheat action: ',act)
 
-                observation, reward, terminated, _= env.step(act) 
-                done = terminated #or truncated
+                #action = model.select_action(
+                #        state,
+                #        config=config,
+                #        training=True,
+                #        action_space=env.action_space,
+                #    )
+                #act =model.get_executable_action(action)
+                next_state, reward, done, info = env.step(act)
+
                 custom_reward = float(get_custom_reward(env, -0.5, -0.5))
+                #log_debug(f'custom_reward = {custom_reward}',True)
                 reward += custom_reward
-
-                # Store the transitions
-                next_state = preprocess(observation,model.multimodal,model.device)
-                action_tsr = action.to(torch.float32).unsqueeze(0)
-                reward_tsr = torch.tensor([reward], device=model.device)
-                done_tsr = torch.tensor([done], dtype=float,device=model.device)
-                transition = Transition(state_clone, action_clone, next_state_clone,reward_clone,done_clone)
+                next_state = preprocess(next_state, multimodal=False,device=model.device)
+                transition = Transition(
+                    state,
+                    torch.tensor(action, dtype=torch.float32),
+                    next_state,
+                    torch.tensor(reward, dtype=torch.float32),
+                    torch.tensor(done, dtype=torch.float32)
+                )
+        
                 transition.to_cpu()
                 model.replay_buffer.push(transition) 
 
@@ -131,7 +142,7 @@ def train(model, env, replay_buffer, config):
 
 
 def main(config):
-    config.client_id = 0
+    config.client_id = None
 
     #build the model and the optimizer
     model = build_model(config)
@@ -156,7 +167,7 @@ if __name__ == "__main__":
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
-    config.gz_speed = 0.005
+    #config.gz_speed = 0.001#0.005
     launch_master_simulation(gui=config.gui)
 
     wandb_api_key = os.environ.get("WANDB_API_KEY")
