@@ -6,6 +6,7 @@ from elsa_tiago_gym.utils_ros_gym import start_env
 from elsa_tiago_fl.utils.rl_utils import preprocess, get_custom_reward
 from elsa_tiago_fl.utils.utils import parse_args, load_config, seed_everything, delete_files_in_folder
 from elsa_tiago_gym.utils_parallel import launch_master_simulation,kill_simulations
+from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
 import os
 import glob
 import torch
@@ -85,6 +86,7 @@ def main(config):
     print(f'episode steps = {env.max_episode_steps}')
     avg_reward, std_reward, avg_episode_length, std_episode_length = evaluate(model, env, config, 10)
     
+
     print(f"Evaluation Reward: {avg_reward} +- {std_reward}")
     print(f"Evaluation steps: {avg_episode_length} +- {std_episode_length}")
 
@@ -94,7 +96,7 @@ if __name__ == "__main__":
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
-    #launch_master_simulation(gui=config.gui)
+    launch_master_simulation(gui=config.gui)
     #config.gz_speed =  None #0.005
     #config.client_id = input('Input the number of the client to test (inv for a random one): ')
     #if config.client_id=='':

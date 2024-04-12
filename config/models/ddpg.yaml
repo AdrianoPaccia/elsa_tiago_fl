@@ -6,28 +6,27 @@ discrete_actions: false
 
 training_parameters:
   lr: 1e-4
-  batch_size: 64
+  batch_size: 128
   hidden1: 128
   hidden2: 128  
   num_steps: 500
-  train_steps: 1000
+  train_steps: 100
   gamma: 0.99 #discount
-  tau: 0.9
+  tau: 0.95
   updating_freq: 10 
 
   # for exploration 
-  eps_start: 1.0
-  eps_end: 0.01
-  eps_decay: 200000 #10000 #depsilon
+  eps_start: 0.5
+  eps_end: 0.1
+  eps_decay: 500000  #depsilon
   oup_theta: 0.01
   oup_mu: 0
   oup_sigma: 1.0
   oup_decay: 200000
   
   num_eval_episodes: 1
-  training_step_evaluate: 500
   replay_buffer_size: 50000
-  min_len_replay_buffer: 100 #00
+  min_len_replay_buffer: 5000
 
 fl_parameters:
   sample_clients: 1

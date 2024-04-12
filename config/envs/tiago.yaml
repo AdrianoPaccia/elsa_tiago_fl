@@ -9,4 +9,4 @@ action_dim: 4
 multimodal: false
 gz_speed: 0.005
 random_init: False
-max_episode_steps: 500
+max_episode_steps: 100

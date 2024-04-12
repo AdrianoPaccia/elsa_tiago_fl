@@ -17,9 +17,9 @@ from elsa_tiago_gym.utils_ros_gym import start_env
 from elsa_tiago_gym.utils_parallel import set_sim_velocity,kill_simulations
 from elsa_tiago_fl.utils.mp_logging import set_logs_level
 import numpy as np
-from elsa_tiago_fl.utils.rl_utils import transition_from_batch
+from elsa_tiago_fl.utils.rl_utils import transition_from_batch,get_buffer_variance
 from elsa_tiago_fl.utils.utils_parallel import save_weigths
-
+import wandb
 
 DEBUGGING = True
 #setup logs managers
@@ -58,6 +58,7 @@ class PolicyUpdateProcess(mp.Process):
 
     def run(self):
         log_debug('ready to update polices!',self.screen)
+
         # setup the eval environment
         env = start_env(env=self.env,
                 speed = self.config.gz_speed,
@@ -75,56 +76,79 @@ class PolicyUpdateProcess(mp.Process):
                 if (queue.size()>0):
                     ready = True
 
-        # prefilling of the buffer at first
-        tic()
+        ## PREFILLING LOOP ------------------------------------------------------------------------------
         with tqdm(total=self.config.min_len_replay_buffer, 
             initial = np.clip(len(self.replay_buffer.memory),0,self.config.min_len_replay_buffer),
             desc="Filling Replay Buffer") as pbar:
             while pbar.n < pbar.total:
                 n = self.get_transitions()
                 pbar.update(n)
-        t = round(toc(),3)
-        log_debug(f'filling the {len(self.replay_buffer.memory)} exp required {t}sec, giving {len(self.replay_buffer.memory)/t} transition/sec',self.screen)
-        
-        for train_iter in range(self.config.fl_parameters.iterations_per_fl_round):
-            with tqdm(total=self.config.train_steps, desc=f"Training iteration {train_iter} client #{self.client_id}") as pbar:
-                while pbar.n < pbar.total:
-                    # get available trasitions
-                    self.get_transitions()
-                    batch = self.get_batch()
-                    #convert a batch of transitions in a transition-batch
-                    batch = transition_from_batch(batch)
+        self.save_local_data()
 
-                    # make 1 training iteration and update the shared weigths
-                    loss = self.model.training_step(batch)
+
+        ## TRAINING LOOP --------------------------------------------------------------------------------------------------
+        iter_per_step = 10
+        for train_iter in range(self.config.fl_parameters.iterations_per_fl_round):
+            with tqdm(total=self.config.train_steps, 
+                      desc=f"Training iteration {train_iter} client #{self.client_id}") as pbar:
+                while pbar.n < pbar.total:
+                    self.get_transitions(200)     
+                    self.training_iteration(iter_per_step)               
                     self.send_shared_params(self.model.state_dict())
                     self.training_steps.value = self.model.steps_done
-
-                    pbar.update()
-
-            # log the episode loss
-            self.model.log_recap('episode',self.logger)
-            log_debug(f"END fl_round - Capacity at {round(self.replay_buffer.get_capacity()*100,0)}%",self.screen)
+                    pbar.update(iter_per_step)
+            self.model.episode_loss = [0.0,0.0,0.0]
 
             #evaluate the fl_round
-            (avg_reward,std_reward,avg_episode_length,std_episode_length,) = fl_evaluate(self.model, env, self.config)
+            (avg_reward,std_reward,avg_episode_length,std_episode_length) = fl_evaluate(self.model, env, self.config)
+
+            # see the dispertion of the data in the replay buffer
+            points = np.array([t.state[-1] for t in list(self.replay_buffer.memory)])
+            dispertion = get_buffer_variance(points)
+
+            ## LOG ( log the episode results)
             log_dict = {
-                "Avg Reward (during training) ": avg_reward,
-                "Std Reward (during training) ": std_reward,
+                "Episode training loss": self.model.episode_loss[0],
+                "Episode policy loss": self.model.episode_loss[1],
+                "Episode value loss": self.model.episode_loss[2],
+                "lr": self.model.optimizer.param_groups[0]["lr"],
+                "epsilon": self.model.eps_linear_decay(),
+                "Data dispertion": dispertion,
+                "Avg eval reward ": avg_reward,
+                "Std eval Reward ": std_reward,
             }
-            self.logger.logger.log(log_dict)
+            self.logger.log_to_wandb(log_dict)
+
 
             #save weigths
-            where = save_weigths(self.model,avg_reward,self.config, 'client'+str(self.config.client_id))
+            where = save_weigths(self.model,avg_reward,self.config, 'client'+str(self.client_id))
             log_debug(f'Model Saved in: {where} ',self.screen)
+        
+
+        # LOG (round)
+        log_dict = {
+        "Train/FL Round loss": self.model.total_loss / (self.model.steps_done + 1),
+        "fl_round": logger.current_epoch,
+        }
+        self.logger.log_training_data(log_dict)
+        self.save_local_data()
+        self.termination_event.set()
 
 
-            
-        #log the avg round loss
-        self.model.log_recap('round',self.logger)
-        #self.termination_event.set()
-
-        self.end_process()
+    def training_iteration(self,n):
+        """
+        n steps where you:
+         - get the batch
+         - convert the batch of transitions in a transition-batch
+         - make 1 training iteration
+        """
+        losses = []
+        for _ in range(n):
+            batch = self.get_batch()
+            batch = transition_from_batch(batch)
+            loss = self.model.training_step(batch)
+            losses.append(loss)
+        return np.mean(losses)
 
 
     def send_shared_params(self,state_dict):
@@ -149,25 +173,25 @@ class PolicyUpdateProcess(mp.Process):
             logging.error(f"Error getting batches: {e}")
             return None
 
-    def get_transitions(self):
+    def get_transitions(self,n=1):
         try:
             n_trans = 0
-            for queue in self.replay_queues:
-                while not queue.empty():
-                    transition = queue.get()
-                    self.replay_buffer.push(transition) 
-                    n_trans +=1
+            while n_trans<n:
+                for queue in self.replay_queues:
+                    while not queue.empty():
+                        transition = queue.get()
+                        self.replay_buffer.push(transition) 
+                        n_trans +=1
             return n_trans
 
         except Exception as e:
             logging.error(f"Error getting transitions: {e}")
             return None
 
-    def end_process(self):
+    def save_local_data(self):
         """
         save the replays and send the termination event
         """
-        self.termination_event.set()
         if self.replay_buffer is not None:
             torch.save(
                 {

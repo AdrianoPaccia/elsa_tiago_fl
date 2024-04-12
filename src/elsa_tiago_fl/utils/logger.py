@@ -62,6 +62,10 @@ class Logger(metaclass=Singleton):
                 print("\t{:}: {:}".format(k, v))
         print("}\n")
 
+    def log_to_wandb(self,log_dict):
+        self.logger.log(log_dict)
+
+
     def log_model_parameters(self, model):
         total_params = 0
         trainable_params = 0

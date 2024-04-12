@@ -32,7 +32,7 @@ def fl_evaluate(model, env, config):
             observation, reward, terminated, _= env.step(act) 
             custom_reward = float(get_custom_reward(env, -0.5, -0.5))
             reward += custom_reward
-
+            
             episode_reward += reward
             done = terminated #or truncated
             episode_length += 1

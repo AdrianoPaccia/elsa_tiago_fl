@@ -39,11 +39,11 @@ def main() -> None:
     seed_everything(config.seed)
 
     #launch the simulation environments
-    #launch_simulations(config.n_workers, gui=config.gui)
+    launch_simulations(config.n_workers, gui=config.gui)
 
     # Delete previous memory files
-    #pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")
-    #delete_files_in_folder(os.path.join(pkg_path,"src/elsa_tiago_fl/temp"))
+    pkg_path = rospkg.RosPack().get_path("elsa_tiago_fl")
+    delete_files_in_folder(os.path.join(pkg_path,"src/elsa_tiago_fl/temp"))
 
     # Set `MASTER_ADDR` and `MASTER_PORT` environment variables
     os.environ["MASTER_ADDR"] = "localhost"
@@ -51,7 +51,6 @@ def main() -> None:
 
     # Create model
     model = get_model_with_highest_score( build_model(config),config,True)
-
     params = get_parameters_from_model(model)
 
     def get_config_fn():
@@ -85,11 +84,11 @@ def main() -> None:
     if config.device == "cuda":
         client_resources = {"num_gpus": 1, "num_cpus": 1}  # TODO Check number of GPUs
 
-
     def client_fn(client_id):
     
         """Create a Flower client representing a single organization."""
         logger = Logger(config=config)
+
 
         """Check if we need a replay buffer"""
         if hasattr(config, "replay_buffer_size"):

@@ -2,10 +2,8 @@ from models.model import BasicModel
 from elsa_tiago_fl.utils.build_utils import build_model,build_optimizer
 from elsa_tiago_fl.utils.utils_parallel import set_parameters_model
 import pandas as pd
-from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
 from elsa_tiago_gym.utils_ros_gym import start_env
-from elsa_tiago_fl.utils.rl_utils import preprocess, get_custom_reward, cheat_action, transition_from_batch
-
+from elsa_tiago_fl.utils.rl_utils import preprocess, get_custom_reward, cheat_action
 from elsa_tiago_fl.utils.utils import parse_args, load_config, seed_everything, delete_files_in_folder
 from elsa_tiago_gym.utils_parallel import launch_master_simulation,kill_simulations
 import os
@@ -16,11 +14,9 @@ import rosgraph
 import numpy as np
 from tqdm import tqdm
 import random
-from elsa_tiago_fl.utils.rl_utils import BasicReplayBuffer,Transition,get_buffer_variance
+from elsa_tiago_fl.utils.rl_utils import BasicReplayBuffer,Transition
 import wandb
 from elsa_tiago_fl.utils.utils import tic,toc
-from elsa_tiago_fl.utils.utils_parallel import save_weigths
-
 
 
 def save_weigths(model,config):
@@ -40,8 +36,8 @@ def save_weigths(model,config):
 
 def train(model, env, replay_buffer, config):
     model.train()
-    model.total_loss = 0
 
+    tic()
     with tqdm(total=config.min_len_replay_buffer, desc=f'prefilling ERP') as pbar:
         while pbar.n < pbar.total:
             ##prefilling
@@ -50,38 +46,39 @@ def train(model, env, replay_buffer, config):
             done = False
             steps = 0
             while (not done) and (steps < config.num_steps) and (pbar.n < pbar.total):
-                action = model.select_action(state,training=True,env=env)
-                act =model.get_executable_action(action)
-
+                action = cheat_action(env)
+                act = action
                 next_state, reward, done, info = env.step(act)
                 custom_reward = float(get_custom_reward(env, -0.5, -0.5))
+                #log_debug(f'custom_reward = {custom_reward}',True)
                 reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)
                 transition = Transition(
-                    state.cpu(),
-                    torch.tensor(action, dtype=torch.float32).unsqueeze(0),
-                    next_state.cpu(),
-                    torch.tensor(reward, dtype=torch.float32).unsqueeze(0),
-                    torch.tensor(done, dtype=torch.float32).unsqueeze(0)
+                    state,
+                    torch.tensor(action, dtype=torch.float32),
+                    next_state,
+                    torch.tensor(reward, dtype=torch.float32),
+                    torch.tensor(done, dtype=torch.float32)
                 )
                 replay_buffer.push(transition)
                 pbar.update()
                 steps += 1
-    print(f'capacity replay buffer ',replay_buffer.get_capacity()) 
+    t = round(toc(),3)
+    print(f'Filling the {len(replay_buffer.memory)} exp required {t}sec, giving {len(replay_buffer.memory)/t} transition/sec')
+        
     total_reward = []
     total_len_episode = []
 
     # Training loop
     with tqdm(total=1000, desc=f'training episodes') as pbar:
         for episode in range(1000):
-            model.episode_loss = [0,0,0]
             observation = env.reset()
             state = preprocess(observation,model.multimodal,model.device)
             i_step = 0
             done = False
             while not done and i_step < config.num_steps:
-                action = model.select_action(state,training=True,env=env)
-                act =model.get_executable_action(action)
+                action = cheat_action(env)
+                act = action
                 next_state, reward, done, info = env.step(act)
 
                 custom_reward = float(get_custom_reward(env, -0.5, -0.5))
@@ -89,48 +86,45 @@ def train(model, env, replay_buffer, config):
                 reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)
                 transition = Transition(
-                    state.cpu(),
-                    torch.tensor(action, dtype=torch.float32).unsqueeze(0),
-                    next_state.cpu(),
-                    torch.tensor(reward, dtype=torch.float32).unsqueeze(0),
-                    torch.tensor(done, dtype=torch.float32).unsqueeze(0)
+                    state,
+                    torch.tensor(action, dtype=torch.float32),
+                    next_state,
+                    torch.tensor(reward, dtype=torch.float32),
+                    torch.tensor(done, dtype=torch.float32)
                 )
-
+        
                 transition.to_cpu()
-                replay_buffer.push(transition) 
+                model.replay_buffer.push(transition) 
 
                 # update the network
                 if i_step%config.updating_freq == 0:
-                    batch = replay_buffer.sample(config.batch_size)
+                    batch = copy.deepcopy(replay_buffer.sample(config.batch_size))
                     for b in batch:
                         b.to(model.device)
-                    batch = transition_from_batch(batch)
-                    loss = model.training_step(batch)
+                    loss = model.training_step_lfd(batch)
 
                 state = next_state
                 i_step += 1
+                tot_step +=1
+
             pbar.update()
+            model.soft_update()
 
             #evaluate the fl_round
             avg_reward,std_reward,avg_episode_length,std_episode_length = fl_evaluate(model, env, config)
 
-            #get the dispertion of datapoints
-            points = np.array([t.state.cpu()[-1] for t in list(replay_buffer.memory)])
-            dispertion = get_buffer_variance(points)  
-
+            #sigma, theta = model.noise_distribution.get_sigma_theta(model.steps_done)
             log_dict = {
-                    "Episode policy loss": model.episode_loss[1],
-                    "Episode value loss": model.episode_loss[2],
+                    "Episode avg Q":torch.tensor(model.q_in_time).mean(),
+                    "Episode avg target Q":torch.tensor(model.target_q_in_time).mean(),
+                    "Episode training loss": model.episode_loss[0],
                     "Evaluation avg reward": avg_reward,
-                    "epsilon": model.eps_linear_decay(),
-                    "dispertion": dispertion,
-                    "buffer capacity":replay_buffer.get_capacity(),
+                    "epsilon": model.get_epsilon(),
                 }       
             wandb.log(log_dict)
 
             #save weigths
-            #where = save_weigths(model,avg_reward,config)
-
+            save_weigths(model,config)
 
 
 def main(config):
@@ -153,18 +147,13 @@ def main(config):
     train(model, env, replay_buffer, config)
 
 
-
-
-
-
-
 if __name__ == "__main__":
 
     #parsing
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
-    config.gz_speed = 0.005
+    #config.gz_speed = 0.001#0.005
     launch_master_simulation(gui=config.gui)
 
     wandb_api_key = os.environ.get("WANDB_API_KEY")

@@ -82,18 +82,15 @@ class DDPG(BasicModel):
     ) -> Union[torch.Tensor, List[torch.Tensor]]:  
         with torch.no_grad():
             opt_action = self.actor(state).reshape(-1).float()
-            if training: 
+            if training: #exploit
                 if random.random() < self.eps_linear_decay(): #explore
-                    if random.random() < 0.5:
+                    choice = random.random() 
+                    if choice < 0.5:
                         action_norm = np.random.uniform(low=self.action_bounds[0], high=self.action_bounds[1], size=opt_action.shape)
                         action = torch.from_numpy(action_norm).squeeze()
                         return action
                     else:
-                        try:
-                            action = torch.tensor(cheat_action(env))
-                        except:
-                            action_norm = np.random.uniform(low=self.action_bounds[0], high=self.action_bounds[1], size=opt_action.shape)
-                            action = torch.from_numpy(action_norm).squeeze()
+                        action = torch.tensor(cheat_action(env))
                         return action
 
                 else: #exploit
@@ -143,29 +140,42 @@ class DDPG(BasicModel):
         return tot_loss
 
 
+    def training_step_lfd(self,batch):
+        """
+        This function trains from a batch and outputs the loss
+        """
+        states = torch.cat(batch.state) #(b,st)
+        actions = torch.cat(batch.action) #(b,act)
+        rewards = torch.cat(batch.reward).unsqueeze(-1) #(b,1)
+        next_states = torch.cat(batch.next_state) #(b,st)
+        dones = torch.cat(batch.done).unsqueeze(-1) #(b,1)
+
+        # Actor update
+        action_opt = self.actor(states)
+        actor_loss = nn.MSELoss()(self.actor(states), actions)  # nn.MSELoss() means Mean Squared Error
+        self.actor.optimizer.zero_grad()
+        actor_loss.backward()
+        self.actor.optimizer.step()
+
+        # Target update
+        soft_update(self.actor,self.actor_target , self.config.tau)
+
+        self.total_loss += policy_loss.item()
+        self.episode_loss[0]+= policy_loss.item()
+        self.steps_done += 1
+
+        return policy_loss.item()
+
+
 
 
     # Useful methods
     #------------------------------
 
-    def log_recap(self,what:str,logger:Logger):
+    def log_recap(self,logger:Logger,log:dict):
         """
         Log the results of the training session into wandb
         """
-        if what == 'episode':
-            log_dict = {
-                "Episode training loss": self.episode_loss[0],
-                "Episode policy loss": self.episode_loss[1],
-                "Episode value loss": self.episode_loss[2],
-                "lr": self.optimizer.param_groups[0]["lr"],
-                "epsilon": self.eps_linear_decay(),
-            }
-            self.episode_loss = [0.0,0.0,0.0]
-        else:
-            log_dict = {
-            "Train/FL Round loss": self.total_loss / (self.steps_done + 1),
-            "fl_round": logger.current_epoch,
-            }
         logger.logger.log(log_dict)
         return log_dict
 

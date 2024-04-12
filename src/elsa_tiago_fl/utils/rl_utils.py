@@ -84,6 +84,19 @@ class BasicReplayBuffer(object):
     def sample(self, batch_size: int, device='cpu'):
         sample = random.sample(self.memory, batch_size)
         return sample
+
+def get_buffer_variance(points):
+    """
+    Conpute the normalized trace of the covariance matrix on the overall list of points
+    """
+    n = len(points)
+    points = np.array(points)
+    mean_vector = np.mean(points, axis=0)
+    centered = points - mean_vector
+    covariance_matrix = np.dot(centered.T, centered) / (n - 1)
+    trace = np.trace(covariance_matrix)
+    trace_norm = trace/n
+    return trace_norm
     
 class TrajectoryHolder(object):
     def __init__(self, input_dim,action_dim,T_horizon,device) -> None:

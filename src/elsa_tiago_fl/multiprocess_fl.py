@@ -112,7 +112,6 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         At the end saves the memory related to the optimizer and the experience
         """
 
-
         # set the model paramaters 
         self.set_parameters(parameters)
 

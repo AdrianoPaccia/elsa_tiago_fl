@@ -1,0 +1,4 @@
+Reward fatto bene training and eval    (2 CHECK)
+Exploration (?)
+N=10 training steps after M=200 transitions 
+Log the variance of steps in ERP

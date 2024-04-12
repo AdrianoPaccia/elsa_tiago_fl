@@ -100,19 +100,20 @@ def get_model_with_highest_score(model,config, from_all=True):
       
     winner_score = -9999
     winner_model = None
-    for pattern in patterns:
-        model_files = glob.glob(pattern)
-        scores = [float(os.path.basename(file).split('_')[-1].split('.pth')[0]) for file in model_files]
-        score_i = int(max(scores))
-        if score_i > winner_score:
-            score_i = max(scores)
-            winner_score = score_i
-            winner_model = model_files[scores.index(score_i)]
-    try:  
-        model.load_state_dict(torch.load(winner_model))
-        print(f'Loaded the model parameters: {winner_model}')
-        return model
-
+    try: 
+        for pattern in patterns:
+            model_files = glob.glob(pattern)
+            scores = [float(os.path.basename(file).split('_')[-1].split('.pth')[0]) for file in model_files]
+            if len(scores)>0:
+                score_i = int(max(scores))
+                if score_i > winner_score:
+                    score_i = max(scores)
+                    winner_score = score_i
+                    winner_model = model_files[scores.index(score_i)]
+        
+            model.load_state_dict(torch.load(winner_model))
+            print(f'Loaded the model parameters: {winner_model}')
+            return model
     except:
         print('No model is available')
         return model
