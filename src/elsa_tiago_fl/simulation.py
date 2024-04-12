@@ -34,12 +34,20 @@ def evaluate(model, env, config, num_episodes):
     total_len_episode = []
 
     model.eval()
+    env.env_kind = 'environments_0'
 
     for _ in tqdm(range(num_episodes)):
         episode_reward, episode_length = 0.0, 1
         done = False
         observation= env.reset()
-        while not done:
+        #impose the env stuff
+        gripper_init_pos  = [np.random.uniform(low, high) for low, high in zip([0.40,-0.3,0.75], [0.8,0.3,0.85])]
+        gripper_init_pos.extend([0,np.pi/2,0])
+        env_code = random.randint(0, 3)
+        x,y,z = np.random.uniform(low=[0.40,-0.3,0.443669], high=[0.6,0.3,0.443669], size=(3,))
+        cube_poses = [[x,y,z, 0,0,0]]
+        observation = env.impose_configuration(gripper_init_pos, env_code, cube_poses)
+        while not done or episode_length<10:
             state = preprocess(observation,model.multimodal,model.device)
             with torch.no_grad():
                 action = model.select_action(
@@ -101,7 +109,7 @@ if __name__ == "__main__":
     #config.client_id = input('Input the number of the client to test (inv for a random one): ')
     #if config.client_id=='':
     #    config.client_id =None
-    config.client_id =None
+    config.client_id =0
     main(config)
     kill_simulations()
 

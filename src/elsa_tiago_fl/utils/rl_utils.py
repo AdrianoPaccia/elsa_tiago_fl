@@ -90,7 +90,6 @@ def get_buffer_variance(points):
     Conpute the normalized trace of the covariance matrix on the overall list of points
     """
     n = len(points)
-    points = np.array(points)
     mean_vector = np.mean(points, axis=0)
     centered = points - mean_vector
     covariance_matrix = np.dot(centered.T, centered) / (n - 1)
@@ -212,7 +211,7 @@ def unprocess(state, state_dim):
         poses.append(pos_i.reshape(1,-1))
     return torch.cat(images), torch.cat(poses)
 
-def get_custom_reward(env, c1 ,c2):
+def get_custom_reward(env, c1 ,c2, split_reward = False):
     """
     REWARD SHAPING: get one of the cubes are get a reward as a linear combination of the distance between:
         - gripper and cube 
@@ -237,11 +236,19 @@ def get_custom_reward(env, c1 ,c2):
 
         # compute the reward as the linar combination of the distance of the gripper from the cube 
         # and the distance of the cube from the cylinder
-        reward = c1 * np.linalg.norm(cube_pos - cylinder_pos) + c2 * np.linalg.norm(gipper_pos - cylinder_pos)
-    except:
-        reward = 0
+        reward_1 = np.linalg.norm(cube_pos - cylinder_pos)
+        reward_2 = np.linalg.norm(gipper_pos - cylinder_pos)
 
-    return reward
+    except:
+        reward_1 = 0
+        reward_2 = 0
+
+    reward = c1 * reward_1 + c2 * reward_2
+
+    if split_reward:
+        return reward, reward_1, reward_2
+    else:
+        return reward
 
 
 def cheat_action(env):

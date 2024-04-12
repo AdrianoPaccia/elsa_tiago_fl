@@ -8,7 +8,7 @@ from elsa_tiago_fl.utils.rl_utils import Transition,preprocess, get_custom_rewar
 import logging
 import torch
 from tqdm import tqdm
-from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate, Evaluator
+from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate, Evaluator, client_evaluate
 from elsa_tiago_fl.utils.utils import tic,toc
 import os
 import rospy
@@ -100,10 +100,13 @@ class PolicyUpdateProcess(mp.Process):
             self.model.episode_loss = [0.0,0.0,0.0]
 
             #evaluate the fl_round
-            (avg_reward,std_reward,avg_episode_length,std_episode_length) = fl_evaluate(self.model, env, self.config)
+            #(avg_reward,std_reward,avg_episode_length,std_episode_length) = fl_evaluate(self.model, env, self.config)
+            avg_reward, avg_reward_1, avg_reward_2 = client_evaluate(model, env, config)
+
 
             # see the dispertion of the data in the replay buffer
-            points = np.array([t.state[-1] for t in list(self.replay_buffer.memory)])
+            points = np.array([t.state.cpu().squeeze()[-3:] for t in list(self.replay_buffer.memory)])
+
             dispertion = get_buffer_variance(points)
 
             ## LOG ( log the episode results)
@@ -115,7 +118,8 @@ class PolicyUpdateProcess(mp.Process):
                 "epsilon": self.model.eps_linear_decay(),
                 "Data dispertion": dispertion,
                 "Avg eval reward ": avg_reward,
-                "Std eval Reward ": std_reward,
+                "Avg eval r1 ": avg_reward_1,
+                "Avg eval r2 ": avg_reward_2,
             }
             self.logger.log_to_wandb(log_dict)
 

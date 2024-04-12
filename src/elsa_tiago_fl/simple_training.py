@@ -2,7 +2,7 @@ from models.model import BasicModel
 from elsa_tiago_fl.utils.build_utils import build_model,build_optimizer
 from elsa_tiago_fl.utils.utils_parallel import set_parameters_model
 import pandas as pd
-from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate
+from elsa_tiago_fl.utils.evaluation_utils import fl_evaluate, client_evaluate
 from elsa_tiago_gym.utils_ros_gym import start_env
 from elsa_tiago_fl.utils.rl_utils import preprocess, get_custom_reward, cheat_action, transition_from_batch
 
@@ -41,14 +41,17 @@ def save_weigths(model,config):
 def train(model, env, replay_buffer, config):
     model.train()
     model.total_loss = 0
-
+    config.min_len_replay_buffer = 128
     with tqdm(total=config.min_len_replay_buffer, desc=f'prefilling ERP') as pbar:
         while pbar.n < pbar.total:
             ##prefilling
             state = env.reset()
+
             state = preprocess(state, multimodal=False,device=model.device)
             done = False
             steps = 0
+
+            #config.num_steps
             while (not done) and (steps < config.num_steps) and (pbar.n < pbar.total):
                 action = model.select_action(state,training=True,env=env)
                 act =model.get_executable_action(action)
@@ -84,10 +87,10 @@ def train(model, env, replay_buffer, config):
                 act =model.get_executable_action(action)
                 next_state, reward, done, info = env.step(act)
 
-                custom_reward = float(get_custom_reward(env, -0.5, -0.5))
-                #log_debug(f'custom_reward = {custom_reward}',True)
+                custom_reward, reward_1, reward_2 = get_custom_reward(env, -0.5, -0.5, True)
                 reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)
+
                 transition = Transition(
                     state.cpu(),
                     torch.tensor(action, dtype=torch.float32).unsqueeze(0),
@@ -112,10 +115,14 @@ def train(model, env, replay_buffer, config):
             pbar.update()
 
             #evaluate the fl_round
-            avg_reward,std_reward,avg_episode_length,std_episode_length = fl_evaluate(model, env, config)
+            #avg_reward,std_reward,avg_episode_length,std_episode_length = fl_evaluate(model, env, config)
+            avg_reward, avg_reward_1, avg_reward_2 = client_evaluate(model, env, config)
+            print("avg_stuff: ", avg_reward, avg_reward_1, avg_reward_2)
+
+            input()
 
             #get the dispertion of datapoints
-            points = np.array([t.state.cpu()[-1] for t in list(replay_buffer.memory)])
+            points = np.array([t.state.cpu().squeeze()[-3:] for t in list(replay_buffer.memory)])
             dispertion = get_buffer_variance(points)  
 
             log_dict = {
