@@ -211,7 +211,7 @@ def unprocess(state, state_dim):
         poses.append(pos_i.reshape(1,-1))
     return torch.cat(images), torch.cat(poses)
 
-def get_custom_reward(env, c1 ,c2, split_reward = False):
+def get_custom_reward(env, split_reward = False):
     """
     REWARD SHAPING: get one of the cubes are get a reward as a linear combination of the distance between:
         - gripper and cube 
@@ -233,17 +233,14 @@ def get_custom_reward(env, c1 ,c2, split_reward = False):
         cube_code = cube_COI_state.type_code
         cylinder_pos = np.array(env.model_state.cylinder_of_type(cube_code).position)
 
-
-        # compute the reward as the linar combination of the distance of the gripper from the cube 
-        # and the distance of the cube from the cylinder
-        reward_1 = np.linalg.norm(cube_pos - cylinder_pos)
-        reward_2 = np.linalg.norm(gipper_pos - cylinder_pos)
+        reward_1 = -np.linalg.norm(cube_pos - cylinder_pos)
+        reward_2 = -np.linalg.norm(gipper_pos - cylinder_pos)
 
     except:
         reward_1 = 0
         reward_2 = 0
 
-    reward = c1 * reward_1 + c2 * reward_2
+    reward = 0.5 * reward_1 + 0.5 * reward_2
 
     if split_reward:
         return reward, reward_1, reward_2
@@ -277,10 +274,7 @@ def cheat_action(env):
         is_ontop = np.linalg.norm(dist) < 0.05
         if is_ontop:
             #leave the cubettto
-            action = [random.random(),
-                    random.random(),
-                    random.random(),
-                    random.random()]
+            action = [0,0,0,1]
             #print(f"leave the cubettto = {action}")
             return action
 
@@ -288,7 +282,7 @@ def cheat_action(env):
             #print(f'{cub_COI_id}: go to that position')
             # go to that position
             proj_pose = cylinder_COI.position
-            proj_pose[-1] = 0.8
+            proj_pose[-1] = 0.5
             action = random_pos_controller(np.array(cube_COI.position), np.array(proj_pose),mod = 1.0)
             #print(f"go to cylinder = {action}")
             return action
@@ -298,10 +292,7 @@ def cheat_action(env):
 
         if grasp_item_id == cub_COI_id:
             # grasp it (is feasible)
-            action = [random.random(),
-                    random.random(),
-                    random.random(),
-                    random.random()]
+            action = [0,0,0,1]
             #print(f'grasp cube - {action}')
             return action
         else:
@@ -314,8 +305,9 @@ def cheat_action(env):
 
 def random_pos_controller(pos,t_pos, mod =1.0):
     # genereate an action that drives the gripper towards the target location with a random magnitude
-    dist = pos - t_pos
-    dist_norm = np.array(dist)/abs(max(dist))    #np.clip(dist,-1,1)#dist / np.sum(dist)
+    dist = pos - t_pos - np.array([0.0,0.0,0.3])
+    dist_norm = np.array(dist)/abs(max(dist))    
+    dist_norm = dist_norm #+ np.array([0.0,0.0,0.2])
     act = [-mod*x for x in dist_norm]
     act.append(random.random() * (-1))
     return np.clip(act,-1.0,1.0).tolist()

@@ -49,7 +49,7 @@ def train(model, env, replay_buffer, config):
                 action = cheat_action(env)
                 act = action
                 next_state, reward, done, info = env.step(act)
-                custom_reward = float(get_custom_reward(env, -0.5, -0.5))
+                custom_reward = float(get_custom_reward(env))
                 #log_debug(f'custom_reward = {custom_reward}',True)
                 reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)
@@ -81,7 +81,7 @@ def train(model, env, replay_buffer, config):
                 act = action
                 next_state, reward, done, info = env.step(act)
 
-                custom_reward = float(get_custom_reward(env, -0.5, -0.5))
+                custom_reward = float(get_custom_reward(env))
                 #log_debug(f'custom_reward = {custom_reward}',True)
                 reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)

@@ -89,6 +89,8 @@ class PolicyUpdateProcess(mp.Process):
         ## TRAINING LOOP --------------------------------------------------------------------------------------------------
         iter_per_step = 10
         for train_iter in range(self.config.fl_parameters.iterations_per_fl_round):
+            self.model.episode_loss = [0.0,0.0,0.0]
+
             with tqdm(total=self.config.train_steps, 
                       desc=f"Training iteration {train_iter} client #{self.client_id}") as pbar:
                 while pbar.n < pbar.total:
@@ -97,23 +99,20 @@ class PolicyUpdateProcess(mp.Process):
                     self.send_shared_params(self.model.state_dict())
                     self.training_steps.value = self.model.steps_done
                     pbar.update(iter_per_step)
-            self.model.episode_loss = [0.0,0.0,0.0]
 
             #evaluate the fl_round
             #(avg_reward,std_reward,avg_episode_length,std_episode_length) = fl_evaluate(self.model, env, self.config)
-            avg_reward, avg_reward_1, avg_reward_2 = client_evaluate(model, env, config)
-
+            avg_reward, avg_reward_1, avg_reward_2 = client_evaluate(self.model, env, self.config)
 
             # see the dispertion of the data in the replay buffer
             points = np.array([t.state.cpu().squeeze()[-3:] for t in list(self.replay_buffer.memory)])
-
             dispertion = get_buffer_variance(points)
 
             ## LOG ( log the episode results)
             log_dict = {
-                "Episode training loss": self.model.episode_loss[0],
-                "Episode policy loss": self.model.episode_loss[1],
-                "Episode value loss": self.model.episode_loss[2],
+                "Episode training loss": self.model.episode_loss[0]/self.config.train_steps,
+                "Episode policy loss": self.model.episode_loss[1]/self.config.train_steps,
+                "Episode value loss": self.model.episode_loss[2]/self.config.train_steps,
                 "lr": self.model.optimizer.param_groups[0]["lr"],
                 "epsilon": self.model.eps_linear_decay(),
                 "Data dispertion": dispertion,
@@ -307,7 +306,7 @@ class WorkerProcess(mp.Process):
                 act = self.model.get_executable_action(action)
 
                 observation, reward, terminated, _= self.env.step(act) 
-                custom_reward = float(get_custom_reward(self.env, -0.5, -0.5))
+                custom_reward = float(get_custom_reward(self.env))
                 reward += custom_reward
 
                 done = terminated #or truncated

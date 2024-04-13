@@ -30,7 +30,7 @@ def fl_evaluate(model, env, config):
             act = model.get_executable_action(action)
 
             observation, reward, terminated, _= env.step(act) 
-            custom_reward = float(get_custom_reward(env, -0.5, -0.5))
+            custom_reward = float(get_custom_reward(env))
             reward += custom_reward
 
             episode_reward += reward
@@ -58,7 +58,7 @@ def client_evaluate(model, env, config):
         episode_reward, episode_reward_1, episode_reward_2, episode_length = 0.0, 0.0, 0.0, 0
         done = False
         observation= env.reset()
-        while not done:
+        while not done and episode_length<10:
             state = preprocess(observation,model.multimodal,model.device)
             with torch.no_grad():
                 action = model.select_action(
@@ -71,7 +71,8 @@ def client_evaluate(model, env, config):
             act = model.get_executable_action(action)
 
             observation, reward, terminated, _= env.step(act) 
-            custom_reward, reward_1, reward_2 = get_custom_reward(env, -0.5, -0.5,True)
+            custom_reward, reward_1, reward_2 = get_custom_reward(env,True)
+            reward+=custom_reward
             
             episode_reward += reward
             episode_reward_1 += reward_1
@@ -84,7 +85,6 @@ def client_evaluate(model, env, config):
         total_rewards[1].append(episode_reward_1)
         total_rewards[2].append(episode_reward_2)
 
-        total_len_episode.append(episode_length)
 
     avg_reward = np.average(total_rewards[0])
     avg_reward_1 = np.average(total_rewards[1])

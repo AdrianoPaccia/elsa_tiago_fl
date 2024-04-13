@@ -57,7 +57,7 @@ def train(model, env, replay_buffer, config):
                 act =model.get_executable_action(action)
 
                 next_state, reward, done, info = env.step(act)
-                custom_reward = float(get_custom_reward(env, -0.5, -0.5))
+                custom_reward = float(get_custom_reward(env))
                 reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)
                 transition = Transition(
@@ -87,7 +87,7 @@ def train(model, env, replay_buffer, config):
                 act =model.get_executable_action(action)
                 next_state, reward, done, info = env.step(act)
 
-                custom_reward, reward_1, reward_2 = get_custom_reward(env, -0.5, -0.5, True)
+                custom_reward, reward_1, reward_2 = get_custom_reward(env, True)
                 reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)
 

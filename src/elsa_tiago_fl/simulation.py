@@ -35,37 +35,42 @@ def evaluate(model, env, config, num_episodes):
 
     model.eval()
     env.env_kind = 'environments_0'
+    
 
-    for _ in tqdm(range(num_episodes)):
-        episode_reward, episode_length = 0.0, 1
+    for i in range(num_episodes):
+        episode_reward, episode_length = 0.0, 0
         done = False
         observation= env.reset()
         #impose the env stuff
-        gripper_init_pos  = [np.random.uniform(low, high) for low, high in zip([0.40,-0.3,0.75], [0.8,0.3,0.85])]
+        gripper_init_pos  = np.random.uniform(low=env.arm_workspace_low, high=env.arm_workspace_high, size=(3,)).tolist()
         gripper_init_pos.extend([0,np.pi/2,0])
         env_code = random.randint(0, 3)
         x,y,z = np.random.uniform(low=[0.40,-0.3,0.443669], high=[0.6,0.3,0.443669], size=(3,))
         cube_poses = [[x,y,z, 0,0,0]]
         observation = env.impose_configuration(gripper_init_pos, env_code, cube_poses)
-        while not done or episode_length<10:
-            state = preprocess(observation,model.multimodal,model.device)
-            with torch.no_grad():
-                action = model.select_action(
-                        state,
-                        config=config,
-                        training=False,
-                        action_space=env.action_space,
-                    )
+        
+        with tqdm(total=config.max_episode_steps, desc=f'Iter {i}') as pbar:
+            while (not done) and (episode_length<config.max_episode_steps):
+                state = preprocess(observation,model.multimodal,model.device)
+                with torch.no_grad():
+                    action = model.select_action(
+                            state,
+                            config=config,
+                            training=False,
+                            action_space=env.action_space,
+                        )
 
-            act = model.get_executable_action(action)
-            observation, reward, terminated, _= env.step(act) 
+                act = model.get_executable_action(action)
+                observation, reward, terminated, _= env.step(act) 
+                custom_reward = float(get_custom_reward(env))
+                reward += custom_reward        
 
-            episode_reward += reward
-            done = terminated #or truncated
-            episode_length += 1
+                episode_reward += reward
+                done = terminated #or truncated
+                episode_length += 1
 
-        total_reward.append(episode_reward)
-        total_len_episode.append(episode_length)
+            total_reward.append(episode_reward)
+            total_len_episode.append(episode_length)
 
     avg_reward, std_reward = np.average(total_reward), np.std(total_reward)
     avg_len_episode, std_len_episode = np.average(total_len_episode), np.std(
