@@ -14,26 +14,26 @@ def build_model(config):
                 )
             )
 
-    match config.model_name.lower():
-        case "dqn":
-            from models.dqn import DQN
-            model = DQN(
-                input_dim=config.input_dim,
-                action_dim=config.action_dim,
-                device="cuda",
-                config=config,
-                multimodal=multimodal,
-            )
-
-        case "ddpg":
-            from models.ddpg import DDPG
-            model = DDPG(
-                input_dim=config.input_dim,
-                action_dim=config.action_dim,
-                device="cuda",
-                config=config,
-                multimodal=multimodal,
-            )
+    if config.model_name.lower() == "dqn":
+        from models.dqn import DQN
+        model = DQN(
+            input_dim=config.input_dim,
+            action_dim=config.action_dim,
+            device="cuda",
+            config=config,
+            multimodal=multimodal,
+        )
+    elif config.model_name.lower() == "ddpg":
+        from models.ddpg import DDPG
+        model = DDPG(
+            input_dim=config.input_dim,
+            action_dim=config.action_dim,
+            device="cuda",
+            config=config,
+            multimodal=multimodal,
+        )
+    else:
+        raise Exception
     model.to(config.device)
 
     return model

@@ -160,7 +160,8 @@ def load_config(args):
 
     # Merge config values and input arguments.
     config = {**env_config, **model_config, **training_config}
-    config = config | {k: v for k, v in args._get_kwargs() if v is not None}
+    #config = config | {k: v for k, v in args._get_kwargs() if v is not None}
+    config.update({k: v for k, v in args._get_kwargs() if v is not None})
 
     # Remove duplicate keys
     #config.pop("model")
