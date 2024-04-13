@@ -105,8 +105,8 @@ class PolicyUpdateProcess(mp.Process):
             avg_reward, avg_reward_1, avg_reward_2 = client_evaluate(self.model, env, self.config)
 
             # see the dispertion of the data in the replay buffer
-            points = np.array([t.state.cpu().squeeze()[-3:] for t in list(self.replay_buffer.memory)])
-            dispertion = get_buffer_variance(points)
+            #points = np.array([t.state.squeeze()[-3:] for t in list(self.replay_buffer.memory)])
+            #dispertion = get_buffer_variance(points)
 
             ## LOG ( log the episode results)
             log_dict = {
@@ -115,7 +115,7 @@ class PolicyUpdateProcess(mp.Process):
                 "Episode value loss": self.model.episode_loss[2]/self.config.train_steps,
                 "lr": self.model.optimizer.param_groups[0]["lr"],
                 "epsilon": self.model.eps_linear_decay(),
-                "Data dispertion": dispertion,
+                #"Data dispertion": dispertion,
                 "Avg eval reward ": avg_reward,
                 "Avg eval r1 ": avg_reward_1,
                 "Avg eval r2 ": avg_reward_2,
