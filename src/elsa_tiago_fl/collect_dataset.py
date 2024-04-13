@@ -36,7 +36,7 @@ def main(config):
                 random_init =False
     )
     num_init_pos = 100
-    env_codes = [0,1,2,3]
+    env_codes = [1,2,3,0]
     granularity = 0.02
     #get point in the table grid
     table_low=[0.40,-0.35,0.443669]
@@ -56,15 +56,13 @@ def main(config):
     print(f'Gripper pos = {num_init_pos}\nCube kinds = {env_codes}\nCube pos = {len(cube_pos)}')
 
     trajectories = {}
-
-    #pick arm pos
-    for i in range(num_init_pos):
-        gripper_init_pos  = np.random.uniform(low=env.arm_workspace_low, high=env.arm_workspace_high, size=(3,)).tolist()
-        gripper_init_pos.extend([0,np.pi/2,0])
-
-        #pick cube kind
-        for env_code in env_codes:
-
+    print('Starting Collecting')
+    #pick cube kind
+    for env_code in env_codes:
+        #pick arm pos
+        for i in range(num_init_pos):
+            gripper_init_pos  = np.random.uniform(low=env.arm_workspace_low, high=env.arm_workspace_high, size=(3,)).tolist()
+            gripper_init_pos.extend([0,np.pi/2,0])
             #pick cube pos
             with tqdm(total=len(cube_pos), desc=f'Iter {i} - Cube {num_to_str[env_code]}') as pbar:
                 step_tot = 0
@@ -99,7 +97,7 @@ def main(config):
                     key = str(i)+'_'+str(env_code)+'_'+str(step_tot)
                     trajectories[key] = trajectory
 
-                file_path = 'traj_dataset.json'
+                file_path = 'traj_dataset_1.json'
                 save_dict(trajectories,file_path)           
 
 
