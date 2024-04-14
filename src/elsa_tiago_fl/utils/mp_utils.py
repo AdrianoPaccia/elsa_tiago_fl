@@ -169,6 +169,7 @@ class PolicyUpdateProcess(mp.Process):
         try:
             #batch = self.batch_queue.get()
             batch = copy.deepcopy(self.replay_buffer.sample(self.config.batch_size))
+
             for b in batch:
                 b.to(self.model.device)
             return batch

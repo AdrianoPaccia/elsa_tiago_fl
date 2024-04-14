@@ -79,7 +79,7 @@ class BasicReplayBuffer(object):
         return len(self.memory)/self.capacity
 
     def push(self,transition:Transition):
-        self.memory.append(transition.to_cpu())
+        self.memory.append(transition)
 
     def sample(self, batch_size: int, device='cpu'):
         sample = random.sample(self.memory, batch_size)

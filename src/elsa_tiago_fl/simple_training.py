@@ -68,12 +68,14 @@ def train(model, env, replay_buffer, config):
                     torch.tensor(reward, dtype=torch.float32).unsqueeze(0),
                     torch.tensor(done, dtype=torch.float32).unsqueeze(0)
                 )
+                
                 replay_buffer.push(transition)
                 pbar.update()
                 steps += 1
     print(f'capacity replay buffer ',replay_buffer.get_capacity()) 
     total_reward = []
     total_len_episode = []
+
 
     # Training loop
     with tqdm(total=1000, desc=f'training episodes') as pbar:
@@ -91,7 +93,7 @@ def train(model, env, replay_buffer, config):
                 custom_reward, reward_1, reward_2 = get_custom_reward(env, True)
                 reward += custom_reward
                 next_state = preprocess(next_state, multimodal=False,device=model.device)
-
+         
                 transition = Transition(
                     state.cpu(),
                     torch.tensor(action, dtype=torch.float32).unsqueeze(0),
@@ -99,6 +101,7 @@ def train(model, env, replay_buffer, config):
                     torch.tensor(reward, dtype=torch.float32).unsqueeze(0),
                     torch.tensor(done, dtype=torch.float32).unsqueeze(0)
                 )
+                print('transition: ',transition)
 
                 transition.to_cpu()
                 replay_buffer.push(transition) 
