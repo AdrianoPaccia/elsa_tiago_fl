@@ -94,12 +94,6 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
                 self.replay_buffer.memory = deque(
                     client_data['replay_buffer'], maxlen=self.replay_buffer.capacity
                 )
-            for _ in range(10):
-                #for b in self.replay_buffer.sample(self.config.batch_size):
-                for b in self.replay_buffer.memory:
-                    print(b)
-                input('other? -> press inv')
-            
             # Load the model data (steps_done, state_dict)
             print(f" - loading steps done ({client_data['model_steps_done']})")
             self.model.steps_done = client_data["model_steps_done"]
