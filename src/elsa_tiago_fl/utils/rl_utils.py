@@ -233,8 +233,8 @@ def get_custom_reward(env, split_reward = False):
         cube_code = cube_COI_state.type_code
         cylinder_pos = np.array(env.model_state.cylinder_of_type(cube_code).position)
 
-        reward_1 = -np.linalg.norm(cube_pos - cylinder_pos)
-        reward_2 = -np.linalg.norm(gipper_pos - cylinder_pos)
+        reward_1 = -np.linalg.norm(cube_pos[:2] - cylinder_pos[:2]) #2d distance
+        reward_2 = -np.linalg.norm(gipper_pos - cylinder_pos)#3d distance
 
     except:
         reward_1 = 0

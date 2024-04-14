@@ -35,12 +35,16 @@ def main(config):
                 multimodal = config.multimodal,
                 random_init =False
     )
-    num_init_pos = 100
-    env_codes = [1,2,3,0]
-    granularity = 0.02
+
+    env.env_kind = 'environments_0'
+    num_init_pos = 10
+    granularity = 0.05
     #get point in the table grid
     table_low=[0.40,-0.35,0.443669]
     table_high =[0.60,0.35,0.443669]
+    gripper_low = [0.40,-0.3,0.65]
+    gripper_high = [0.60, 0.3,0.85]
+
     n_x = int((table_high[0]-table_low[0]) / granularity) + 1
     n_y = int((table_high[1]-table_low[1]) / granularity) + 1
     x = np.linspace(table_low[0], table_high[0], n_x)  
@@ -51,6 +55,7 @@ def main(config):
     ## qua serve perche state è model.device ma non ha model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cuda')
 
+    env_codes = [3,2,1,0]
 
     print('\nSTARING with:')
     print(f'Gripper pos = {num_init_pos}\nCube kinds = {env_codes}\nCube pos = {len(cube_pos)}')
@@ -61,7 +66,7 @@ def main(config):
     for env_code in env_codes:
         #pick arm pos
         for i in range(num_init_pos):
-            gripper_init_pos  = np.random.uniform(low=env.arm_workspace_low, high=env.arm_workspace_high, size=(3,)).tolist()
+            gripper_init_pos  = np.random.uniform(low=gripper_low, high=gripper_high, size=(3,)).tolist()
             gripper_init_pos.extend([0,np.pi/2,0])
             #pick cube pos
             with tqdm(total=len(cube_pos), desc=f'Iter {i} - Cube {num_to_str[env_code]}') as pbar:
@@ -119,6 +124,7 @@ if __name__ == "__main__":
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
+    config.gz_speed=0.005
     launch_master_simulation(gui=config.gui)
    
     main(config)
