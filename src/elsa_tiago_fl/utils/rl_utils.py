@@ -169,7 +169,7 @@ from PIL import Image
 from torchvision import transforms
 
 
-def preprocess(state, multimodal: bool=False,device='cpu'):
+def preprocess(state:dict, multimodal: bool=False,device='cpu'):
     if multimodal:
         img,g_pos = state
         # process the image
@@ -185,10 +185,34 @@ def preprocess(state, multimodal: bool=False,device='cpu'):
         pos_tsr = torch.FloatTensor(g_pos).unsqueeze(0)
         state_tsr = torch.cat((img_tsr,pos_tsr),dim=1)
     else:
+        cubes_dim = 7*5 + 6 + 3
+        
+
+        state_flat = []
+        i = 0
+        cubes = np.ones((7*5))*(-10)
+        for cube in state["cubes"].values():
+            for k in cube.values():
+                cubes[i:i+len(k)] = list(k)
+                i+=len(k)
+        state_flat.extend(cubes.tolist())
+
+        i = 0
+        cylinders = np.ones((6*1))*(-10)
+        for cyl in state["cylinders"].values():
+            for k in cyl.values():
+                cylinders[i:i+len(k)] = list(k)
+                i+=len(k)
+        state_flat.extend(cylinders.tolist())
+        state_flat.extend(state['fk'])
+
+
+        '''
+        for v in state.values
         state_flat = []
         for s in state:
             state_flat.extend(s.flatten())
-        #state_tsr = torch.tensor(state_flat,dtype=float).unsqueeze(0)
+        #state_tsr = torch.tensor(state_flat,dtype=float).unsqueeze(0)'''
         state_tsr = torch.FloatTensor(state_flat).unsqueeze(0)
 
     return state_tsr.to(device)
@@ -250,6 +274,7 @@ def get_custom_reward(env, split_reward = False):
 
 def cheat_action(env):
 
+    verbose = False
     #get the pos of the gripper
     gipper_pos = np.array(env.stored_arm_pose[:3])# position of the EE 
 
@@ -257,55 +282,67 @@ def cheat_action(env):
     cubes = env.model_state.cubes
     cylinders = env.model_state.cylinders
 
-    #get the Cube Of Interest (the first which is not in the rigth box)
+    '''#get the Cube Of Interest (the first which is not in the rigth box)
     i_COI = None
     for i, n in enumerate(env.model_state.cubes_in_cylinders()):
         if n != 1:
             i_COI = i
     if i_COI is None:
         return [0,0,0,0]
-
+    
     cube_COI = list(cubes.values())[i_COI]
-    cub_COI_id = cube_COI.id
-    cylinder_COI = env.model_state.cylinder_of_type(cube_COI.type_code)
+    cube_COI.id = cube_COI.id
 
-    if env.grasped_item == cub_COI_id:
+    '''
+
+    for v in env.model_state.cubes.values():
+        if v.type_code == env.type_target:
+            cube_COI = v
+            break
+    cylinder_COI = env.model_state.cylinders[env.cylinder_target]
+
+    try:
+        cube_COI = env.model_state.cubes[env.cube_target]
+    except:
+        return [0,0,0,0]
+
+    if env.grasped_item == cube_COI.id:
         dist = np.subtract(gipper_pos[:2],cylinder_COI.position[:2])
         is_ontop = np.linalg.norm(dist) < 0.05
         if is_ontop:
+            time.sleep(5)
             #leave the cubettto
             action = [0,0,0,1]
-            #print(f"leave the cubettto = {action}")
+            if verbose:print(f"[{cube_COI.id}] leave the cubettto = {action}")
             return action
 
         else:
-            #print(f'{cub_COI_id}: go to that position')
+            #print(f'{cube_COI.id}: go to that position')
             # go to that position
             proj_pose = cylinder_COI.position
             proj_pose[-1] = 0.5
             action = random_pos_controller(np.array(cube_COI.position), np.array(proj_pose),mod = 1.0)
-            #print(f"go to cylinder = {action}")
+            if verbose: print(f"[{cube_COI.id}] go to cylinder = {action}")
             return action
 
     else:
         grasp_item_id,_ = env.get_grasping_obj()
-
-        if grasp_item_id == cub_COI_id:
+        if grasp_item_id == cube_COI.id:
             # grasp it (is feasible)
             action = [0,0,0,1]
-            #print(f'grasp cube - {action}')
+            if verbose: print(f'[{cube_COI.id}] grasp cube - {action}')
             return action
         else:
             # go towards the object
             action = random_pos_controller(np.array(gipper_pos), np.array(cube_COI.position))
-            #print(f'go towards the object - {action}')
+            if verbose: print(f'[{cube_COI.id}] go towards the object - {action}')
             return action
 
 
 
 def random_pos_controller(pos,t_pos, mod =1.0):
     # genereate an action that drives the gripper towards the target location with a random magnitude
-    dist = pos - t_pos - np.array([0.0,0.0,0.3])
+    dist = pos - t_pos - np.array([0.0,0.0,0.2])
     dist_norm = np.array(dist)/abs(max(dist))    
     dist_norm = dist_norm #+ np.array([0.0,0.0,0.2])
     act = [-mod*x for x in dist_norm]

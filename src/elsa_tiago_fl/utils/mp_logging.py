@@ -7,7 +7,7 @@ def set_logs_level():
     logger_mp.setLevel(logging.DEBUG)
 
     # Create a file handler for DEBUG and INFO level logs
-    file_handler = logging.FileHandler('logs/multiprocessing_logs.log')
+    file_handler = logging.FileHandler('/save/mp_logs/multiprocessing_logs.log')
     file_handler.setLevel(logging.DEBUG)
 
     # Create a stream handler for WARNING and above level logs
@@ -22,18 +22,3 @@ def set_logs_level():
     # Add the handlers to the logger_mp
     logger_mp.addHandler(file_handler)
     logger_mp.addHandler(stream_handler)
-
-
-
-def configure_logging():
-    # Create a file handler for all log levels
-    file_handler = logging.FileHandler('logs/multiprocessing_logs.log')
-    file_handler.setLevel(logging.DEBUG)
-
-    # Create a formatter and add it to the handler
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
-
-    # Get the root logger and add the file handler
-    root_logger = logging.getLogger()
-    root_logger.addHandler(file_handler)

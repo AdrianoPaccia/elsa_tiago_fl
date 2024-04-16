@@ -117,9 +117,6 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         # Setup the model for training and retreinve the initial parameters
         init_parameters, init_frozen_parameters = self.model.setup_fl_training(self.optimizer)
 
-        #setup logs managers
-        set_logs_level()
-
         ## Multiprocessing:
         print(f'(FIT) Creating Multiple Processes (1 policy updater and {self.n_workers} workers)')
     
@@ -232,9 +229,6 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         print('Starting the evaluation of the entire Fl_model')
 
         self.set_parameters(parameters)
-
-        #setup logs managers
-        set_logs_level()
 
         ## Multiprocessing:
         # Initialize the manager and shared variables

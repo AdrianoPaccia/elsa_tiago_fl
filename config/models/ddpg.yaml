@@ -6,13 +6,13 @@ discrete_actions: false
 
 training_parameters:
   lr: 1e-4
-  batch_size: 128
+  batch_size: 32 #128
   hidden1: 128
   hidden2: 128  
   num_steps: 500
   train_steps: 100
   gamma: 0.99 #discount
-  tau: 0.95
+  tau: 0.1 
   updating_freq: 10 
 
   # for exploration 
