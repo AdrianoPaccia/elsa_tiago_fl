@@ -29,7 +29,7 @@ def main(config):
     with_noise = False
     eps = 0.2
     n_envs = 3
-    n_iter_per_env = 1000
+    n_iter_per_env = 10 #1000
     env_codes = [0,1,2]
     #env_codes.extend([x for x in range(17,n_envs)])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -69,7 +69,8 @@ def main(config):
                     cube_poses = cube_poses,
                     env_code = env_code
                 )
-                state = preprocess(state, multimodal=False,device= device)
+                
+                #state = preprocess(state, multimodal=False,device= device)
                 while (not done) and (step_i < config.num_steps):
                     if with_noise:
                         if random.random() < eps: 
@@ -81,11 +82,11 @@ def main(config):
                     next_state, reward, done, info = env.step(action)
                     custom_reward = float(get_custom_reward(env))
                     reward += custom_reward                                 #model.device
-                    next_state = preprocess(next_state, multimodal=False,device= device)
+                    #next_state = preprocess(next_state, multimodal=False,device= device)
                     transition = (
-                        state.cpu().squeeze().tolist(),
+                        state,#.cpu().squeeze().tolist(),
                         action,
-                        next_state.cpu().squeeze().tolist(),
+                        next_state,#.cpu().squeeze().tolist(),
                         [reward],
                         [done]
                     )
@@ -109,18 +110,13 @@ def main(config):
             save_dict(descriptions,file_path_desc)           
 
 
-
-def save_dict(my_dict,file_path):
+def save_dict(data:dict,file_path:str):
     try:
-        json_str = json.dumps(my_dict)
-        with open(file_path, 'w') as file:
-            file.write(json_str)
-            file.close()
-        print(f'Dict saved in {file_path}!')
-        return True
+        with open(file_path, 'w') as json_file:
+            json.dump(data, json_file)
     except:
         print('NOT saved!')
-        return False
+        return Exception
 
 
 def give_name_traj(n_cubes, color):
