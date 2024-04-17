@@ -4,7 +4,7 @@
 # - actions as joint velocities
 
 env_name: 'TiagoSimpleEnv-v0'
-input_dim: 24 #43 
+input_dim: 44
 action_dim: 4
 multimodal: false
 gz_speed: 0.005

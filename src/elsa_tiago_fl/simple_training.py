@@ -41,7 +41,11 @@ def save_weigths(model,config):
 def train(model, env, replay_buffer, config):
     model.train()
     model.total_loss = 0
-    config.min_len_replay_buffer = 128
+    config.min_len_replay_buffer = 1000
+
+
+    tic()
+    ## PREFILLING ------------------------------------------------------------------
     with tqdm(total=config.min_len_replay_buffer, desc=f'prefilling ERP') as pbar:
         while pbar.n < pbar.total:
             ##prefilling
@@ -72,12 +76,18 @@ def train(model, env, replay_buffer, config):
                 replay_buffer.push(transition)
                 pbar.update()
                 steps += 1
-    print(f'capacity replay buffer ',replay_buffer.get_capacity()) 
+    prefilling_time = toc()
+    #add the line
+    line=f'\nsimple_env - speed up ({config.gz_speed}) - max displacement = {0.05}: {config.min_len_replay_buffer} samples in {prefilling_time}s ==> {config.min_len_replay_buffer/prefilling_time} samples/s'
+    with open("measurements.txt", "a") as file:
+        file.write(line)
+    input(line) 
     total_reward = []
     total_len_episode = []
 
 
-    # Training loop
+
+    ## TRAININNG LOOP ------------------------------------------------------------------
     with tqdm(total=1000, desc=f'training episodes') as pbar:
         for episode in range(1000):
             model.episode_loss = [0,0,0]
@@ -86,8 +96,9 @@ def train(model, env, replay_buffer, config):
             i_step = 0
             done = False
             while not done and i_step < config.num_steps:
-                action = model.select_action(state,training=True,env=env)
-                act =model.get_executable_action(action)
+                #action = model.select_action(state,training=True,env=env)
+                #act =model.get_executable_action(action)
+                action = [np.uniform(-1,1) for _ in range(4)]
                 next_state, reward, done, info = env.step(act)
 
                 custom_reward, reward_1, reward_2 = get_custom_reward(env, True)
@@ -175,7 +186,7 @@ if __name__ == "__main__":
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
-    config.gz_speed = 0.005
+    config.gz_speed = None
     launch_master_simulation(gui=config.gui)
 
     wandb_api_key = os.environ.get("WANDB_API_KEY")

@@ -17,67 +17,53 @@ from elsa_tiago_fl.utils.rl_utils import BasicReplayBuffer,Transition,get_buffer
 from elsa_tiago_fl.utils.utils import tic,toc
 from elsa_tiago_fl.utils.utils_parallel import save_weigths
 import json
-from collections import namedtuple
-from elsa_tiago_gym.utils import generate_random_config_2d
 
-TrajectoryDescription = namedtuple('TrajectoryDescription', ['cube_init_poses', 'gripper_init_pose', 'type_target', 'outcome'])
 
 def main(config):
 
     # HYPERPARAMS ----------------------------------------------------------------------------------------------
-    random_init = False
-    with_noise = False
-    eps = 0.2
-    n_envs = 3
-    n_iter_per_env = 2
-    env_codes = [0,1,2]
-    #env_codes.extend([x for x in range(17,n_envs)])
+    with_noise = True
+    eps = 0.
+    n_envs = 50
+    n_iter_per_env = 300
+    env_codes = [6,15]
+    env_codes.extend([x for x in range(17,n_envs)])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    print('Starting with environments: ',env_codes)
+    print('environments = ',env_codes)
+    print('Starting environments')
     env = start_env(env=config.env_name,
             speed = config.gz_speed,
             client_id = 0,
             max_episode_steps = config.max_episode_steps,
             multimodal = config.multimodal,
-            random_init =random_init
+            random_init =True
     )
     time.sleep(5)
-    env.env_kind = 'environments'
+    env.env_kind = 'environments_4'
+
 
     ## START COLLECTION -------------------------------------------------------------------------------------------------
     print('Starting Collecting')
     #pick cube kind
     for env_code in env_codes:        
         trajectories = {}
-        descriptions = {}
-        env_name = give_name_traj(len(env.model_state.cubes), env.target_color)
-        env.env_code = env_code
-
-        ## ROLLOUT
         with tqdm(total=n_iter_per_env, desc=f'Environment {env_code}') as pbar:
+            
+            #rollout
             for i in range(n_iter_per_env):
                 trajectory = []
                 done = False
                 step_i = 0
-
-                #reset the environment and impose a new trajectory
-                env.reset()
-                gipper_pose, cube_poses = get_new_conf(env,5)
-                state = env.impose_configuration(
-                    gipper_pose = gipper_pose,
-                    cube_poses = cube_poses,
-                    env_code = env_code
-                )
+                env.init_environment(env_code)
+                state = env.reset()
                 state = preprocess(state, multimodal=False,device= device)
                 while (not done) and (step_i < config.num_steps):
                     if with_noise:
-                        if random.random() < eps: 
+                        if random.random() < eps: #noisy action
                             action = [np.uniform(-1,1) for _ in range(4)]
                         else:
-                            action = cheat_action(env) 
-                    else:
-                        action = cheat_action(env)                       
+                            action = cheat_action(env)                            
                     next_state, reward, done, info = env.step(action)
                     custom_reward = float(get_custom_reward(env))
                     reward += custom_reward                                 #model.device
@@ -93,21 +79,11 @@ def main(config):
                     trajectory.append(transition)
                     step_i += 1
                 pbar.update()
-                key = str(i) 
-                trajectories[key] = trajectory
-                desc_i = TrajectoryDescription(
-                    cube_init_poses = cube_poses,
-                    gripper_init_pose = gipper_pose,
-                    type_target = env.type_target,
-                    outcome = '1' if reward>0 else '0'
-                )
-                descriptions[key] = desc_i
-            #if i%10 == 0:
-            file_path_traj = f'datasets/trajectories/{env_name}_{n_iter_per_env}samples.json'
-            save_dict(trajectories,file_path_traj)           
-            file_path_desc = f'datasets/descriptions/{env_name}_{n_iter_per_env}samples.json'
-            save_dict(descriptions,file_path_desc)           
+            key = str(i)+'_'+str(env_code)#+'_'+str(step_tot)
+            trajectories[key] = trajectory
 
+        file_path = f'datasets/traj_dataset_{env_code}_expert_300samples.json'
+        save_dict(trajectories,file_path)           
 
 
 def save_dict(my_dict,file_path):
@@ -122,25 +98,6 @@ def save_dict(my_dict,file_path):
         print('NOT saved!')
         return False
 
-
-def give_name_traj(n_cubes, color):
-    return str(n_cubes) + '_' + color
-
-def get_new_conf(env,n_cubes=5):
-    c_pos = generate_random_config_2d(
-                low = [0.45,-0.25],
-                high = [0.55,0.25],
-                n_cubes = n_cubes,
-                dist = 0.1,
-                threshold=0.01
-                )
-    c_poses = []
-    for c in c_pos:
-        c.extend([0.44,0,0,0])
-        c_poses.append(c)
-    x, y, z  = [np.random.uniform(low, high) for low, high in zip([0.40,-0.2,0.8], [0.5,0.2,0.85])]
-    g_pose = [x, y, z, 0, np.radians(90), 0]
-    return g_pose, c_poses
         
 
 if __name__ == "__main__":

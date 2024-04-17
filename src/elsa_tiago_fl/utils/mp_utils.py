@@ -75,8 +75,9 @@ class PolicyUpdateProcess(mp.Process):
             for queue in self.replay_queues:
                 if (queue.size()>0):
                     ready = True
-
+        self.config.min_len_replay_buffer = 1000
         ## PREFILLING LOOP ------------------------------------------------------------------------------
+        tic()
         with tqdm(total=self.config.min_len_replay_buffer, 
             initial = np.clip(len(self.replay_buffer.memory),0,self.config.min_len_replay_buffer),
             desc="Filling Replay Buffer") as pbar:
@@ -84,6 +85,12 @@ class PolicyUpdateProcess(mp.Process):
                 n = self.get_transitions()
                 pbar.update(n)
         self.save_local_data()
+        prefilling_time = toc()
+        #add the line
+        line=f'\n multi_env - speed up ({self.config.gz_speed}) - n_workers = {self.config.n_workers} - max displacement = {0.05}: {self.config.min_len_replay_buffer} samples in {prefilling_time}s ==> {self.config.min_len_replay_buffer/prefilling_time} samples/s'
+        with open("measurements.txt", "a") as file:
+            file.write(line)
+        print(line)
 
 
         ## TRAINING LOOP --------------------------------------------------------------------------------------------------

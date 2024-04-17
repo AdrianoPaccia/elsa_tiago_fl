@@ -66,6 +66,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
 
         self.n_workers = n_workers
+        
         self.env = env
 
         self.model = model
@@ -113,6 +114,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
 
         # set the model paramaters 
         self.set_parameters(parameters)
+        self.config.n_workers = self.n_workers
 
         # Setup the model for training and retreinve the initial parameters
         init_parameters, init_frozen_parameters = self.model.setup_fl_training(self.optimizer)

@@ -308,9 +308,9 @@ def cheat_action(env):
 
     if env.grasped_item == cube_COI.id:
         dist = np.subtract(gipper_pos[:2],cylinder_COI.position[:2])
-        is_ontop = np.linalg.norm(dist) < 0.05
+        is_ontop = np.linalg.norm(dist) < 0.07
         if is_ontop:
-            time.sleep(5)
+            time.sleep(1)
             #leave the cubettto
             action = [0,0,0,1]
             if verbose:print(f"[{cube_COI.id}] leave the cubettto = {action}")
@@ -320,7 +320,7 @@ def cheat_action(env):
             #print(f'{cube_COI.id}: go to that position')
             # go to that position
             proj_pose = cylinder_COI.position
-            proj_pose[-1] = 0.5
+            #proj_pose[-1] = 0.5
             action = random_pos_controller(np.array(cube_COI.position), np.array(proj_pose),mod = 1.0)
             if verbose: print(f"[{cube_COI.id}] go to cylinder = {action}")
             return action
@@ -342,7 +342,7 @@ def cheat_action(env):
 
 def random_pos_controller(pos,t_pos, mod =1.0):
     # genereate an action that drives the gripper towards the target location with a random magnitude
-    dist = pos - t_pos - np.array([0.0,0.0,0.2])
+    dist = pos - t_pos - np.array([0.0,0.0,0.3])
     dist_norm = np.array(dist)/abs(max(dist))    
     dist_norm = dist_norm #+ np.array([0.0,0.0,0.2])
     act = [-mod*x for x in dist_norm]
