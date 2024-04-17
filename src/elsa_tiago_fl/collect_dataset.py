@@ -29,7 +29,7 @@ def main(config):
     with_noise = False
     eps = 0.2
     n_envs = 3
-    n_iter_per_env = 2
+    n_iter_per_env = 1000
     env_codes = [0,1,2]
     #env_codes.extend([x for x in range(17,n_envs)])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
