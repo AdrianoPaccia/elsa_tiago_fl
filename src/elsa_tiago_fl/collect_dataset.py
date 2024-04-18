@@ -19,6 +19,7 @@ from elsa_tiago_fl.utils.utils_parallel import save_weigths
 import json
 from collections import namedtuple
 from elsa_tiago_gym.utils import generate_random_config_2d
+from elsa_tiago_fl.utils.utils import tic,toc
 
 TrajectoryDescription = namedtuple('TrajectoryDescription', ['cube_init_poses', 'gripper_init_pose', 'type_target', 'outcome'])
 
@@ -29,9 +30,8 @@ def main(config):
     with_noise = False
     eps = 0.2
     n_envs = 3
-    n_iter_per_env = 10 #1000
+    n_iter_per_env = 1000
     env_codes = [0,1,2]
-    #env_codes.extend([x for x in range(17,n_envs)])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     print('Starting with environments: ',env_codes)
@@ -55,6 +55,7 @@ def main(config):
         env.env_code = env_code
 
         ## ROLLOUT
+        tic()
         with tqdm(total=n_iter_per_env, desc=f'Environment {env_code}') as pbar:
             for i in range(n_iter_per_env):
                 trajectory = []
@@ -107,7 +108,9 @@ def main(config):
             file_path_traj = f'datasets/trajectories/{env_name}_{n_iter_per_env}samples.json'
             save_dict(trajectories,file_path_traj)           
             file_path_desc = f'datasets/descriptions/{env_name}_{n_iter_per_env}samples.json'
-            save_dict(descriptions,file_path_desc)           
+            save_dict(descriptions,file_path_desc)     
+            duration = toc()
+            print(f'took {round(duration,1)} s to get {n_iter_per_env} trajectories ({round(duration/n_iter_per_env)} s/traj)')      
 
 
 def save_dict(data:dict,file_path:str):

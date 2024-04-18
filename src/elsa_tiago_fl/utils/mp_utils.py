@@ -75,7 +75,6 @@ class PolicyUpdateProcess(mp.Process):
             for queue in self.replay_queues:
                 if (queue.size()>0):
                     ready = True
-        self.config.min_len_replay_buffer = 10
         ## PREFILLING LOOP ------------------------------------------------------------------------------
         timesteps = []
         with tqdm(total=self.config.min_len_replay_buffer, 
