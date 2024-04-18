@@ -114,6 +114,7 @@ def save_dict(data:dict,file_path:str):
     try:
         with open(file_path, 'w') as json_file:
             json.dump(data, json_file)
+        print(f'Saved in {file_path}!')
     except:
         print('NOT saved!')
         return Exception

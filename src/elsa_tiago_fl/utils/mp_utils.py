@@ -77,20 +77,25 @@ class PolicyUpdateProcess(mp.Process):
                     ready = True
         self.config.min_len_replay_buffer = 1000
         ## PREFILLING LOOP ------------------------------------------------------------------------------
-        tic()
+        timesteps = []
         with tqdm(total=self.config.min_len_replay_buffer, 
             initial = np.clip(len(self.replay_buffer.memory),0,self.config.min_len_replay_buffer),
             desc="Filling Replay Buffer") as pbar:
             while pbar.n < pbar.total:
+                tic()
                 n = self.get_transitions()
                 pbar.update(n)
-        self.save_local_data()
-        prefilling_time = toc()
+                timesteps.append(toc())
+                steps += 1
+        avg = np.mean(timesteps)
+        std = math.sqrt(np.var(timesteps))
         #add the line
-        line=f'\n multi_env - speed up ({self.config.gz_speed}) - n_workers = {self.config.n_workers} - max displacement = {0.05}: {self.config.min_len_replay_buffer} samples in {prefilling_time}s ==> {self.config.min_len_replay_buffer/prefilling_time} samples/s'
+        line=f'\nmulti_env - speed up ({self.config.gz_speed}) - max displacement = {0.05}: {self.config.min_len_replay_buffer} samples in {sum(timesteps)}s ==> {avg}+-{std}'
         with open("measurements.txt", "a") as file:
             file.write(line)
-        print(line)
+        print(line) 
+        self.save_local_data()
+        
 
 
         ## TRAINING LOOP --------------------------------------------------------------------------------------------------

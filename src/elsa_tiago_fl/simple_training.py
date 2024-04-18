@@ -20,7 +20,7 @@ from elsa_tiago_fl.utils.rl_utils import BasicReplayBuffer,Transition,get_buffer
 import wandb
 from elsa_tiago_fl.utils.utils import tic,toc
 from elsa_tiago_fl.utils.utils_parallel import save_weigths
-
+import math
 
 
 def save_weigths(model,config):
@@ -44,11 +44,13 @@ def train(model, env, replay_buffer, config):
     config.min_len_replay_buffer = 1000
 
 
-    tic()
+
     ## PREFILLING ------------------------------------------------------------------
+    timesteps = []
     with tqdm(total=config.min_len_replay_buffer, desc=f'prefilling ERP') as pbar:
         while pbar.n < pbar.total:
             ##prefilling
+            tic()
             state = env.reset()
 
             state = preprocess(state, multimodal=False,device=model.device)
@@ -75,10 +77,12 @@ def train(model, env, replay_buffer, config):
                 
                 replay_buffer.push(transition)
                 pbar.update()
+                timesteps.append(toc())
                 steps += 1
-    prefilling_time = toc()
+    avg = np.mean(timesteps)
+    std = math.sqrt(np.var(timesteps))
     #add the line
-    line=f'\nsimple_env - speed up ({config.gz_speed}) - max displacement = {0.05}: {config.min_len_replay_buffer} samples in {prefilling_time}s ==> {config.min_len_replay_buffer/prefilling_time} samples/s'
+    line=f'\nsimple_env - speed up ({config.gz_speed}) - max displacement = {0.05}: {config.min_len_replay_buffer} samples in {sum(timesteps)}s ==> {avg}+-{std}'
     with open("measurements.txt", "a") as file:
         file.write(line)
     input(line) 
@@ -186,7 +190,7 @@ if __name__ == "__main__":
     args = parse_args()
     config = load_config(args)
     seed_everything(config.seed)
-    config.gz_speed = None
+    config.gz_speed = 0.005
     launch_master_simulation(gui=config.gui)
 
     wandb_api_key = os.environ.get("WANDB_API_KEY")
