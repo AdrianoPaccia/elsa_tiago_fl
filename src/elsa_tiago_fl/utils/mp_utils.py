@@ -20,7 +20,7 @@ import numpy as np
 from elsa_tiago_fl.utils.rl_utils import transition_from_batch,get_buffer_variance
 from elsa_tiago_fl.utils.utils_parallel import save_weigths
 import wandb
-
+import math
 DEBUGGING = True
 #setup logs managers
 #set_logs_level()
@@ -75,7 +75,7 @@ class PolicyUpdateProcess(mp.Process):
             for queue in self.replay_queues:
                 if (queue.size()>0):
                     ready = True
-        self.config.min_len_replay_buffer = 1000
+        self.config.min_len_replay_buffer = 10
         ## PREFILLING LOOP ------------------------------------------------------------------------------
         timesteps = []
         with tqdm(total=self.config.min_len_replay_buffer, 

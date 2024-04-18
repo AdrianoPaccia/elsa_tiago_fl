@@ -83,7 +83,7 @@ class FlowerClientMultiprocessing(fl.client.NumPyClient):
         if not os.path.exists(os.path.join("temp")):
             os.makedirs(os.path.join("temp"))
 
-        if os.path.exists(self.client_local_filename):
+        if False:#os.path.exists(self.client_local_filename):
             print(
                 f"Loading data for client #{int(client_id)} from file: {self.client_local_filename}"
             )
