@@ -86,7 +86,6 @@ class PolicyUpdateProcess(mp.Process):
                 n = self.get_transitions()
                 pbar.update(n)
                 timesteps.append(toc())
-                steps += 1
         avg = np.mean(timesteps)
         std = math.sqrt(np.var(timesteps))
         #add the line
